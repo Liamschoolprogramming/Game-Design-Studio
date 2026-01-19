@@ -6,6 +6,14 @@
 #include "GameFramework/Actor.h"
 #include "Puzzle.generated.h"
 
+
+UENUM(BlueprintType)
+enum class EStates : uint8
+{
+	State1	UMETA(DisplayName = "State1"),
+	State2  UMETA(DisplayName = "State2"),
+};
+
 UCLASS()
 class GAMEDESIGNSTUDIO_API APuzzle : public AActor
 {
@@ -14,13 +22,17 @@ class GAMEDESIGNSTUDIO_API APuzzle : public AActor
 public:	
 	// Sets default values for this actor's properties
 	APuzzle();
+	FVector Location;
+
+	EStates State;
+	
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
-	UPROPERTY(EditAnywhere)
-	FVector Location;
+	//UPROPERTY(EditAnywhere)
+	//FVector Location;
 
 public:	
 	// Called every frame
