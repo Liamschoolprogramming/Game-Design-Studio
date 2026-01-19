@@ -22,8 +22,11 @@ class GAMEDESIGNSTUDIO_API APuzzle : public AActor
 public:	
 	// Sets default values for this actor's properties
 	APuzzle();
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void PushObject(const FVector& Amount);
+	
 	FVector Location;
-
 	EStates State;
 	
 

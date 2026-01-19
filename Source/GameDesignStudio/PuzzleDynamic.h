@@ -13,6 +13,9 @@ UCLASS()
 class GAMEDESIGNSTUDIO_API APuzzleDynamic : public APuzzle
 {
 	GENERATED_BODY()
+	
+public:
+	virtual void PushObject(const FVector& Amount) override;
 
 protected:
 	virtual void BeginPlay() override;

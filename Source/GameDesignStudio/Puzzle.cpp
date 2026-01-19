@@ -26,5 +26,14 @@ void APuzzle::Tick(float DeltaTime)
 
 }
 
+void APuzzle::PushObject(const FVector& Amount)
+{
+	// GetActorLocation returns the root component location
+	// Pass a reference instead of value 
+	FVector NewLocation = GetActorLocation() + Amount;
+	SetActorLocation(NewLocation);
+
+}
+
 
 

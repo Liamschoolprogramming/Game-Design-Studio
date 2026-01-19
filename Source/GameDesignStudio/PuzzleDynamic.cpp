@@ -11,11 +11,15 @@ void APuzzleDynamic::BeginPlay()
 	
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, Location.ToString());
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::Printf(TEXT("Puzzle Dynamic Begin Puzzle")));
+	
+}
 
+void APuzzleDynamic::PushObject(const FVector& Amount)
+{
+	FVector NewLocation = GetActorLocation() + Amount;
+	SetActorLocation(NewLocation);
 	
-	
-	
-	
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Puzzle Dynamic Push Object")));
 	
 }
 
