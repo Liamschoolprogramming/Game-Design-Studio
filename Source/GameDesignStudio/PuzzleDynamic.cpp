@@ -14,12 +14,35 @@ void APuzzleDynamic::BeginPlay()
 	
 }
 
+// We could say we want this to activate another object after it's pushed or once it's
+// reached a certain area, call a delegate
 void APuzzleDynamic::PushObject(const FVector& Amount)
 {
-	FVector NewLocation = GetActorLocation() + Amount;
-	SetActorLocation(NewLocation);
+	//FVector NewLocation = GetActorLocation() + Amount;
 	
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Puzzle Dynamic Push Object")));
+	switch (State)
+	{
+	case EStates::State1:
+		SetActorLocation(GetActorLocation() + Amount);
+		
+		break;
+		
+	case EStates::State2:
+		SetActorLocation(GetActorLocation() - Amount);
+		
+	default:
+		break;
+	}
+	
+	/*
+	if (State == EStates::State1)
+	{
+		FVector NewLocation = GetActorLocation() + Amount;
+		SetActorLocation(NewLocation);
+	}
+	*/
+	
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Puzzle Dynamic Push Object")));
 	
 }
 
