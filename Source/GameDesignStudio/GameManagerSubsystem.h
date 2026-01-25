@@ -27,6 +27,9 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 	
+	void IsPuzzleSolved(FString Id);
+	void SetStepComplete(FString Id, FString Step);
+	
 	template<typename T>
 	T* GetManager() const;
 	

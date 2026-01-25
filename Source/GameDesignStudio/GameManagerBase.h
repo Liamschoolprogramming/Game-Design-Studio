@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
+#include "PuzzleTypes.h"
 #include "GameManagerBase.generated.h"
 
 /**
@@ -25,6 +26,11 @@ public:
 	virtual void Shutdown();
 	
 	virtual void PostInitialize();
+	
+	UFUNCTION(BlueprintPure, Category = "Puzzle")
+	bool IsPuzzleSolved(const FPuzzleId& Id) const;
+	
+	void SetPuzzleStep(const FPuzzleId& Id, FName StepId);
 	
 protected:
 	
