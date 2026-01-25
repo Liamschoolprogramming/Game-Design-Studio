@@ -49,6 +49,36 @@ APlayerCharacter::APlayerCharacter()
 	FollowCamera->bUsePawnControlRotation = false;
 	
 }
+// Called to bind functionality to input
+void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	
+
+	if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		
+		//zoom
+		EnhancedInput->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Zoom);
+		
+		//jump
+		EnhancedInput->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+		EnhancedInput->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+
+		// Moving
+		EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
+		//Mouse look
+		EnhancedInput->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+
+		// Looking
+		EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+		
+		//Click
+		EnhancedInput->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &APlayerCharacter::ClickStarted);
+		EnhancedInput->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &APlayerCharacter::ClickEnded);
+		
+	}
+}
 
 void APlayerCharacter::MoveForward(float AxisValue)
 {
@@ -63,6 +93,16 @@ void APlayerCharacter::MoveForward(float AxisValue)
 		//add movement in that direction
 		AddMovementInput(Direction, AxisValue);
 	}
+}
+
+void APlayerCharacter::ClickStarted()
+{
+	bSettingDestination = true;
+}
+
+void APlayerCharacter::ClickEnded()
+{
+	bSettingDestination = false;
 }
 
 void APlayerCharacter::MoveRight(float AxisValue)
@@ -149,32 +189,66 @@ void APlayerCharacter::Zoom(const FInputActionValue& Value)
 	);
 	
 }
-// Called to bind functionality to input
-void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void APlayerCharacter::Look(const FInputActionValue& Value)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	//we dont want to move the camera while trying to click to move
+	if (bSettingDestination) return;
+	FVector2D LookVector = Value.Get<FVector2D>();
+	
+	DoLook(LookVector.X, LookVector.Y);
 	
 	
+	
+}
 
-	//bind jump
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-
-	//bind move
-	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerCharacter::MoveRight);
-
-	//bind look
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-
-	if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+void APlayerCharacter::DoLook(float Yaw, float Pitch)
+{
+	if (GetController() != nullptr)
 	{
-		
-		if (ZoomAction)
-		{
-			EnhancedInput->BindAction(ZoomAction, ETriggerEvent::Started, this, &APlayerCharacter::Zoom);
-		}
+		// add yaw and pitch input to controller
+		AddControllerYawInput(Yaw);
+		AddControllerPitchInput(Pitch);
 	}
 }
+
+
+void APlayerCharacter::Move(const FInputActionValue& Value)
+{
+	FVector2D MovementVector = Value.Get<FVector2D>();
+	DoMove(MovementVector.X, MovementVector.Y);
+}
+
+void APlayerCharacter::DoMove(float Right, float Forward)
+{
+	
+	
+	if (GetController() != nullptr)
+	{
+		// find out which way is forward
+		const FRotator Rotation = GetController()->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get forward vector
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+		// get right vector 
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		// add movement 
+		AddMovementInput(ForwardDirection, Forward);
+		AddMovementInput(RightDirection, Right);
+	}
+}
+//Handle jump in BP exposed functions
+void APlayerCharacter::DoJumpStart()
+{
+	ACharacter::Jump();
+}
+
+void APlayerCharacter::DoJumpEnd()
+{
+	ACharacter::StopJumping();
+}
+
+
 
