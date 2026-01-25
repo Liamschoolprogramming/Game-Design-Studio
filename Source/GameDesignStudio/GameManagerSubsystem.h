@@ -25,8 +25,11 @@ public:
 	template<typename T>
 	T* GetManager() const;
 	
+	// For future deploy
+	/*
 	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UGameManagerBase* GetManagerByClass(TSubclassOf<UGameManagerBase> ManagerClass) const;
+	*/
 	
 protected:
 	

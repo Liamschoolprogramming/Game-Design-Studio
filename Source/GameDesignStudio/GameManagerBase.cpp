@@ -6,6 +6,7 @@
 
 void UGameManagerBase::Initialize(UGameManagerSubsystem* InstanceOwner)
 {
+	// This is where we are passing in the subsystem
 	Owner = InstanceOwner;
 }
 
