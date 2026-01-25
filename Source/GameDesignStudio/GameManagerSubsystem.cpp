@@ -3,28 +3,35 @@
 
 #include "GameManagerSubsystem.h"
 #include "GameManagerBase.h"
+#include "PuzzleRiverManager.h"
+#include "Kismet/GameplayStatics.h"
 
 void UGameManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
-	Super::Initialize(Collection);
 	
-	// What is actually spawning the managers
-	RegisterManagers();
+	//*******************************************************************************************//
+	// RegisterManagers() method creates the object in memory based on the class, the range
+	// for loop goes through that list and calls the objects initialize method after that.
 	
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, FString::Printf(TEXT("Registered GameManagerSubsystem")));
-	
-	// Calling initialize on each manager in the array and setting its
-	// instance owner to this subsystem
+	// The Initialize() can be though of an AActors BeginPlay() whatever you want to happen
+	// as that object is being created should go in the Initialize() method.
 	
 	// Pair.Value is accessing the manager at the current index in the range
-	// then we use the arrow operator to call initialize of that instance and
-	// pass this subsytem as an arugement
-	for (auto& Pair : Managers)
-	{
-		Pair.Value->Initialize(this);
-	}
+	// then we use the arrow operator to call the initialize method of that instance and
+	// pass this subsytem as an argument so it registers with it.
 	
+	// Each UObject should only register with one subsystem, so each manager is registered to
+	// the GameManagerSubsystem
+	//*******************************************************************************************//
 	
+	Super::Initialize(Collection);
+	
+	UE_LOG(LogTemp, Warning, TEXT("GameManagerSubsystem Initialize: %s"), *UGameplayStatics::GetGameInstance(GetWorld())->GetName());
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, FString::Printf(TEXT("Registered GameManagerSubsystem")));
+	
+	RegisterManagers();
+	
+	//Initializing and Setting this subsystem to the owning subsystem of the manager
 	for (auto& Pair : Managers)
 	{
 		Pair.Value->Initialize(this);
@@ -44,11 +51,11 @@ void UGameManagerSubsystem::Deinitialize()
 	Super::Deinitialize();
 }
 
-
+// Creating objects based on the class type used for the template and
+// adding it to the managers array
 void UGameManagerSubsystem::RegisterManagers()
 {
-	RegisterManager<UGameManagerBase>();
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Added Manager")));
+	RegisterManager<UPuzzleRiverManager>();
 }
 
 template <typename T>
@@ -58,9 +65,12 @@ void UGameManagerSubsystem::RegisterManager()
 	Managers.Add(T::StaticClass(), Manager);
 }
 
-/*
-UGameManagerBase* UGameManagerSubsystem::GetManagerByClass(TSubclassOf<UGameManagerBase> ManagerClass) const
+UGameManagerBase* UGameManagerSubsystem::GetManager(TSubclassOf<UGameManagerBase> ManagerClass) const
 {
+	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(ManagerClass))
+	{
+		return Found->Get();
+	}
+	
 	return nullptr;
 }
-*/

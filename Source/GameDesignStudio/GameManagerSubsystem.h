@@ -9,6 +9,11 @@
 /**
  * 
  */
+
+//**************************************************//
+//		RENAME THIS TO PuzzleProgressSubsystem		//
+//**************************************************//
+
 class UGameManagerBase;
 
 UCLASS()
@@ -25,11 +30,9 @@ public:
 	template<typename T>
 	T* GetManager() const;
 	
-	// For future deploy
-	/*
-	UFUNCTION(BlueprintCallable, Category = "Managers")
-	UGameManagerBase* GetManagerByClass(TSubclassOf<UGameManagerBase> ManagerClass) const;
-	*/
+	// Template is used for the UClass type
+	UFUNCTION(BlueprintPure, Category = "Managers")
+	UGameManagerBase* GetManager(TSubclassOf<UGameManagerBase> ManagerClass) const;
 	
 protected:
 	
@@ -40,8 +43,8 @@ protected:
 	
 private:
 	
-	// Map for manager lookup
-	UPROPERTY()
+	// Map for access to managers
+	UPROPERTY(EditDefaultsOnly, Category = "GameManager")
 	TMap<TSubclassOf<UGameManagerBase>, TObjectPtr<UGameManagerBase>> Managers;
 	
 };

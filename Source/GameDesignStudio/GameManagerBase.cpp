@@ -3,11 +3,14 @@
 
 #include "GameManagerBase.h"
 #include "GameManagerSubsystem.h"
+#include "Kismet/GameplayStatics.h"
 
 void UGameManagerBase::Initialize(UGameManagerSubsystem* InstanceOwner)
 {
-	// This is where we are passing in the subsystem
+	// Registering with the service (subsystem)
 	Owner = InstanceOwner;
+	
+	LogCreation();
 }
 
 void UGameManagerBase::PostInitialize()

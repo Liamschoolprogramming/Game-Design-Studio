@@ -12,10 +12,11 @@
 
 class UGameManagerSubsystem;
 
-UCLASS(Abstract, Blueprintable)
+UCLASS(Abstract, BlueprintType, Blueprintable)
 class GAMEDESIGNSTUDIO_API UGameManagerBase : public UObject
 {
 	GENERATED_BODY()
+
 public:
 	
 	// Sets the owning subsystem
@@ -27,8 +28,14 @@ public:
 	
 protected:
 	
-	// On each manager initialization, it adds itself to this array
 	UPROPERTY()
 	TObjectPtr<UGameManagerSubsystem> Owner;
+	
+	// Easier to just inline. If we have lots of classes to lookup, might want to
+	// put in cpp file
+	void LogCreation() const
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Manager created: %s"), *GetClass()->GetName());
+	}
 	
 };
