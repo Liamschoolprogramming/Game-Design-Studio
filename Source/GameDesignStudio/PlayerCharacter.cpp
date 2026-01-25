@@ -5,6 +5,10 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Materials/MaterialParameterCollection.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
+#include "Kismet/GameplayStatics.h"
+
 
 
 // Sets default values
@@ -92,6 +96,15 @@ void APlayerCharacter::BeginPlay()
 		}
 	}
 	
+	//Update the cutout distance in the MPC
+	if (!CameraMPC) return;
+	UMaterialParameterCollectionInstance* MPCInstance =
+		GetWorld()->GetParameterCollectionInstance(CameraMPC);
+	if (!MPCInstance) return;
+	MPCInstance->SetScalarParameterValue(
+		FName("CameraArmLength"),((CameraBoom->TargetArmLength)-CameraCutoutCompensation)
+	);
+	
 }
 
 // Called every frame
@@ -103,10 +116,12 @@ void APlayerCharacter::Tick(float DeltaTime)
 void APlayerCharacter::Zoom(const FInputActionValue& Value)
 {
 	float AxisValue = -Value.Get<float>();
-	//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, FString::Printf(TEXT("Zoom %f"), AxisValue));
-	float NewZoom = AxisValue * CameraZoomSpeed;
-	//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, FString::Printf(TEXT("New Zoom %f"), NewZoom));
 	
+	float NewZoom = AxisValue * CameraZoomSpeed;
+	
+	
+	
+	//calculate new zoom within range
 	float length = CameraBoom->TargetArmLength;
 	
 	if (NewZoom + length > CameraZoomMax)
@@ -123,6 +138,15 @@ void APlayerCharacter::Zoom(const FInputActionValue& Value)
 	}
 	
 	CameraBoom->TargetArmLength = NewZoom;
+	
+	//Update the cutout distance in the MPC
+	if (!CameraMPC) return;
+	UMaterialParameterCollectionInstance* MPCInstance =
+		GetWorld()->GetParameterCollectionInstance(CameraMPC);
+	if (!MPCInstance) return;
+	MPCInstance->SetScalarParameterValue(
+		FName("CameraArmLength"),(length-CameraCutoutCompensation)
+	);
 	
 }
 // Called to bind functionality to input

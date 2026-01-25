@@ -43,9 +43,17 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
 	
+	//Zoom action
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	TObjectPtr<UInputAction> ZoomAction;
 
+	//MPC for camera cutout material
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	UMaterialParameterCollection* CameraMPC;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	float CameraCutoutCompensation = 100;
+	
 
 	void MoveForward(float AxisValue);
 
