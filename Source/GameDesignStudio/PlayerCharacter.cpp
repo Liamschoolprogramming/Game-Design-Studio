@@ -4,28 +4,46 @@
 #include "PlayerCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
 
+	// Don't rotate character to camera direction
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+	
+	
 	//Initialize camera arm
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->TargetArmLength = 800;
-
-	//Setup camera arm attach to the root component of the class
+	
+	// Configure character movement
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
+	//GetCharacterMovement()->bConstrainToPlane = true;
+	//GetCharacterMovement()->bSnapToPlaneAtStart = true;
+	
+	//Setup camera arm 
 	CameraBoom->SetupAttachment(RootComponent);
-
-	//use the pawn control rotation
 	CameraBoom->bUsePawnControlRotation = true;
-
+	CameraBoom->SetUsingAbsoluteRotation(true);
+	CameraBoom->TargetArmLength = 800.f;
+	CameraBoom->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
+	CameraBoom->bDoCollisionTest = false;
+	
 	//Initialize Camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 
-	//Set attach to the camera boom
-	FollowCamera->SetupAttachment(CameraBoom);
+	//Setup camera
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	FollowCamera->bUsePawnControlRotation = false;
+	
 }
 
 void APlayerCharacter::MoveForward(float AxisValue)
@@ -62,6 +80,17 @@ void APlayerCharacter::MoveRight(float AxisValue)
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	if (const APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
+			PC->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+		{
+			if (DefaultMappingContext)
+			{
+				Subsystem->AddMappingContext(DefaultMappingContext, 0);
+			}
+		}
+	}
 	
 }
 
@@ -71,11 +100,37 @@ void APlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
+void APlayerCharacter::Zoom(const FInputActionValue& Value)
+{
+	float AxisValue = -Value.Get<float>();
+	//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, FString::Printf(TEXT("Zoom %f"), AxisValue));
+	float NewZoom = AxisValue * CameraZoomSpeed;
+	//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Blue, FString::Printf(TEXT("New Zoom %f"), NewZoom));
+	
+	float length = CameraBoom->TargetArmLength;
+	
+	if (NewZoom + length > CameraZoomMax)
+	{
+		NewZoom = CameraZoomMax;
+	}
+	else if (NewZoom + length < CameraZoomMin)
+	{
+		NewZoom = CameraZoomMin;
+	}
+	else
+	{
+		NewZoom = NewZoom + length;
+	}
+	
+	CameraBoom->TargetArmLength = NewZoom;
+	
+}
 // Called to bind functionality to input
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	
+	
 
 	//bind jump
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
@@ -89,5 +144,13 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
+	if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		
+		if (ZoomAction)
+		{
+			EnhancedInput->BindAction(ZoomAction, ETriggerEvent::Started, this, &APlayerCharacter::Zoom);
+		}
+	}
 }
 
