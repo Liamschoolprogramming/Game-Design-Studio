@@ -20,14 +20,8 @@ public:
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
-	FOnPossessedDelegate OnPossessed;
-	
-	FOnPossessedDelegate GetOnPossessedDelegate()
-	{
-		return OnPossessed;
-	}
-	
-	
+	UFUNCTION(BlueprintCallable)
+		void OnPossess();
 	
 protected:
 	// Called when the game starts or when spawned

@@ -17,23 +17,23 @@ APossessableEntity::APossessableEntity()
 void APossessableEntity::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	OnClicked.AddDynamic(this, );
-	
 }
 
 // Called every frame
 void APossessableEntity::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
 void APossessableEntity::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
 
+void APossessableEntity::OnPossess()
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	PlayerController->Possess(this);
 }
 
