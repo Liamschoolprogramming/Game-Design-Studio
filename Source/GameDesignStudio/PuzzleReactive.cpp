@@ -3,3 +3,9 @@
 
 #include "PuzzleReactive.h"
 
+APuzzleReactive::APuzzleReactive()
+{
+	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseMesh"));
+	BaseMesh->SetupAttachment(RootComponent);
+}
+
