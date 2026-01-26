@@ -27,10 +27,10 @@ public:
 	
 	virtual void PostInitialize();
 	
-	UFUNCTION(BlueprintPure, Category = "Puzzle")
-	bool IsPuzzleSolved(const FPuzzleId& Id) const;
+	//UFUNCTION(BlueprintPure, Category = "Puzzle")
+	//bool IsPuzzleSolved(const FPuzzleId& Id) const;
 	
-	void SetPuzzleStep(const FPuzzleId& Id, FName StepId);
+	//void SetPuzzleStep(const FPuzzleId& Id, FName StepId);
 	
 protected:
 	

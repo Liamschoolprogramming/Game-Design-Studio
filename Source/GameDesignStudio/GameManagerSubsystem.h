@@ -37,6 +37,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Managers")
 	UGameManagerBase* GetManager(TSubclassOf<UGameManagerBase> ManagerClass) const;
 	
+	UFUNCTION(BlueprintCallable, Category = "Managers")
+	UPuzzleRiverManager* GetPuzzleRiverManager() const;
+	
 protected:
 	
 	virtual void RegisterManagers();

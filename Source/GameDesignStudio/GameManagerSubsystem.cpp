@@ -65,6 +65,16 @@ void UGameManagerSubsystem::RegisterManager()
 	Managers.Add(T::StaticClass(), Manager);
 }
 
+UPuzzleRiverManager* UGameManagerSubsystem::GetPuzzleRiverManager() const
+{
+	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UPuzzleRiverManager::StaticClass()))
+	{
+		return Cast<UPuzzleRiverManager>(Found->Get());
+	}
+	
+	return nullptr;
+}
+
 UGameManagerBase* UGameManagerSubsystem::GetManager(TSubclassOf<UGameManagerBase> ManagerClass) const
 {
 	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(ManagerClass))
