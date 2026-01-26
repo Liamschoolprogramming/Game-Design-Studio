@@ -97,4 +97,6 @@ void APossessableEntity::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	//bind look
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	
+	PlayerInputComponent->BindAction("CancelPossess", IE_Pressed, this, &APossessableEntity::OnCancelPossess);
 }
