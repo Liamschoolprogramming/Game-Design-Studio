@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CustomCamera.h"
 #include "PlayerCharacter.h"
 #include "GameFramework/PlayerController.h"
 #include "EnhancedInputSubsystems.h"
@@ -22,16 +23,10 @@ public:
 	
 	bool bSettingDestination = false;
 
+	UPROPERTY(EditAnywhere, Category="Camera")
+	TSubclassOf<ACustomCamera> CameraReferenceClass;
 	
-	void ClickStarted();
-	void ClickEnded();
-	
-	void Jump();
-	void StopJumping();
-	
-	void Zoom(const FInputActionValue& Value);
-	void Look(const FInputActionValue& Value);
-	void Move(const FInputActionValue& Value);
+	ACustomCamera* CameraReference;
 	
 	/** Handles move inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
@@ -73,10 +68,32 @@ public:
 	/** Mouse Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	UInputAction* MouseLookAction;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
-	UEnhancedInputComponent* EnhancedInput;
+	UInputAction* LookGateAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* ToggleLockCameraToPawnAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* SelectAction;
 
+	
+	
+	
+	void Zoom(const FInputActionValue& Value);
+	
+	void Move(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
+	void Jump(const FInputActionValue& Value);
+	void StopJumping(const FInputActionValue& Value);
+	
+	void StartClick(const FInputActionValue& Value);
+	void StopClick(const FInputActionValue& Value);
+	
+	void LookGate(const FInputActionValue& Value);
+	void ToggleLockCameraToPawn(const FInputActionValue& Value);
+	void Select(const FInputActionValue& Value);
+	
 protected:
 	virtual void BeginPlay() override;
 
