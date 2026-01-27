@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameManagerBase.h"
+#include "Core/Managers/GameManagerBase.h"
 #include "PuzzleRiverManager.generated.h"
 
 /**

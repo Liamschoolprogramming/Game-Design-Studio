@@ -2,7 +2,7 @@
 
 
 #include "GameManagerBase.h"
-#include "GameManagerSubsystem.h"
+#include "Core/Subsystems/GameManagerSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 
 void UGameManagerBase::Initialize(UGameManagerSubsystem* InstanceOwner)

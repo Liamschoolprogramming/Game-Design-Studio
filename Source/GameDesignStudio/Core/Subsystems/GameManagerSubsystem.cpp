@@ -2,8 +2,8 @@
 
 
 #include "GameManagerSubsystem.h"
-#include "GameManagerBase.h"
-#include "PuzzleRiverManager.h"
+#include "Core/Managers/GameManagerBase.h"
+#include "Managers/PuzzleRiverManager.h"
 #include "Kismet/GameplayStatics.h"
 
 void UGameManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)

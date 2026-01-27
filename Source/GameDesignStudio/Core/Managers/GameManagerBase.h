@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "PuzzleTypes.h"
+#include "Data/PuzzleTypes.h"
 #include "GameManagerBase.generated.h"
 
 /**
