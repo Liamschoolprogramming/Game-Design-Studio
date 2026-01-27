@@ -5,6 +5,8 @@
 #include "PlayerCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Materials/MaterialParameterCollection.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -44,14 +46,40 @@ void APossessableEntity::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void APossessableEntity::OnTogglePossession()
+{
+	if (bPossessed)
+	{
+		PlayerController->Possess(PlayerCharacter);
+		bPossessed = false;
+	}
+	else
+	{
+		PlayerController->Possess(this);
+		bPossessed = true;
+	}
+}
+
 void APossessableEntity::OnPossess()
 {
 	PlayerController->Possess(this);
+	bPossessed = true;
 }
 
 void APossessableEntity::OnCancelPossess()
 {
 	PlayerController->Possess(PlayerCharacter);
+	bPossessed = false;
+}
+
+void APossessableEntity::ClickStarted()
+{
+	bSettingDestination = true;
+}
+
+void APossessableEntity::ClickEnded()
+{
+	bSettingDestination = false;
 }
 
 void APossessableEntity::MoveForward(float AxisValue)
@@ -85,18 +113,109 @@ void APossessableEntity::MoveRight(float AxisValue)
 	}
 }
 
+void APossessableEntity::Look(const FInputActionValue& Value)
+{
+	if (bSettingDestination) return;
+	FVector2D LookVector = Value.Get<FVector2D>();
+	
+	DoLook(LookVector.X, LookVector.Y);
+}
+
+void APossessableEntity::DoLook(float Yaw, float Pitch)
+{
+	if (GetController() != nullptr)
+	{
+		// add yaw and pitch input to controller
+		AddControllerYawInput(Yaw);
+		AddControllerPitchInput(Pitch);
+	}
+}
+
+void APossessableEntity::Move(const FInputActionValue& Value)
+{
+	FVector2D MovementVector = Value.Get<FVector2D>();
+	DoMove(MovementVector.X, MovementVector.Y);
+}
+
+void APossessableEntity::DoMove(float Right, float Forward)
+{
+	if (GetController() != nullptr)
+	{
+		// find out which way is forward
+		const FRotator Rotation = GetController()->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get forward vector
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+		// get right vector 
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		// add movement 
+		AddMovementInput(ForwardDirection, Forward);
+		AddMovementInput(RightDirection, Right);
+	}
+}
+	
+void APossessableEntity::Zoom(const FInputActionValue& Value)
+{
+	float AxisValue = -Value.Get<float>();
+	float NewZoom = AxisValue * CameraZoomSpeed;
+	
+	//calculate new zoom within range
+	float length = CameraBoom->TargetArmLength;
+
+	if (NewZoom + length > CameraZoomMax)
+	{
+		NewZoom = CameraZoomMax;
+	}
+	else if (NewZoom + length < CameraZoomMin)
+	{
+		NewZoom = CameraZoomMin;
+	}
+	else
+	{
+		NewZoom = NewZoom + length;
+	}
+
+	CameraBoom->TargetArmLength = NewZoom;
+
+	//Update the cutout distance in the MPC
+	if (!CameraMPC) return;
+	UMaterialParameterCollectionInstance* MPCInstance =
+		GetWorld()->GetParameterCollectionInstance(CameraMPC);
+	if (!MPCInstance) return;
+	MPCInstance->SetScalarParameterValue(
+		FName("CameraArmLength"),(length-CameraCutoutCompensation)
+	);
+
+}
+
 // Called to bind functionality to input
 void APossessableEntity::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	
-	//bind move
-	PlayerInputComponent->BindAxis("MoveForward", this, &APossessableEntity::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &APossessableEntity::MoveRight);
+	if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		
+		//zoom
+		EnhancedInput->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &APossessableEntity::Zoom);
+		
+		// Moving
+		EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APossessableEntity::Move);
+		
+		// Mouse look
+		EnhancedInput->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &APossessableEntity::Look);
 
-	//bind look
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	
-	PlayerInputComponent->BindAction("CancelPossess", IE_Pressed, this, &APossessableEntity::OnCancelPossess);
+		// Looking
+		EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &APossessableEntity::Look);
+		
+		//Click
+		EnhancedInput->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &APossessableEntity::ClickStarted);
+		EnhancedInput->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &APossessableEntity::ClickEnded);
+		
+		// Cancel Possession
+		EnhancedInput->BindAction(CancelPossessAction, ETriggerEvent::Triggered, this, &APossessableEntity::OnCancelPossess);
+	}
 }
