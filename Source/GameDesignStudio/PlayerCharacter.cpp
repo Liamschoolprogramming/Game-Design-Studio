@@ -49,77 +49,7 @@ APlayerCharacter::APlayerCharacter()
 	FollowCamera->bUsePawnControlRotation = false;
 	
 }
-// Called to bind functionality to input
-void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	
 
-	if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		
-		//zoom
-		EnhancedInput->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Zoom);
-		
-		//jump
-		EnhancedInput->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInput->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-
-		// Moving
-		EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
-		//Mouse look
-		EnhancedInput->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
-
-		// Looking
-		EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
-		
-		//Click
-		EnhancedInput->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &APlayerCharacter::ClickStarted);
-		EnhancedInput->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &APlayerCharacter::ClickEnded);
-		
-	}
-}
-
-void APlayerCharacter::MoveForward(float AxisValue)
-{
-	if ((Controller != NULL) && (AxisValue != 0.0f))
-	{
-		//find which direction is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		//get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		//add movement in that direction
-		AddMovementInput(Direction, AxisValue);
-	}
-}
-
-void APlayerCharacter::ClickStarted()
-{
-	bSettingDestination = true;
-}
-
-void APlayerCharacter::ClickEnded()
-{
-	bSettingDestination = false;
-}
-
-void APlayerCharacter::MoveRight(float AxisValue)
-{
-	if ((Controller != NULL) && (AxisValue != 0.0f))
-	{
-		//find which direction is right
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		//get right vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-		//add movement in that direction
-		AddMovementInput(Direction, AxisValue);
-	}
-}
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
@@ -153,6 +83,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+/*
 void APlayerCharacter::Zoom(const FInputActionValue& Value)
 {
 	float AxisValue = -Value.Get<float>();
@@ -250,5 +181,5 @@ void APlayerCharacter::DoJumpEnd()
 	ACharacter::StopJumping();
 }
 
-
+*/
 

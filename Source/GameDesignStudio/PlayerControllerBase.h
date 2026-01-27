@@ -1,0 +1,86 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "PlayerCharacter.h"
+#include "GameFramework/PlayerController.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
+#include "PlayerControllerBase.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class GAMEDESIGNSTUDIO_API APlayerControllerBase : public APlayerController
+{
+	GENERATED_BODY()
+
+public:
+
+	
+	bool bSettingDestination = false;
+
+	
+	void ClickStarted();
+	void ClickEnded();
+	
+	void Jump();
+	void StopJumping();
+	
+	void Zoom(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
+	void Move(const FInputActionValue& Value);
+	
+	/** Handles move inputs from either controls or UI interfaces */
+	UFUNCTION(BlueprintCallable, Category="Input")
+	virtual void DoMove(float Right, float Forward);
+
+	/** Handles look inputs from either controls or UI interfaces */
+	UFUNCTION(BlueprintCallable, Category="Input")
+	virtual void DoLook(float Yaw, float Pitch);
+
+	APlayerControllerBase();
+
+	/*
+	 * BEGIN INPUT SECTION
+	 */
+	//IMC
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	TObjectPtr<UInputMappingContext> DefaultMappingContext;
+
+	//Zoom action
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* ZoomAction;
+
+	//Move Action
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* MoveAction;
+	
+	//Look Action
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* LookAction;
+	
+	//Jump Action
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* JumpAction;
+
+	//Set Destination click action
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* SetDestinationClickAction;
+	
+	/** Mouse Look Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* MouseLookAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UEnhancedInputComponent* EnhancedInput;
+
+protected:
+	virtual void BeginPlay() override;
+
+public:
+	virtual void SetupInputComponent() override;
+	
+};
