@@ -3,7 +3,7 @@
 
 #include "PuzzleInteractive.h"
 
-bool APuzzleInteractive::Interact(APawn* Pawn) { return false; }
+void APuzzleInteractive::Interact(APawn* Pawn) { }
 
 bool APuzzleInteractive::IsInRange(APawn* Pawn)
 {

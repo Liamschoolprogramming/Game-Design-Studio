@@ -17,7 +17,14 @@ public:
 	APushableEntity();
 	
 	UFUNCTION(BlueprintCallable)
-	virtual bool Interact(APawn* Pawn) override;
+	virtual void Interact(APawn* Pawn) override;
+	
+	bool BeingPushed = false;
+	
+	virtual void Tick(float DeltaTime) override;
+	
+	UPROPERTY()
+	APawn* PushingPawn;
 	
 // protected:
 // 	virtual void BeginPlay() override;
