@@ -17,8 +17,8 @@ public:
 	APushableEntity();
 	
 	UFUNCTION(BlueprintCallable)
-	virtual void Interact(APawn* Pawn) override;
-
+	virtual bool Interact(APawn* Pawn) override;
+	
 // protected:
 // 	virtual void BeginPlay() override;
 //

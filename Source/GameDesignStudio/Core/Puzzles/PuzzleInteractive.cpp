@@ -3,5 +3,9 @@
 
 #include "PuzzleInteractive.h"
 
-void APuzzleInteractive::Interact(APawn* Pawn) { }
+bool APuzzleInteractive::Interact(APawn* Pawn) { return false; }
 
+bool APuzzleInteractive::IsInRange(APawn* Pawn)
+{
+	return ((this->GetActorTransform().GetLocation() - Pawn->GetActorTransform().GetLocation()).Size() <= InteractRange);
+}

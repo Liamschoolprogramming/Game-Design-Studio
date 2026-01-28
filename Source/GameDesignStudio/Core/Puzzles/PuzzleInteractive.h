@@ -13,5 +13,10 @@ class GAMEDESIGNSTUDIO_API APuzzleInteractive : public APuzzle
 	GENERATED_BODY()
 	
 public:
-	virtual void Interact(APawn* Pawn);
+	virtual bool Interact(APawn* Pawn);
+	
+	UPROPERTY(BlueprintReadWrite)
+	double InteractRange = 10;
+protected:
+	virtual bool IsInRange(APawn* Pawn);
 };
