@@ -4,7 +4,9 @@
 #include "CustomCamera.h"
 
 #include "Camera/CameraComponent.h"
+#include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ACustomCamera::ACustomCamera()
@@ -31,6 +33,18 @@ ACustomCamera::ACustomCamera()
 	
 }
 
+void ACustomCamera::MoveCamera(FVector2D ActionValue)
+{
+	FVector pos = GetActorLocation();
+	FVector f = GetActorForwardVector();
+	FVector r = GetActorRightVector();
+	f = f * ActionValue.Y * CameraMovementSpeed;
+	r = r * ActionValue.X * CameraMovementSpeed;
+	
+	pos = pos + f + r;
+	SetActorLocation(pos);
+}
+
 // Called when the game starts or when spawned
 void ACustomCamera::BeginPlay()
 {
@@ -42,6 +56,16 @@ void ACustomCamera::BeginPlay()
 void ACustomCamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (bLockCameraToCharacter == true)
+	{
+		ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+		if (PlayerCharacter)
+		{
+			SetActorLocation(PlayerCharacter->GetActorLocation());
+		}
+		
+	}
 
 }
 

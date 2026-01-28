@@ -24,8 +24,13 @@ public:
 	//Camera
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
 	class UCameraComponent* FollowCamera;
-
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
+	float CameraMovementSpeed = 10;
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void MoveCamera(FVector2D ActionValue);
+	
+	bool bLockCameraToCharacter = true;
 	
 protected:
 	// Called when the game starts or when spawned

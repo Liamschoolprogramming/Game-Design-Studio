@@ -4,8 +4,7 @@
 #include "PlayerControllerBase.h"
 
 #include "EnhancedInputSubsystems.h"
-
-
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 
 
 void APlayerControllerBase::Jump(const FInputActionValue& Value)
@@ -32,6 +31,14 @@ void APlayerControllerBase::StopJumping(const FInputActionValue& Value)
 
 void APlayerControllerBase::StartClick(const FInputActionValue& Value)
 {
+	//Do the move to here instead of blueprints
+	FHitResult Hit;
+	GetHitResultUnderCursor(ECC_Visibility,true, Hit);
+	
+	if (Hit.bBlockingHit && CameraReference->bLockCameraToCharacter == true)
+	{
+		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Hit.Location);
+	}
 }
 
 void APlayerControllerBase::StopClick(const FInputActionValue& Value)
@@ -44,10 +51,17 @@ void APlayerControllerBase::LookGate(const FInputActionValue& Value)
 
 void APlayerControllerBase::ToggleLockCameraToPawn(const FInputActionValue& Value)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 0.4, FColor::Red, "ToggleLockCameraToPawn");
+	if (CameraReference)
+	{
+		CameraReference->bLockCameraToCharacter = !(CameraReference->bLockCameraToCharacter);
+	}
 }
 
 void APlayerControllerBase::Select(const FInputActionValue& Value)
 {
+	
+	
 }
 
 void APlayerControllerBase::Zoom(const FInputActionValue& Value)
@@ -61,7 +75,15 @@ void APlayerControllerBase::Look(const FInputActionValue& Value)
 
 void APlayerControllerBase::Move(const FInputActionValue& Value)
 {
-	
+	//move the camera if we have a reference to it
+	if (CameraReference)
+	{
+		if (CameraReference->bLockCameraToCharacter == false)
+		{
+			CameraReference->MoveCamera(Value.Get<FVector2D>());
+		}
+		
+	}
 }
 
 void APlayerControllerBase::DoMove(float Right, float Forward)
@@ -84,6 +106,7 @@ void APlayerControllerBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//spawn camera
 	if (CameraReferenceClass)
 	{
 		FActorSpawnParameters SpawnParams;
@@ -100,6 +123,7 @@ void APlayerControllerBase::BeginPlay()
 		SetViewTarget(CameraReference);
 	}
 	
+	//set up input
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
 		GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
 	{
@@ -109,6 +133,7 @@ void APlayerControllerBase::BeginPlay()
 		}
 	}
 	
+	//setup cursor 
 	bShowMouseCursor = true;
 	bEnableClickEvents = true;
 
@@ -116,7 +141,7 @@ void APlayerControllerBase::BeginPlay()
 	
 	
 }
-
+//bind all input actions
 void APlayerControllerBase::SetupInputComponent()
 {
 	Super::SetupInputComponent();
@@ -159,7 +184,7 @@ void APlayerControllerBase::SetupInputComponent()
 		}
 		if (ToggleLockCameraToPawnAction)
 		{
-			EnhancedInputComponent->BindAction(ToggleLockCameraToPawnAction,ETriggerEvent::Triggered, this, &APlayerControllerBase::ToggleLockCameraToPawn);
+			EnhancedInputComponent->BindAction(ToggleLockCameraToPawnAction,ETriggerEvent::Completed, this, &APlayerControllerBase::ToggleLockCameraToPawn);
 		}
 		if (SelectAction)
 		{
