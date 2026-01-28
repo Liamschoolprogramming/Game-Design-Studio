@@ -3,3 +3,5 @@
 
 #include "PuzzleInteractive.h"
 
+void APuzzleInteractive::Interact(APawn* Pawn) { }
+
