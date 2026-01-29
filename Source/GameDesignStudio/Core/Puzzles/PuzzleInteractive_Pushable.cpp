@@ -1,5 +1,6 @@
 #include "PuzzleInteractive_Pushable.h"
 #include "EditorCategoryUtils.h"
+#include "VectorTypes.h"
 
 APuzzleInteractive_Pushable::APuzzleInteractive_Pushable()
 {
@@ -11,7 +12,7 @@ void APuzzleInteractive_Pushable::Tick(float DeltaTime)
 	
 	if (bBeingPushed && PushingCharacter != nullptr)
 	{
-		this->SetActorLocation(PushingCharacter->GetActorLocation() + Offset);
+		this->SetActorLocation(PushingCharacter->GetActorLocation() + PushingCharacter->GetActorForwardVector() * 200);
 	}
 }
 
