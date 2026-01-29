@@ -10,5 +10,14 @@ struct FPlayerStats
 	
 	UPROPERTY(EditAnywhere)
 	double PossessRange;
+		
+	UPROPERTY(EditAnywhere)
+	double InteractRange;
+	
+	FPlayerStats()
+	{
+		PossessRange = 500.0;
+		InteractRange = 500.0;
+	}
 };
 

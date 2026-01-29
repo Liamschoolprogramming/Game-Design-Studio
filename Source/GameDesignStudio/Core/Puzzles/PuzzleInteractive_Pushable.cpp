@@ -4,7 +4,6 @@
 APuzzleInteractive_Pushable::APuzzleInteractive_Pushable()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	InteractRange = 500;
 }
 
 void APuzzleInteractive_Pushable::Tick(float DeltaTime)

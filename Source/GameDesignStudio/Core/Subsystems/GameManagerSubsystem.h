@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/PlayerStats.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "GameManagerSubsystem.generated.h"
 
@@ -39,6 +40,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UPuzzleRiverManager* GetPuzzleRiverManager() const;
+		
+	UPROPERTY()
+	FPlayerStats PlayerStats;
 	
 protected:
 	
