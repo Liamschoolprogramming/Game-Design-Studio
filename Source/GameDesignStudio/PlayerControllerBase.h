@@ -25,7 +25,8 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Camera")
 	TSubclassOf<ACustomCamera> CameraReferenceClass;
-	
+
+	UPROPERTY(BlueprintReadOnly, Category="Camera")
 	ACustomCamera* CameraReference;
 	
 	/** Handles move inputs from either controls or UI interfaces */
@@ -77,8 +78,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	UInputAction* SelectAction;
 
-	
-	
+	UFUNCTION(BlueprintCallable, Category="Input")
+	void CheckControlDevice(FPlatformUserId PlatformUserId, FInputDeviceId InputDeviceId);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	bool bUsingGamepad = false;
 	
 	void Zoom(const FInputActionValue& Value);
 	
@@ -91,11 +95,16 @@ public:
 	void StopClick(const FInputActionValue& Value);
 	
 	void LookGate(const FInputActionValue& Value);
+	void LookGateStart();
+	void LookGateStop();
 	void ToggleLockCameraToPawn(const FInputActionValue& Value);
 	void Select(const FInputActionValue& Value);
 	
 protected:
 	virtual void BeginPlay() override;
+
+private:
+	
 
 public:
 	virtual void SetupInputComponent() override;

@@ -2,9 +2,12 @@
 
 
 #include "PlayerControllerBase.h"
-
+#include "GameFramework/InputDeviceSubsystem.h"
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Kismet/GameplayStatics.h"
+
+DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
 
 
 void APlayerControllerBase::Jump(const FInputActionValue& Value)
@@ -47,7 +50,26 @@ void APlayerControllerBase::StopClick(const FInputActionValue& Value)
 
 void APlayerControllerBase::LookGate(const FInputActionValue& Value)
 {
+	
+	
 }
+
+void APlayerControllerBase::LookGateStart()
+{
+	if (CameraReference)
+	{
+		CameraReference->AllowCameraRotation(true);
+	}
+}
+
+void APlayerControllerBase::LookGateStop()
+{
+	if (CameraReference)
+	{
+		CameraReference->AllowCameraRotation(false);
+	}
+}
+
 
 void APlayerControllerBase::ToggleLockCameraToPawn(const FInputActionValue& Value)
 {
@@ -55,6 +77,7 @@ void APlayerControllerBase::ToggleLockCameraToPawn(const FInputActionValue& Valu
 	if (CameraReference)
 	{
 		CameraReference->bLockCameraToCharacter = !(CameraReference->bLockCameraToCharacter);
+		CameraReference->AllowCameraRotation(false);
 	}
 }
 
@@ -66,11 +89,24 @@ void APlayerControllerBase::Select(const FInputActionValue& Value)
 
 void APlayerControllerBase::Zoom(const FInputActionValue& Value)
 {
-	
+	if (CameraReference)
+	{
+		CameraReference->ZoomCamera(Value.Get<float>());
+		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, "ZoomCamera");
+	}
 }
 
 void APlayerControllerBase::Look(const FInputActionValue& Value)
 {
+	if (CameraReference)
+	{
+		if (bUsingGamepad)
+		{
+			CameraReference->AllowCameraRotation(true);
+		}
+		
+		CameraReference->RotateCamera(Value.Get<FVector2D>());
+	}
 }
 
 void APlayerControllerBase::Move(const FInputActionValue& Value)
@@ -98,7 +134,8 @@ APlayerControllerBase::APlayerControllerBase()
 {
 	
 		
-		
+		FHardwareDelegate HardwareDelegate;
+	
 	
 }
 
@@ -116,11 +153,17 @@ void APlayerControllerBase::BeginPlay()
 		FVector _SpawnLocation = GetPawn()->GetActorLocation();
 		
 		FRotator _SpawnRotation = GetPawn()->GetActorRotation();
+		APlayerCameraManager* pcm = PlayerCameraManager.Get();
 		
-	
+		
 		CameraReference = GetWorld()->SpawnActor<ACustomCamera>(ACustomCamera::StaticClass(), _SpawnLocation, _SpawnRotation, SpawnParams);
 	
 		SetViewTarget(CameraReference);
+		if (pcm && CameraReference)
+		{
+			CameraReference->pitchMax = PlayerCameraManager.Get()->ViewPitchMax;
+			CameraReference->pitchMin = PlayerCameraManager.Get()->ViewPitchMin;
+		}
 	}
 	
 	//set up input
@@ -132,6 +175,8 @@ void APlayerControllerBase::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	
 	
 	//setup cursor 
 	bShowMouseCursor = true;
@@ -141,6 +186,35 @@ void APlayerControllerBase::BeginPlay()
 	
 	
 }
+
+void APlayerControllerBase::CheckControlDevice(FPlatformUserId PlatformUserId, FInputDeviceId InputDeviceId)
+{
+	UInputDeviceSubsystem* InputDeviceSubsystem  = UInputDeviceSubsystem::Get();
+	ULocalPlayer* LocalPlayer = GetLocalPlayer();
+	if (InputDeviceSubsystem  && LocalPlayer)
+	{
+		
+		FHardwareDeviceIdentifier  DeviceType = InputDeviceSubsystem->GetInputDeviceHardwareIdentifier (InputDeviceId);
+	 
+		if (DeviceType.PrimaryDeviceType == EHardwareDevicePrimaryType::Gamepad)
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 0.5, FColor::Red, "Gamepad");
+			bUsingGamepad = true;
+		}
+		else if (DeviceType.PrimaryDeviceType == EHardwareDevicePrimaryType::KeyboardAndMouse)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 0.5, FColor::Red, "Player is using Keyboard and Mouse");
+			bUsingGamepad = false;
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 0.5, FColor::Red, "Player is using another device");
+			bUsingGamepad = false;
+		}
+		
+	}
+}
+
 //bind all input actions
 void APlayerControllerBase::SetupInputComponent()
 {
@@ -161,6 +235,7 @@ void APlayerControllerBase::SetupInputComponent()
 		if (LookAction)
 		{
 			EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerControllerBase::Look);
+			GEngine->AddOnScreenDebugMessage(-1, 0.5, FColor::Red, "Look");
 		}
 		if (JumpAction)
 		{
@@ -179,7 +254,8 @@ void APlayerControllerBase::SetupInputComponent()
 		}
 		if (LookGateAction)
 		{
-			EnhancedInputComponent->BindAction(LookGateAction, ETriggerEvent::Triggered, this, &APlayerControllerBase::LookGate);
+			EnhancedInputComponent->BindAction(LookGateAction, ETriggerEvent::Started, this, &APlayerControllerBase::LookGateStart);
+			EnhancedInputComponent->BindAction(LookGateAction, ETriggerEvent::Completed, this, &APlayerControllerBase::LookGateStop);
 			
 		}
 		if (ToggleLockCameraToPawnAction)
