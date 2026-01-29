@@ -16,7 +16,7 @@ public:
 	virtual void Interact(APawn* Pawn);
 	
 	UPROPERTY(BlueprintReadWrite)
-	double InteractRange = 10;
+	double InteractRange = 100;
 protected:
 	virtual bool IsInRange(APawn* Pawn);
 };

@@ -5,31 +5,26 @@
 #include "CoreMinimal.h"
 #include "PuzzleInteractive.h"
 #include "GameFramework/Actor.h"
-#include "PushableEntity.generated.h"
+#include "PuzzleInteractive_Pushable.generated.h"
 
 UCLASS()
-class GAMEDESIGNSTUDIO_API APushableEntity : public APuzzleInteractive
+class GAMEDESIGNSTUDIO_API APuzzleInteractive_Pushable : public APuzzleInteractive
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
-	APushableEntity();
+	APuzzleInteractive_Pushable();
 	
 	UFUNCTION(BlueprintCallable)
 	virtual void Interact(APawn* Pawn) override;
-	
-	bool BeingPushed = false;
 	
 	virtual void Tick(float DeltaTime) override;
 	
 	UPROPERTY()
 	APawn* PushingPawn;
 	
-// protected:
-// 	virtual void BeginPlay() override;
-//
-// public:
-// 	// Called every frame
-// 	virtual void Tick(float DeltaTime) override;
+protected:
+	bool BeingPushed = false;
+	FVector Offset = FVector(100,100,0);
+	
 };
