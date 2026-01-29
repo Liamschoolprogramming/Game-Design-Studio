@@ -2,10 +2,11 @@
 
 
 #include "PuzzleInteractive.h"
+#include "PlayerCharacter.h"
 
-void APuzzleInteractive::Interact(APawn* Pawn) { }
+void APuzzleInteractive::Interact(APlayerCharacter* PlayerCharacter) { }
 
-bool APuzzleInteractive::IsInRange(APawn* Pawn)
+bool APuzzleInteractive::IsInRange(APlayerCharacter* PlayerCharacter)
 {
-	return ((this->GetActorTransform().GetLocation() - Pawn->GetActorTransform().GetLocation()).Size() <= InteractRange);
+	return ((this->GetActorTransform().GetLocation() - PlayerCharacter->GetActorTransform().GetLocation()).Size() <= InteractRange);
 }

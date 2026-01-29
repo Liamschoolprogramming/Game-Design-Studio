@@ -1,8 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PlayerCharacter.h"
 #include "PuzzleInteractive.h"
 #include "GameFramework/Actor.h"
 #include "PuzzleInteractive_Pushable.generated.h"
@@ -16,15 +15,15 @@ public:
 	APuzzleInteractive_Pushable();
 	
 	UFUNCTION(BlueprintCallable)
-	virtual void Interact(APawn* Pawn) override;
+	virtual void Interact(APlayerCharacter* PlayerCharacter) override;
 	
 	virtual void Tick(float DeltaTime) override;
 	
 	UPROPERTY()
-	APawn* PushingPawn;
+	APlayerCharacter* PushingCharacter;
 	
 protected:
-	bool BeingPushed = false;
+	bool bBeingPushed = false;
 	FVector Offset = FVector(100,100,0);
 	
 };

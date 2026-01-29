@@ -1,7 +1,5 @@
-
 #include "PuzzleInteractive_Pushable.h"
 #include "EditorCategoryUtils.h"
-
 
 APuzzleInteractive_Pushable::APuzzleInteractive_Pushable()
 {
@@ -12,29 +10,29 @@ APuzzleInteractive_Pushable::APuzzleInteractive_Pushable()
 void APuzzleInteractive_Pushable::Tick(float DeltaTime)
 {
 	
-	if (BeingPushed && PushingPawn != nullptr)
+	if (bBeingPushed && PushingCharacter != nullptr)
 	{
-		this->SetActorLocation(PushingPawn->GetActorLocation() + Offset);
+		this->SetActorLocation(PushingCharacter->GetActorLocation() + Offset);
 	}
 }
 
-void APuzzleInteractive_Pushable::Interact(APawn* Pawn)
+void APuzzleInteractive_Pushable::Interact(APlayerCharacter* PlayerCharacter)
 {
-	if (BeingPushed)
+	if (bBeingPushed)
 	{
-		BeingPushed = false;
-		PushingPawn = nullptr;
+		bBeingPushed = false;
+		PushingCharacter = nullptr;
 	}
 	else
 	{
-		if (IsInRange(Pawn))
+		if (IsInRange(PlayerCharacter))
 		{
 			if(GEngine)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Interacting!"));
 			}
-			PushingPawn = Pawn;
-			BeingPushed = true;
+			PushingCharacter = PlayerCharacter;
+			bBeingPushed = true;
 		}
 		else
 		{
