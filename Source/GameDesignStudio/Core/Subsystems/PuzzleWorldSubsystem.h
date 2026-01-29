@@ -1,11 +1,9 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "core/Puzzles/Puzzle.h"
-#include "StartingWorldSubsystem.generated.h"
+#include "PuzzleWorldSubsystem.generated.h"
 
 // Maybe rename to something broad since I think this will be spawned each level
 // then have the level managers be unique
@@ -19,17 +17,20 @@ UCLASS()
 class GAMEDESIGNSTUDIO_API UStartingWorldSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
-	
-	
+
+/*
 public:
 	virtual void initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
-	
+
 	void RegisterPuzzleActor(APuzzle* Actor);
 	void UnregisterPuzzleActor(APuzzle* Actor);
-	
+
 	void ApplyState(APuzzle* Actor);
-	
+
 private:
-	TMap<FPuzzleId, TWeakObjectPtr<APuzzle>> ActiveActors;
+	TMap<FPuzzleId, TWeakObjectPtr<APuzzle>> ActiveActors;  
+	
+	
+*/
 };
