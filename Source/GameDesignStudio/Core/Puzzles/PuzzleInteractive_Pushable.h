@@ -22,8 +22,11 @@ public:
 	UPROPERTY()
 	APlayerCharacter* PushingCharacter;
 	
+	UPROPERTY(BlueprintReadWrite)
+	bool bGolemPushableOnly = false;
+	
 protected:
 	bool bBeingPushed = false;
-	FVector Offset = FVector(100,100,0);
+	FVector Offset = FVector(200,200,0);
 	
 };

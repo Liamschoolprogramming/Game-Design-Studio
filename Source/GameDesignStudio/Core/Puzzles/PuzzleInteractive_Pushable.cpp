@@ -30,8 +30,16 @@ void APuzzleInteractive_Pushable::Interact(APlayerCharacter* PlayerCharacter)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Interacting!"));
 			}
-			PushingCharacter = PlayerCharacter;
-			bBeingPushed = true;
+			
+			if (!bGolemPushableOnly || (bGolemPushableOnly && PlayerCharacter->PlayerCharacterType == EPlayerCharacterType::Golem))
+			{
+				PushingCharacter = PlayerCharacter;
+				bBeingPushed = true;
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("cant push!!"));
+			}
 		}
 		else
 		{

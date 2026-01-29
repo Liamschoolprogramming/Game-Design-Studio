@@ -5,8 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "EnhancedInputComponent.h"
-   #include "EnhancedInputSubsystems.h"
-   #include "InputActionValue.h"
+#include "Data/PlayerStats.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputActionValue.h"
 #include "PlayerCharacter.generated.h"
 
 
@@ -18,6 +19,9 @@ class GAMEDESIGNSTUDIO_API APlayerCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
+	
+	UPROPERTY(BlueprintReadWrite)
+	EPlayerCharacterType PlayerCharacterType = EPlayerCharacterType::Default;
 
 protected:
 	// Called when the game starts or when spawned
@@ -115,6 +119,7 @@ public:
 	// this is so knockback can be done by anything and the code doesnt need to be rewritten like a thousand times
 	UFUNCTION(BlueprintCallable)
 	void DoKnockback(float Power, AActor* origin);
+
 
 };
 
