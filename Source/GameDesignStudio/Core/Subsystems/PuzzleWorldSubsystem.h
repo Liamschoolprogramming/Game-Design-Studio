@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
+#include "data/PersistentActorId.h"
 #include "core/Puzzles/Puzzle.h"
 #include "PuzzleWorldSubsystem.generated.h"
 
@@ -14,23 +15,27 @@ class APuzzle;
  * 
  */
 UCLASS()
-class GAMEDESIGNSTUDIO_API UStartingWorldSubsystem : public UWorldSubsystem
+class GAMEDESIGNSTUDIO_API UPuzzleWorldSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
-
-/*
+	
 public:
-	virtual void initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
-
+	
+	
+	// Actor needs to call this method
 	void RegisterPuzzleActor(APuzzle* Actor);
-	void UnregisterPuzzleActor(APuzzle* Actor);
+	
+	//void UnregisterPuzzleActor(APuzzle* Actor);
 
-	void ApplyState(APuzzle* Actor);
+	//void ApplyState(APuzzle* Actor);
 
 private:
-	TMap<FPuzzleId, TWeakObjectPtr<APuzzle>> ActiveActors;  
 	
+	// Key will be the unique actor key
+	TMap<FName, TWeakObjectPtr<APuzzle>> RuntimeActors;
 	
-*/
+	//TMap<FPuzzleId, TWeakObjectPtr<APuzzle>> ActiveActors;
+	
 };

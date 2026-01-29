@@ -14,6 +14,11 @@ class GAMEDESIGNSTUDIO_API APuzzle : public AActor
 public:	
 	// Sets default values for this actor's properties
 	APuzzle();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite);
+	FName ActorId;
+	
+	//void SetActorID(FName Id) const;
 
 protected:
 	// Called when the game starts or when spawned

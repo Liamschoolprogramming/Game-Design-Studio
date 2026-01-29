@@ -17,8 +17,13 @@ struct FPuzzleIds
 {
 	GENERATED_BODY()
 	
-	FName PuzzleId;
-	FName StepId;
+	// Location of puzzle
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName Area;
+	
+	// Specific puzzle
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName Puzzle;
 	
 	
 };

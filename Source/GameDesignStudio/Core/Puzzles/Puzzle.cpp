@@ -3,6 +3,8 @@
 
 #include "Puzzle.h"
 
+#include "Core/Subsystems/PuzzleWorldSubsystem.h"
+
 // Sets default values
 APuzzle::APuzzle()
 {
@@ -16,6 +18,16 @@ void APuzzle::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (ActorId.IsNone())
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s: ActorId must be set"), *GetName());
+		
+	}
+	
+	else
+	{
+		GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>()->RegisterPuzzleActor(this);
+	}
 }
 
 // Called every frame
@@ -24,4 +36,11 @@ void APuzzle::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+/*
+void APuzzle::SetActorID(FName Id) const
+{
+	ActorId = Id;
+}
+*/
 
