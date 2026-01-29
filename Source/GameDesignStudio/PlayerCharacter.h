@@ -75,6 +75,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Camera")
 	float CameraCutoutCompensation = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Prototype Variables")
+	bool hasItem = false;
 	
 	bool bSettingDestination = false;
 
