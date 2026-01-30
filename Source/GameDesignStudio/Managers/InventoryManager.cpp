@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "InventoryManager.h"
 
 void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
@@ -19,17 +18,29 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 // returns false if exceeded max amount or invalid item
 bool UInventoryManager::AddToInventory(FName ItemName, int Amount)
 {
+	if(GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Adding item"));
+	}
 	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);
+	if(GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Looking for item"));
+	}
 	if (FoundItem == nullptr)
 	{
-		FPlayerInventoryItem* NewItem = AllItems.Find(ItemName);
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Didnt find item"));
+		}
+		/*FPlayerInventoryItem* NewItem = AllItems.Find(ItemName);
 		if (NewItem == nullptr)
 		{
 			return false;
 		}
 		
 		PlayerInventory.Add(ItemName, *FoundItem);
-		return true;
+		return true;*/
 	}
 	
 	/*if ((FoundItem->CurrentAmount + Amount) > FoundItem->MaxAmount)
