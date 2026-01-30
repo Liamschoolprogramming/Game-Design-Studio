@@ -5,6 +5,7 @@
 #include "GameFramework/InputDeviceSubsystem.h"
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Components/SplineComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
@@ -77,6 +78,11 @@ void APlayerControllerBase::ToggleLockCameraToPawn(const FInputActionValue& Valu
 	if (CameraReference)
 	{
 		CameraReference->bLockCameraToCharacter = !(CameraReference->bLockCameraToCharacter);
+		APawn* OurPawn = GetPawn();
+		if (CameraReference->bLockCameraToCharacter && OurPawn)
+		{
+			CameraReference->ZoomSpline->SetWorldRotation(OurPawn->GetActorRotation());
+		}
 		CameraReference->AllowCameraRotation(false);
 	}
 }
@@ -102,10 +108,18 @@ void APlayerControllerBase::Look(const FInputActionValue& Value)
 	{
 		if (bUsingGamepad)
 		{
+			
 			CameraReference->AllowCameraRotation(true);
+			
+			CameraReference->ZoomCamera(Value.Get<FVector2D>().Y);
+			
+			
+		}else
+		{
+			CameraReference->RotateCamera(Value.Get<FVector2D>());
 		}
 		
-		CameraReference->RotateCamera(Value.Get<FVector2D>());
+		
 	}
 }
 
@@ -117,6 +131,24 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 		if (CameraReference->bLockCameraToCharacter == false)
 		{
 			CameraReference->MoveCamera(Value.Get<FVector2D>());
+		}
+		else
+		{
+			//only move the pawn if we are using gamepad
+			APawn* OurPawn = GetPawn();
+			if (OurPawn && bUsingGamepad)
+			{
+				FVector2D ActionValue = Value.Get<FVector2D>();
+				FVector pos = OurPawn->GetActorLocation();
+				FVector f = CameraReference->GetActorForwardVector();
+				FVector r = CameraReference->GetActorRightVector();
+				f = f * ActionValue.Y * PawnMovementSpeed;
+				r = r * ActionValue.X * PawnMovementSpeed;
+	
+				pos = pos + f + r;
+				OurPawn->SetActorLocation(pos);
+			}
+			
 		}
 		
 	}

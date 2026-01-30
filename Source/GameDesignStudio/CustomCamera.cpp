@@ -3,6 +3,7 @@
 
 #include "CustomCamera.h"
 
+#include "Macros.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Character.h"
@@ -64,12 +65,14 @@ void ACustomCamera::ZoomCamera(float Value)
 void ACustomCamera::MoveCamera(FVector2D ActionValue)
 {
 	FVector pos = GetActorLocation();
+	float z = pos.Z;
 	FVector f = GetActorForwardVector();
 	FVector r = GetActorRightVector();
 	f = f * ActionValue.Y * CameraMovementSpeed;
 	r = r * ActionValue.X * CameraMovementSpeed;
 	
 	pos = pos + f + r;
+	pos.Z = z;
 	SetActorLocation(pos);
 }
 
@@ -77,8 +80,8 @@ void ACustomCamera::RotateCamera(FVector2D ActionValue)
 {
 	if (bAllowRotation)
 	{
-
-		FRotator rot = GetActorRotation();
+		
+		FRotator rot = ZoomSpline->GetComponentRotation();
 		rot.Yaw = rot.Yaw + (ActionValue.X * CameraRotationSpeed);
 		//if we are following BG3 camera exactly they don't do this
 		/*rot.Pitch = rot.Pitch + (-ActionValue.Y * CameraRotationSpeed);
@@ -91,7 +94,8 @@ void ACustomCamera::RotateCamera(FVector2D ActionValue)
 		{
 			rot.Pitch = pitchMin;
 		}*/
-		SetActorRotation(rot);
+		Debug::PrintToScreen(rot);
+		ZoomSpline->SetWorldRotation(rot);
 	}
 }
 
@@ -106,10 +110,9 @@ void ACustomCamera::SetCameraTransformAlongSpline(float percent)
 	{
 		percent = ZoomMinPercent;
 	}
-	if (!bAllowRotation)
-	{
-		CameraBoom->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(CameraBoom->GetComponentLocation(), ZoomSpline->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World)));
-	}
+	
+	CameraBoom->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(CameraBoom->GetComponentLocation(), ZoomSpline->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World)));
+	
 	FVector pos = ZoomSpline->GetLocationAtTime(percent,ESplineCoordinateSpace::World);
 	CameraBoom->SetWorldLocation(pos);
 	
@@ -158,6 +161,9 @@ void ACustomCamera::Tick(float DeltaTime)
 			SetCameraTransformAlongSpline(ZoomPercent);
 		}
 		
+	}else
+	{
+		SetCameraTransformAlongSpline(ZoomPercent);
 	}
 
 }

@@ -91,6 +91,11 @@ public:
 	void Jump(const FInputActionValue& Value);
 	void StopJumping(const FInputActionValue& Value);
 	
+	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
+	float PawnMovementSpeed = 5;
+	
 	void StartClick(const FInputActionValue& Value);
 	void StopClick(const FInputActionValue& Value);
 	
