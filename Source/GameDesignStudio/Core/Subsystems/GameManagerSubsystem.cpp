@@ -37,6 +37,8 @@ void UGameManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 		Pair.Value->Initialize(this);
 	}
 	
+	PlayerStats = FPlayerStats(); 
+	
 }
 
 void UGameManagerSubsystem::Deinitialize()

@@ -83,103 +83,38 @@ void APlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-/*
-void APlayerCharacter::Zoom(const FInputActionValue& Value)
+void APlayerCharacter::DoKnockback(float _power, AActor* origin)
 {
-	float AxisValue = -Value.Get<float>();
 	
-	float NewZoom = AxisValue * CameraZoomSpeed;
-	
-	
-	
-	//calculate new zoom within range
-	float length = CameraBoom->TargetArmLength;
-	
-	if (NewZoom + length > CameraZoomMax)
-	{
-		NewZoom = CameraZoomMax;
-	}
-	else if (NewZoom + length < CameraZoomMin)
-	{
-		NewZoom = CameraZoomMin;
-	}
-	else
-	{
-		NewZoom = NewZoom + length;
-	}
-	
-	CameraBoom->TargetArmLength = NewZoom;
-	
-	//Update the cutout distance in the MPC
-	if (!CameraMPC) return;
-	UMaterialParameterCollectionInstance* MPCInstance =
-		GetWorld()->GetParameterCollectionInstance(CameraMPC);
-	if (!MPCInstance) return;
-	MPCInstance->SetScalarParameterValue(
-		FName("CameraArmLength"),(length-CameraCutoutCompensation)
+	FVector locations;
+	locations = this->GetActorLocation() - origin->GetActorLocation();
+	GEngine->AddOnScreenDebugMessage(
+		-1,         // Key for the message (use -1 for a new key each time, or a specific key to update an existing message)
+		5.0f,       // Duration the message is displayed (in seconds)
+		FColor::Yellow, // Color of the text
+		FString::Printf(TEXT("%f locations x power"), locations.X) // The message itself as an FString
+
 	);
+	GEngine->AddOnScreenDebugMessage(
+		-1,         // Key for the message (use -1 for a new key each time, or a specific key to update an existing message)
+		5.0f,       // Duration the message is displayed (in seconds)
+		FColor::Yellow, // Color of the text
+		FString::Printf(TEXT("%f locations x power"), locations.Y) // The message itself as an FString
+
+	);
+	GEngine->AddOnScreenDebugMessage(
+		-1,         // Key for the message (use -1 for a new key each time, or a specific key to update an existing message)
+		5.0f,       // Duration the message is displayed (in seconds)
+		FColor::Yellow, // Color of the text
+		FString::Printf(TEXT("%f locations x power"), locations.Z) // The message itself as an FString
+
+	);
+	locations *= FVector(1,1,0);
 	
-}
-void APlayerCharacter::Look(const FInputActionValue& Value)
-{
-	//we dont want to move the camera while trying to click to move
-	if (bSettingDestination) return;
-	FVector2D LookVector = Value.Get<FVector2D>();
+	locations = locations.GetSafeNormal(1.0);
 	
-	DoLook(LookVector.X, LookVector.Y);
+	locations.Normalize(1.0);
 	
-	
-	
+	LaunchCharacter(locations * _power, false, false);
 }
-
-void APlayerCharacter::DoLook(float Yaw, float Pitch)
-{
-	if (GetController() != nullptr)
-	{
-		// add yaw and pitch input to controller
-		AddControllerYawInput(Yaw);
-		AddControllerPitchInput(Pitch);
-	}
-}
-
-
-void APlayerCharacter::Move(const FInputActionValue& Value)
-{
-	FVector2D MovementVector = Value.Get<FVector2D>();
-	DoMove(MovementVector.X, MovementVector.Y);
-}
-
-void APlayerCharacter::DoMove(float Right, float Forward)
-{
-	
-	
-	if (GetController() != nullptr)
-	{
-		// find out which way is forward
-		const FRotator Rotation = GetController()->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
-		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-		// add movement 
-		AddMovementInput(ForwardDirection, Forward);
-		AddMovementInput(RightDirection, Right);
-	}
-}
-//Handle jump in BP exposed functions
-void APlayerCharacter::DoJumpStart()
-{
-	ACharacter::Jump();
-}
-
-void APlayerCharacter::DoJumpEnd()
-{
-	ACharacter::StopJumping();
-}
-
-*/
 
