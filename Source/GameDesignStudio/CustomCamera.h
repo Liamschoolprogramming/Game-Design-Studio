@@ -27,7 +27,21 @@ public:
 	class UCameraComponent* FollowCamera;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	class USplineComponent* ZoomSpline;
+	class USplineComponent* PerspectiveZoomSpline;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	class USplineComponent* TopDownZoomSpline;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zoom")
+	bool bInTopDownMode;
+	
+	const float ToTopDownThreshold = 0.9f;
+	const float ToPerspectiveThreshold = 0.1f;
+	
+	
+
+	
+	void ToggleCameraMode();
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
 	float CameraMovementSpeed = 10;

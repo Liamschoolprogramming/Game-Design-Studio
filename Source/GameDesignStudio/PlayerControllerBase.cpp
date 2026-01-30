@@ -81,7 +81,7 @@ void APlayerControllerBase::ToggleLockCameraToPawn(const FInputActionValue& Valu
 		APawn* OurPawn = GetPawn();
 		if (CameraReference->bLockCameraToCharacter && OurPawn)
 		{
-			CameraReference->ZoomSpline->SetWorldRotation(OurPawn->GetActorRotation());
+			CameraReference->PerspectiveZoomSpline->SetWorldRotation(OurPawn->GetActorRotation());
 		}
 		CameraReference->AllowCameraRotation(false);
 	}
