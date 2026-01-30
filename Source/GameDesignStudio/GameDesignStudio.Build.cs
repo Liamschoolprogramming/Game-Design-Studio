@@ -9,6 +9,8 @@ public class GameDesignStudio : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule" });
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
+		PublicIncludePaths.Add("GameDesignStudio");
+		
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
 
 		
