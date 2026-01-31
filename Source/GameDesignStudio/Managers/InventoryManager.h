@@ -25,10 +25,10 @@ public:
 	TMap<FName, FPlayerInventoryItem> AllItems;
 	
 	UFUNCTION(BlueprintCallable)
-	bool AddToInventory(FName ItemName, int Amount);
+	int AddToInventory(FName ItemName, int Amount);
 	
 	UFUNCTION(BlueprintCallable)
-	bool RemoveFromInventory(FName ItemName, int Amount);
+	int RemoveFromInventory(FName ItemName, int Amount);
 
 	UFUNCTION(BlueprintCallable)
 	void SetMaxAmountForItem(FName ItemName, int MaxAmount);

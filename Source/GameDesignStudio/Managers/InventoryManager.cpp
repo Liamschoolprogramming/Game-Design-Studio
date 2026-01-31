@@ -9,49 +9,68 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 	PlayerInventory = {};
 	
 	AllItems = {
-		{"TestItem", FPlayerInventoryItem("Test Item", 0, 10)},
-		{"AnotherTestItem", FPlayerInventoryItem("Another Test Item", 0, 15)},
+		{"TestItem", FPlayerInventoryItem("Test Item", 0, 10, EInventoryItemType::Quest)},
+		{"AnotherTestItem", FPlayerInventoryItem("Another Test Item", 0, 15, EInventoryItemType::Quest)},
 	};
 }
 
-// tries to add an item to the inventory, returns true if success
-// returns false if exceeded max amount or invalid item
-bool UInventoryManager::AddToInventory(FName ItemName, int Amount)
+// Tries to add an item to the inventory, returns new amount in inventory for that item.
+int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 {
 	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);
 
 	if (FoundItem == nullptr)
 	{
 		FPlayerInventoryItem* NewItem = AllItems.Find(ItemName);
-		FPlayerInventoryItem ItemToAdd = FPlayerInventoryItem(NewItem->ItemDisplayName, Amount, NewItem->MaxAmount);
+		FPlayerInventoryItem ItemToAdd = FPlayerInventoryItem(NewItem->ItemDisplayName, Amount, NewItem->MaxAmount, EInventoryItemType::Quest);
 		
 		if (NewItem == nullptr)
 		{
-			return false;
+			return 0;
 		}
 		
-		
 		PlayerInventory.Add(ItemName, ItemToAdd);
-		return true;
+		return Amount;
 	}
 	
-	if ((FoundItem->CurrentAmount + Amount) > FoundItem->MaxAmount)
+	int Maximum = FoundItem->MaxAmount;
+	if ((FoundItem->CurrentAmount + Amount) > Maximum)
 	{
-		return false;
+		FoundItem-> CurrentAmount = Maximum;
+		return Maximum;
 	}
 	
 	FoundItem-> CurrentAmount += Amount;
-	return true;
+	return FoundItem-> CurrentAmount;
 }
 
-bool UInventoryManager::RemoveFromInventory(FName ItemName, int Amount)
+// Tries to remove a specified amount of a given item from the inventory
+// and returns the new integer amount in inventory for that item.
+int UInventoryManager::RemoveFromInventory(FName ItemName, int Amount)
 {
-	return false;
+	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);
+
+	if (FoundItem == nullptr)
+	{
+		return 0;
+	}
+	if (FoundItem->CurrentAmount >= Amount)
+	{
+		FoundItem-> CurrentAmount -= Amount;
+		return FoundItem-> CurrentAmount;
+	}
+	FoundItem->CurrentAmount = 0;
+	return 0;
 }
 
 void UInventoryManager::SetMaxAmountForItem(FName ItemName, int MaxAmount)
 {
-	
+	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);
+
+	if (FoundItem != nullptr)
+	{
+		FoundItem->MaxAmount = MaxAmount;
+	}
 }
 
 FPlayerInventoryItem UInventoryManager::GetItemDetails(FName ItemName)

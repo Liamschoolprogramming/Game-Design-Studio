@@ -28,6 +28,13 @@ enum class EPlayerCharacterType : uint8
 	Golem UMETA(DisplayName = "Golem"),
 };
 
+UENUM()
+enum class EInventoryItemType : uint8
+{
+	Quest UMETA(DisplayName = "Quest"),
+	Gear UMETA(DisplayName = "Gear"),
+};
+
 USTRUCT(BlueprintType)
 struct FPlayerInventoryItem
 {
@@ -42,16 +49,21 @@ struct FPlayerInventoryItem
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int MaxAmount;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EInventoryItemType ItemType;
+	
 	FPlayerInventoryItem()
 	{
 		MaxAmount = 1000;
 		CurrentAmount = 0;
+		ItemType = EInventoryItemType::Quest;
 	}
 	
-	FPlayerInventoryItem(FName ItemName, int Amount, int Max)
+	FPlayerInventoryItem(FName ItemName, int Amount, int Max, EInventoryItemType InvItemType)
 	{
 		CurrentAmount = Amount;
 		MaxAmount = Max;
 		ItemDisplayName = ItemName;
+		ItemType = InvItemType;
 	}
 };
