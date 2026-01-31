@@ -5,6 +5,7 @@
 #include "Core/Managers/GameManagerBase.h"
 #include "Managers/PuzzleRiverManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "Managers/InventoryManager.h"
 
 void UGameManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -58,6 +59,7 @@ void UGameManagerSubsystem::Deinitialize()
 void UGameManagerSubsystem::RegisterManagers()
 {
 	RegisterManager<UPuzzleRiverManager>();
+	RegisterManager<UInventoryManager>();
 }
 
 template <typename T>
@@ -76,6 +78,17 @@ UPuzzleRiverManager* UGameManagerSubsystem::GetPuzzleRiverManager() const
 	
 	return nullptr;
 }
+
+UInventoryManager* UGameManagerSubsystem::GetInventoryManager() const
+{
+	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UInventoryManager::StaticClass()))
+	{
+		return Cast<UInventoryManager>(Found->Get());
+	}
+	
+	return nullptr;
+}
+
 
 UGameManagerBase* UGameManagerSubsystem::GetManager(TSubclassOf<UGameManagerBase> ManagerClass) const
 {

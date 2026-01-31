@@ -1,0 +1,41 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Core/Managers/GameManagerBase.h"
+#include "Data/PlayerStats.h"
+#include "InventoryManager.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class GAMEDESIGNSTUDIO_API UInventoryManager : public UGameManagerBase
+{
+	GENERATED_BODY()
+	
+	virtual void Initialize(UGameManagerSubsystem* InstanceOwner) override;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FName, FPlayerInventoryItem> PlayerInventory;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FName, FPlayerInventoryItem> AllItems;
+	
+	UFUNCTION(BlueprintCallable)
+	int AddToInventory(FName ItemName, int Amount);
+	
+	UFUNCTION(BlueprintCallable)
+	int RemoveFromInventory(FName ItemName, int Amount);
+
+	UFUNCTION(BlueprintCallable)
+	void SetMaxAmountForItem(FName ItemName, int MaxAmount);
+	
+	UFUNCTION(BlueprintCallable)
+	FPlayerInventoryItem GetItemDetails(FName ItemName);
+
+	UFUNCTION(BlueprintCallable)
+	int GetCurrentAmountForItem(FName ItemName);
+};
