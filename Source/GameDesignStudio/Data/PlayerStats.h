@@ -8,10 +8,10 @@ struct FPlayerStats
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	double PossessRange;
 		
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	double InteractRange;
 	
 	FPlayerStats()
@@ -33,13 +33,13 @@ struct FPlayerInventoryItem
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName ItemDisplayName;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int CurrentAmount;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int MaxAmount;
 	
 	FPlayerInventoryItem()
@@ -48,9 +48,9 @@ struct FPlayerInventoryItem
 		CurrentAmount = 0;
 	}
 	
-	FPlayerInventoryItem(FName ItemName, int Max)
+	FPlayerInventoryItem(FName ItemName, int Amount, int Max)
 	{
-		CurrentAmount = 0;
+		CurrentAmount = Amount;
 		MaxAmount = Max;
 		ItemDisplayName = ItemName;
 	}

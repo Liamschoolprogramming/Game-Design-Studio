@@ -27,26 +27,10 @@ void APuzzleInteractive_Pushable::Interact(APlayerCharacter* PlayerCharacter)
 	{
 		if (IsInRange(PlayerCharacter))
 		{
-			if(GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Interacting!"));
-			}
-			
 			if (!bGolemPushableOnly || (bGolemPushableOnly && PlayerCharacter->PlayerCharacterType == EPlayerCharacterType::Golem))
 			{
 				PushingCharacter = PlayerCharacter;
 				bBeingPushed = true;
-			}
-			else
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("cant push!!"));
-			}
-		}
-		else
-		{
-			if(GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Not in range!!"));
 			}
 		}
 	}

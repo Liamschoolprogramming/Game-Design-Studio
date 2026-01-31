@@ -9,8 +9,8 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 	PlayerInventory = {};
 	
 	AllItems = {
-		{"TestItem", FPlayerInventoryItem("Test Item", 10)},
-		{"AnotherTestItem", FPlayerInventoryItem("Another Test Item", 15)},
+		{"TestItem", FPlayerInventoryItem("Test Item", 0, 10)},
+		{"AnotherTestItem", FPlayerInventoryItem("Another Test Item", 0, 15)},
 	};
 }
 
@@ -18,37 +18,29 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 // returns false if exceeded max amount or invalid item
 bool UInventoryManager::AddToInventory(FName ItemName, int Amount)
 {
-	if(GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Adding item"));
-	}
 	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);
-	if(GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Looking for item"));
-	}
+
 	if (FoundItem == nullptr)
 	{
-		if(GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Didnt find item"));
-		}
-		/*FPlayerInventoryItem* NewItem = AllItems.Find(ItemName);
+		FPlayerInventoryItem* NewItem = AllItems.Find(ItemName);
+		FPlayerInventoryItem ItemToAdd = FPlayerInventoryItem(NewItem->ItemDisplayName, Amount, NewItem->MaxAmount);
+		
 		if (NewItem == nullptr)
 		{
 			return false;
 		}
 		
-		PlayerInventory.Add(ItemName, *FoundItem);
-		return true;*/
+		
+		PlayerInventory.Add(ItemName, ItemToAdd);
+		return true;
 	}
 	
-	/*if ((FoundItem->CurrentAmount + Amount) > FoundItem->MaxAmount)
+	if ((FoundItem->CurrentAmount + Amount) > FoundItem->MaxAmount)
 	{
 		return false;
 	}
 	
-	FoundItem-> CurrentAmount += Amount;*/
+	FoundItem-> CurrentAmount += Amount;
 	return true;
 }
 
@@ -60,5 +52,25 @@ bool UInventoryManager::RemoveFromInventory(FName ItemName, int Amount)
 void UInventoryManager::SetMaxAmountForItem(FName ItemName, int MaxAmount)
 {
 	
+}
+
+FPlayerInventoryItem UInventoryManager::GetItemDetails(FName ItemName)
+{
+	FPlayerInventoryItem* FoundItem = AllItems.Find(ItemName);
+	if (FoundItem == nullptr)
+	{
+		return FPlayerInventoryItem();
+	}
+	return *FoundItem;
+}
+
+int UInventoryManager::GetCurrentAmountForItem(FName ItemName)
+{
+	FPlayerInventoryItem* FoundItem = AllItems.Find(ItemName);
+	if (FoundItem == nullptr)
+	{
+		return 0;
+	}
+	return FoundItem->CurrentAmount;
 }
 

@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Core/Managers/GameManagerBase.h"
 #include "Data/PlayerStats.h"
-#include "UObject/Object.h"
 #include "InventoryManager.generated.h"
 
 /**
@@ -33,4 +32,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetMaxAmountForItem(FName ItemName, int MaxAmount);
+	
+	UFUNCTION(BlueprintCallable)
+	FPlayerInventoryItem GetItemDetails(FName ItemName);
+
+	UFUNCTION(BlueprintCallable)
+	int GetCurrentAmountForItem(FName ItemName);
 };
