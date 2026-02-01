@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
+#include "Data/PersistantActorValues.h"
 #include "Data/PuzzleTypes.h"
 #include "GameManagerBase.generated.h"
 
@@ -18,9 +19,16 @@ class GAMEDESIGNSTUDIO_API UGameManagerBase : public UObject
 {
 	GENERATED_BODY()
 	
+	UPROPERTY()
 	TMap<FName, FPersistantActorValues> PersistantActorValues;
 
 public:
+	
+	UPROPERTY()
+	TObjectPtr<UGameManagerSubsystem> Owner;
+	
+	// Registers actor
+	void RegisterActor(const FName Id, const FPersistantActorValues& ActorValues);
 	
 	// Sets the owning subsystem
 	virtual void Initialize(UGameManagerSubsystem* InstanceOwner);
@@ -35,9 +43,6 @@ public:
 	//void SetPuzzleStep(const FPuzzleId& Id, FName StepId);
 	
 protected:
-	
-	UPROPERTY()
-	TObjectPtr<UGameManagerSubsystem> Owner;
 	
 	// Easier to just inline. If we have lots of classes to lookup, might want to
 	// put in cpp file

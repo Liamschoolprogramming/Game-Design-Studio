@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "PersistentActorId.h"
+#include "PersistantActorValues.generated.h"
 
 
 USTRUCT()
@@ -12,8 +12,6 @@ struct FPersistantActorValues
 	UPROPERTY()
 	FTransform ActorLocation;
 	
-	UPROPERTY()
-	TSet<FName> VisualStates;
-	
-	
+	//UPROPERTY()
+	//TSet<FName> VisualStates;
 };

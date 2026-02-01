@@ -18,6 +18,8 @@ void APuzzle::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	ActorValues.ActorLocation = GetActorTransform();
+	
 	if (ActorId.IsNone())
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s: ActorId must be set"), *GetName());
@@ -28,6 +30,7 @@ void APuzzle::BeginPlay()
 	{
 		GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>()->RegisterPuzzleActor(this);
 	}
+	
 }
 
 // Called every frame

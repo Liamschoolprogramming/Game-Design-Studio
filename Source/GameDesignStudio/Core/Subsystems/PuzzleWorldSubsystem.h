@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "data/PersistentActorId.h"
+
 #include "core/Puzzles/Puzzle.h"
 #include "PuzzleWorldSubsystem.generated.h"
 
@@ -21,8 +22,23 @@ class GAMEDESIGNSTUDIO_API UPuzzleWorldSubsystem : public UWorldSubsystem
 	
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	virtual void PostInitialize()
+	
 	virtual void Deinitialize() override;
+	
+	virtual void PostInitialize();
+	
+	/*
+	template<typename T>
+	T* GetManager() const
+	{
+		if (T* ManagerType = Cast<T>(Manager))
+			{
+				return ManagerType;
+			}
+		return nullptr;
+	}
+	*/
+
 	
 	
 	// Actor needs to call this method
