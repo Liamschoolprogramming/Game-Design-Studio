@@ -8,6 +8,7 @@
 #include "GameFramework/PlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "PlayerControllerBase.generated.h"
 
 /**
@@ -91,6 +92,8 @@ public:
 	void Jump(const FInputActionValue& Value);
 	void StopJumping(const FInputActionValue& Value);
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effects")
+	UNiagaraSystem* ParticleSystem;
 	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")

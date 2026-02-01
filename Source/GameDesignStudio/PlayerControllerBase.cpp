@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Components/SplineComponent.h"
+
 #include "Kismet/GameplayStatics.h"
 
 DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
@@ -42,6 +43,11 @@ void APlayerControllerBase::StartClick(const FInputActionValue& Value)
 	if (Hit.bBlockingHit && CameraReference->bLockCameraToCharacter == true)
 	{
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Hit.Location);
+		if (ParticleSystem)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),ParticleSystem, Hit.Location);
+		}
+		
 	}
 }
 
