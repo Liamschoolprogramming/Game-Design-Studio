@@ -21,7 +21,7 @@ struct FPlayerStats
 	}
 };
 
-UENUM()
+UENUM(Blueprintable)
 enum class EPlayerCharacterType : uint8
 {
 	Default UMETA(DisplayName = "Default"),
