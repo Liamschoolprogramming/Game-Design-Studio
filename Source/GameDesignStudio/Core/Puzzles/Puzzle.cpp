@@ -3,6 +3,8 @@
 
 #include "Puzzle.h"
 
+#include "Core/Subsystems/GameManagerSubsystem.h"
+#include "Managers/PuzzleRiverManager.h"
 #include "Core/Subsystems/PuzzleWorldSubsystem.h"
 
 // Sets default values
@@ -30,6 +32,25 @@ void APuzzle::BeginPlay()
 	{
 		GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>()->RegisterPuzzleActor(this);
 	}
+	
+}
+
+UGameManagerBase* APuzzle::GetOwningManagerClass(TSubclassOf<UGameManagerBase> ManagerClass)
+{
+	UGameManagerSubsystem* Subsystem = GetGameInstance()->GetSubsystem<UGameManagerSubsystem>();
+	UGameManagerBase* Manager = Subsystem->GetManagerByClass(ManagerClass);
+	
+	return Manager;
+	
+	
+	
+	// Key map of managers by type set in the editor
+	
+	//return Cast<OwningManager>(UGameManagerBase);
+	
+	//return Cast<UPuzzleRiverManager>(OwningManager);
+	
+	
 	
 }
 

@@ -24,32 +24,20 @@ void UPuzzleWorldSubsystem::RegisterPuzzleActor(APuzzle* Actor)
 	
 	UGameManagerSubsystem* Subsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>();
 	
-	
 	if (!RuntimeActors.Contains(Actor->ActorId))
 	{
+		// Registering actor references with the PuzzleWorldSubsystem
 		RuntimeActors.Add(Actor->ActorId, Actor);
 		
-		// Needs to get owning subsystem map of managers and use this as a key. Then call
-		// register actor on the manager to register the actorValues struct by the ActorId key
-		
+		// Registering actor with the manager set in the editor and storing initial data
 		Subsystem->RegisterActorToManager(Actor->OwningManager, Actor->ActorId, Actor->ActorValues);
-		
-		UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Registered"), RuntimeActors.Num());
+		UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Registered %d"), RuntimeActors.Num());
 	
 	}
-	
-	/*
-	for (const auto& Actor :RuntimeActors)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Actor registered to WorldSubsystem"));
-	}
-	*/
 }
 
 void UPuzzleWorldSubsystem::PostInitialize()
 {
 	Super::PostInitialize();
-	
-	// Need to pass actor refs to managers after initialization
 	
 }

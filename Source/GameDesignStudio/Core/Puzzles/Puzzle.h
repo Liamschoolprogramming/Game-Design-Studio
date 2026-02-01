@@ -13,6 +13,10 @@ class GAMEDESIGNSTUDIO_API APuzzle : public AActor
 {
 	GENERATED_BODY()
 	
+	UFUNCTION(BlueprintCallable, Category = "Managers", meta = (DeterminesOutputType = "ManagerClass"))
+	UGameManagerBase* GetOwningManagerClass(TSubclassOf<UGameManagerBase> ManagerClass);
+	
+	
 public:	
 	// Sets default values for this actor's properties
 	APuzzle();

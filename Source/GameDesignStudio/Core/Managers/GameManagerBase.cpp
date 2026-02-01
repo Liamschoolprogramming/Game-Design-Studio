@@ -25,13 +25,10 @@ void UGameManagerBase::Shutdown()
 
 void UGameManagerBase::RegisterActor(const FName Id, const FPersistantActorValues& ActorValues)
 {
-	
 	PersistantActorValues.Add(Id, ActorValues);
 	
 	if (const FPersistantActorValues* Data = PersistantActorValues.Find(Id))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Location: %s"), *Data->ActorLocation.GetLocation().ToString());
 	}
-	
-	//UE_LOG(LogTemp, Warning, TEXT("Registering Actor: Position = %p"), &PersistantActorValues.Find(Id)->ActorLocation);
 }

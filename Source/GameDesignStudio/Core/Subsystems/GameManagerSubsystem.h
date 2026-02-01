@@ -35,10 +35,10 @@ public:
 	template<typename T>
 	T* GetManager();
 	
+	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UGameManagerBase* GetManagerByClass(TSubclassOf<UGameManagerBase> ManagerClass);
 	
 	// Template is used for the UClass type
-	UFUNCTION(BlueprintPure, Category = "Managers")
 	UGameManagerBase* GetManager(TSubclassOf<UGameManagerBase> ManagerClass) const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Managers")

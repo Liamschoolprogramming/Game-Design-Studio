@@ -27,32 +27,12 @@ public:
 	
 	virtual void PostInitialize();
 	
-	/*
-	template<typename T>
-	T* GetManager() const
-	{
-		if (T* ManagerType = Cast<T>(Manager))
-			{
-				return ManagerType;
-			}
-		return nullptr;
-	}
-	*/
-
-	
-	
 	// Actor needs to call this method
 	void RegisterPuzzleActor(APuzzle* Actor);
-	
-	//void UnregisterPuzzleActor(APuzzle* Actor);
-
-	//void ApplyState(APuzzle* Actor);
 
 private:
 	
 	// Key will be the unique actor key
 	TMap<FName, TWeakObjectPtr<APuzzle>> RuntimeActors;
-	
-	//TMap<FPuzzleId, TWeakObjectPtr<APuzzle>> ActiveActors;
 	
 };
