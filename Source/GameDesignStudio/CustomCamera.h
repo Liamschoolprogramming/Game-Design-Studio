@@ -44,7 +44,7 @@ public:
 	void ToggleCameraMode();
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
-	float CameraMovementSpeed = 100;
+	float DefaultCameraMovementSpeed = 800;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
 	float CameraRotationSpeed = 10;
@@ -60,7 +60,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void RotateCamera(FVector2D ActionValue);
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Movement")
+	float GetCameraSpeedFromDesiredDirection(FVector2D InputValue);
 	
+	float MaxDistanceFromCharacter = 5000.0f;
+	
+	float SlowDownRange = 1000.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zoom")
 	float ZoomSpeed = .1;

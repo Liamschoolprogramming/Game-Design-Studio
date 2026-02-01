@@ -58,15 +58,14 @@ ACustomCamera::ACustomCamera()
 }
 void ACustomCamera::ZoomCamera(float Value)
 {
-	if (bLockCameraToCharacter)
-	{
+	
 		float temp = ((ZoomSpeed) * Value) + ZoomPercent;
 	
 		ZoomPercent = UKismetMathLibrary::FClamp (temp,0,1 );
 	
 		SetCameraTransformAlongSpline(ZoomPercent);
 		
-	}
+	
 	
 }
 
@@ -118,8 +117,8 @@ void ACustomCamera::MoveCamera(FVector2D ActionValue)
 	
 	FVector f = bInTopDownMode ? RootComponent->GetForwardVector(): CameraBoom->GetForwardVector();
 	FVector r = bInTopDownMode ? RootComponent->GetRightVector(): CameraBoom->GetRightVector();
-	f = f * ActionValue.Y * CameraMovementSpeed * GetWorld()->GetDeltaSeconds();
-	r = r * ActionValue.X * CameraMovementSpeed * GetWorld()->GetDeltaSeconds();
+	f = f * ActionValue.Y * GetCameraSpeedFromDesiredDirection(ActionValue);
+	r = r * ActionValue.X * GetCameraSpeedFromDesiredDirection(ActionValue);
 	
 	pos = pos + f + r;
 	pos.Z = z;
@@ -133,20 +132,42 @@ void ACustomCamera::RotateCamera(FVector2D ActionValue)
 		
 		FRotator rot = PerspectiveZoomSpline->GetComponentRotation();
 		rot.Yaw = rot.Yaw + (ActionValue.X * CameraRotationSpeed);
-		//if we are following BG3 camera exactly they don't do this
-		/*rot.Pitch = rot.Pitch + (-ActionValue.Y * CameraRotationSpeed);
-		
-		if (rot.Pitch > pitchMax)
-		{
-			rot.Pitch = pitchMax;
-		}
-		if (rot.Pitch < pitchMin)
-		{
-			rot.Pitch = pitchMin;
-		}*/
 		
 		PerspectiveZoomSpline->SetWorldRotation(rot);
 	}
+}
+//basically some fancy math to figure out which direction we are moving and whether we are reaching the edge of the camera bounds and smoothly slows us down if we move away from the pawn
+float ACustomCamera::GetCameraSpeedFromDesiredDirection(FVector2D InputValue)
+{
+	
+	FVector f = bInTopDownMode ? RootComponent->GetForwardVector(): CameraBoom->GetForwardVector();
+	FVector r = bInTopDownMode ? RootComponent->GetRightVector(): CameraBoom->GetRightVector();
+	f = f * InputValue.Y;
+	r = r * InputValue.X;
+	FVector dir = f + r;
+	dir.Normalize();
+	APawn* OurPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	if (OurPawn)
+	{
+		FVector DirToPawn = OurPawn->GetActorLocation() - GetActorLocation();
+		float DistanceToPawn = DirToPawn.Length();
+		DirToPawn.Normalize();
+		
+		float dot = FVector::DotProduct(dir, DirToPawn);
+		dot = UKismetMathLibrary::FClamp(dot, 0.0f, 1.0f);
+		
+		float percentToDist = UKismetMathLibrary::NormalizeToRange(DistanceToPawn, MaxDistanceFromCharacter - SlowDownRange, MaxDistanceFromCharacter);
+		percentToDist = UKismetMathLibrary::FClamp(percentToDist, 0.0f, 1.0f);
+		
+		float lerp = UKismetMathLibrary::Lerp(1,dot,percentToDist);
+		lerp = lerp * DefaultCameraMovementSpeed * GetWorld()->GetDeltaSeconds();
+		return lerp;
+	}
+	
+	Debug::PrintToScreen("No pawn", 1, FColor::Red);
+	return DefaultCameraMovementSpeed * GetWorld()->GetDeltaSeconds();
+	
+		
 }
 
 void ACustomCamera::AllowCameraRotation(bool bValue)

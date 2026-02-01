@@ -94,7 +94,7 @@ public:
 	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
-	float PawnMovementSpeed = 100;
+	float PawnMovementSpeed = 500;
 	
 	void StartClick(const FInputActionValue& Value);
 	void StopClick(const FInputActionValue& Value);
