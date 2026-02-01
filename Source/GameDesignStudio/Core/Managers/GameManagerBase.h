@@ -17,6 +17,8 @@ UCLASS(Abstract, BlueprintType, Blueprintable)
 class GAMEDESIGNSTUDIO_API UGameManagerBase : public UObject
 {
 	GENERATED_BODY()
+	
+	TMap<FName, FPersistantActorValues> PersistantActorValues;
 
 public:
 	

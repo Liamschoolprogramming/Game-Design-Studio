@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Data/PersistantActorValues.h"
 #include "Puzzle.generated.h"
 
 UCLASS(Abstract)
@@ -17,6 +18,10 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite);
 	FName ActorId;
+	
+	// Weak pointers don't prevent another actor from being destroyed
+	TWeakObjectPtr<AActor> WorldSubsytem;
+	FPersistantActorValues ActorValues;
 	
 	//void SetActorID(FName Id) const;
 

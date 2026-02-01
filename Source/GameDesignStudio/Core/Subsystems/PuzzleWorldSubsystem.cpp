@@ -24,6 +24,8 @@ void UPuzzleWorldSubsystem::RegisterPuzzleActor(APuzzle* Actor)
 	
 	UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Registered"), RuntimeActors.Num());
 	
+	
+	
 	/*
 	for (const auto& Actor :RuntimeActors)
 	{

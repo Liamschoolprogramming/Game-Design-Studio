@@ -21,6 +21,7 @@ class GAMEDESIGNSTUDIO_API UPuzzleWorldSubsystem : public UWorldSubsystem
 	
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void PostInitialize()
 	virtual void Deinitialize() override;
 	
 	
