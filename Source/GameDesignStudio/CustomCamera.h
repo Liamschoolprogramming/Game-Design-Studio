@@ -44,10 +44,16 @@ public:
 	void ToggleCameraMode();
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
-	float CameraMovementSpeed = 10;
+	float CameraMovementSpeed = 100;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
 	float CameraRotationSpeed = 10;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
+	float CameraHeight;
+
+	float SetCameraHeight();
+	
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void MoveCamera(FVector2D ActionValue);
 

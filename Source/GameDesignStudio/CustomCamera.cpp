@@ -76,14 +76,50 @@ void ACustomCamera::ToggleCameraMode()
 	SetCameraTransformAlongSpline(ZoomPercent);
 }
 
+float ACustomCamera::SetCameraHeight()
+{
+	APawn* Pawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	
+	if (Pawn)
+	{
+		float PawnDesiredHeight = Pawn->GetActorLocation().Z;
+		FVector Origin;
+		FVector BoxExtent;
+		Pawn->GetActorBounds(true,Origin, BoxExtent);
+		float HalfHeight = BoxExtent.Z;
+		FVector start = FVector(GetActorLocation().X, GetActorLocation().Y, PawnDesiredHeight + 2000);
+		FVector end = FVector(GetActorLocation().X, GetActorLocation().Y, PawnDesiredHeight - HalfHeight);
+		FHitResult HitResult;
+		
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(this);            // Ignore self
+		Params.AddIgnoredActor(Pawn);
+		Params.bTraceComplex = true;             // Use complex collision if needed
+		Params.bReturnPhysicalMaterial = false;
+		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, start, end, ECC_Visibility,Params );
+		if (bHit)
+		{
+			CameraHeight = HalfHeight + HitResult.Location.Z;
+		}
+		else
+		{
+			CameraHeight = PawnDesiredHeight;
+		}
+		
+	}
+	return CameraHeight;
+	
+}
+
 void ACustomCamera::MoveCamera(FVector2D ActionValue)
 {
 	FVector pos = GetActorLocation();
 	float z = pos.Z;
-	FVector f = GetActorForwardVector();
-	FVector r = GetActorRightVector();
-	f = f * ActionValue.Y * CameraMovementSpeed;
-	r = r * ActionValue.X * CameraMovementSpeed;
+	
+	FVector f = bInTopDownMode ? RootComponent->GetForwardVector(): CameraBoom->GetForwardVector();
+	FVector r = bInTopDownMode ? RootComponent->GetRightVector(): CameraBoom->GetRightVector();
+	f = f * ActionValue.Y * CameraMovementSpeed * GetWorld()->GetDeltaSeconds();
+	r = r * ActionValue.X * CameraMovementSpeed * GetWorld()->GetDeltaSeconds();
 	
 	pos = pos + f + r;
 	pos.Z = z;
@@ -140,7 +176,7 @@ void ACustomCamera::SetCameraTransformAlongSpline(float percent)
 		bInTopDownMode = !bInTopDownMode;
 	}
 
-	Debug::PrintToScreen(percent);
+	
 	
 	//swap depending on the camera mode
 	USplineComponent* SplineComponent = bInTopDownMode? TopDownZoomSpline : PerspectiveZoomSpline;
@@ -211,6 +247,8 @@ void ACustomCamera::Tick(float DeltaTime)
 	}else
 	{
 		SetCameraTransformAlongSpline(ZoomPercent);
+		float h = SetCameraHeight();
+		RootComponent->SetWorldLocation(FVector(GetActorLocation().X,GetActorLocation().Y, h));
 	}
 
 }

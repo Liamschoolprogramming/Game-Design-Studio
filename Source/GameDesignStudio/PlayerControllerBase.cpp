@@ -142,8 +142,8 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 				FVector pos = OurPawn->GetActorLocation();
 				FVector f = CameraReference->GetActorForwardVector();
 				FVector r = CameraReference->GetActorRightVector();
-				f = f * ActionValue.Y * PawnMovementSpeed;
-				r = r * ActionValue.X * PawnMovementSpeed;
+				f = f * ActionValue.Y * PawnMovementSpeed * GetWorld()->GetDeltaSeconds();
+				r = r * ActionValue.X * PawnMovementSpeed * GetWorld()->GetDeltaSeconds();
 	
 				pos = pos + f + r;
 				OurPawn->SetActorLocation(pos);
