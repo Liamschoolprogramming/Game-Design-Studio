@@ -8,6 +8,7 @@
 #include "GameFramework/PlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "PlayerControllerBase.generated.h"
 
 /**
@@ -91,6 +92,28 @@ public:
 	void Jump(const FInputActionValue& Value);
 	void StopJumping(const FInputActionValue& Value);
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effects")
+	UNiagaraSystem* ParticleSystem;
+	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
+	float PawnMovementSpeed = 500;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
+	float PawnRotationSpeed = 8.f;
+	
+	FRotator PawnDesiredRotation;
+	bool bPawnHasMovementInput = false;
+	
+	//Essentially a toggle for if we want to be able to move the pawn without always point and click
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
+	bool bCanUseWASDToMovePawn = true;
+	
+	//MPC for camera cutout material
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	UMaterialParameterCollection* CameraMPC;
+	
+	
 	void StartClick(const FInputActionValue& Value);
 	void StopClick(const FInputActionValue& Value);
 	
@@ -102,6 +125,7 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 
 private:
 	

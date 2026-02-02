@@ -27,20 +27,45 @@ public:
 	class UCameraComponent* FollowCamera;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	class USplineComponent* ZoomSpline;
+	class USplineComponent* PerspectiveZoomSpline;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	class USplineComponent* TopDownZoomSpline;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zoom")
+	bool bInTopDownMode;
+	
+	const float ToTopDownThreshold = 0.9f;
+	const float ToPerspectiveThreshold = 0.1f;
+	
+	
+
+	
+	void ToggleCameraMode();
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
-	float CameraMovementSpeed = 10;
+	float DefaultCameraMovementSpeed = 800;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
 	float CameraRotationSpeed = 10;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
+	float CameraHeight;
+
+	float SetCameraHeight();
+	
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void MoveCamera(FVector2D ActionValue);
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void RotateCamera(FVector2D ActionValue);
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Movement")
+	float GetCameraSpeedFromDesiredDirection(FVector2D InputValue);
 	
+	float MaxDistanceFromCharacter = 5000.0f;
+	
+	float SlowDownRange = 1000.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zoom")
 	float ZoomSpeed = .1;
@@ -53,7 +78,7 @@ public:
 
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zoom")
-	float ZoomMinPercent = 0.4f;
+	float ZoomMinPercent = 0.1f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zoom")
 	float ZoomPercent = ZoomMinPercent;
@@ -63,6 +88,9 @@ public:
 	bool bAllowRotation = false;
 	bool bLockCameraToCharacter = true;
 
+	FVector ForwardVector();
+	FVector RightVector();
+	
 	void SetCameraTransformAlongSpline(float percent);
 	
 protected:
