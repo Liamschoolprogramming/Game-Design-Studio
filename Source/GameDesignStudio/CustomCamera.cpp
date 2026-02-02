@@ -176,6 +176,16 @@ void ACustomCamera::AllowCameraRotation(bool bValue)
 	bAllowRotation = bValue;
 }
 
+FVector ACustomCamera::ForwardVector()
+{
+	return FollowCamera->GetForwardVector();
+}
+
+FVector ACustomCamera::RightVector()
+{
+	return FollowCamera->GetRightVector();
+}
+
 void ACustomCamera::SetCameraTransformAlongSpline(float percent)
 {
 	ZoomPercent = percent;

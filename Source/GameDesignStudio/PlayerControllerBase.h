@@ -99,6 +99,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
 	float PawnMovementSpeed = 500;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
+	float PawnRotationSpeed = 1.f;
+	
+	FRotator PawnDesiredRotation;
+	bool bPawnHasMovementInput = false;
+	
+	//Essentially a toggle for if we want to be able to move the pawn without always point and click
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
+	bool bCanUseWASDToMovePawn;
+	
 	//MPC for camera cutout material
 	UPROPERTY(EditDefaultsOnly, Category = "Camera")
 	UMaterialParameterCollection* CameraMPC;

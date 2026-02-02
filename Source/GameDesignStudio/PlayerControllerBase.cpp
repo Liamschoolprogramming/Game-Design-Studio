@@ -120,7 +120,7 @@ void APlayerControllerBase::Look(const FInputActionValue& Value)
 			CameraReference->AllowCameraRotation(true);
 			
 			CameraReference->ZoomCamera(Value.Get<FVector2D>().Y);
-			
+			CameraReference->RotateCamera(Value.Get<FVector2D>());
 			
 		}else
 		{
@@ -142,19 +142,31 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 		}
 		else
 		{
-			//only move the pawn if we are using gamepad
+			//only move the pawn if we are using gamepad or override
 			APawn* OurPawn = GetPawn();
-			if (OurPawn && bUsingGamepad)
+			if ((OurPawn && bUsingGamepad) || (OurPawn && bCanUseWASDToMovePawn))
 			{
 				FVector2D ActionValue = Value.Get<FVector2D>();
 				FVector pos = OurPawn->GetActorLocation();
-				FVector f = CameraReference->GetActorForwardVector();
-				FVector r = CameraReference->GetActorRightVector();
-				f = f * ActionValue.Y * PawnMovementSpeed * GetWorld()->GetDeltaSeconds();
-				r = r * ActionValue.X * PawnMovementSpeed * GetWorld()->GetDeltaSeconds();
-	
-				pos = pos + f + r;
+				FVector f = CameraReference->ForwardVector();
+				FVector r = CameraReference->RightVector();
+				f = f * ActionValue.Y;
+				r = r * ActionValue.X;
+				
+				FVector Dir = f + r;
+				
+				Dir.Normalize();
+				pos = pos + (Dir * PawnMovementSpeed * GetWorld()->GetDeltaSeconds());
 				OurPawn->SetActorLocation(pos);
+				
+				//Smoothly rotate to new direction
+				FRotator CurrentRotation = OurPawn->GetActorRotation();
+				FRotator TargetRotation = Dir.Rotation();
+				
+				FRotator SmoothRot = FMath::RInterpTo(CurrentRotation, TargetRotation, GetWorld()->GetDeltaSeconds(), PawnRotationSpeed);
+				
+				
+				OurPawn->SetActorRotation(SmoothRot);
 			}
 			
 		}

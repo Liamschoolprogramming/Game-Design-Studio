@@ -88,6 +88,9 @@ public:
 	bool bAllowRotation = false;
 	bool bLockCameraToCharacter = true;
 
+	FVector ForwardVector();
+	FVector RightVector();
+	
 	void SetCameraTransformAlongSpline(float percent);
 	
 protected:
