@@ -66,14 +66,6 @@ void APlayerCharacter::BeginPlay()
 		}
 	}
 	
-	//Update the cutout distance in the MPC
-	if (!CameraMPC) return;
-	UMaterialParameterCollectionInstance* MPCInstance =
-		GetWorld()->GetParameterCollectionInstance(CameraMPC);
-	if (!MPCInstance) return;
-	MPCInstance->SetScalarParameterValue(
-		FName("CameraArmLength"),((CameraBoom->TargetArmLength)-CameraCutoutCompensation)
-	);
 	
 }
 

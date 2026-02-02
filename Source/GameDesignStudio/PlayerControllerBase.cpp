@@ -8,6 +8,8 @@
 #include "Components/SplineComponent.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "Materials/MaterialParameterCollection.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
 
 DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
 
@@ -216,13 +218,24 @@ void APlayerControllerBase::BeginPlay()
 
 	
 	
+	
 	//setup cursor 
 	bShowMouseCursor = true;
 	bEnableClickEvents = true;
+	
+}
 
+void APlayerControllerBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 	
-	
-	
+	//Set player pawn position in the MPC
+	if (!GetPawn()) return;
+	if (!CameraMPC) return;
+	UMaterialParameterCollectionInstance* MPCInstance =
+		GetWorld()->GetParameterCollectionInstance(CameraMPC);
+	if (!MPCInstance) return;
+	MPCInstance->SetVectorParameterValue(FName("PlayerLocation"), GetPawn()->GetActorLocation());
 }
 
 void APlayerControllerBase::CheckControlDevice(FPlatformUserId PlatformUserId, FInputDeviceId InputDeviceId)

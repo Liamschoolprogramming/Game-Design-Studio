@@ -59,11 +59,12 @@ ACustomCamera::ACustomCamera()
 void ACustomCamera::ZoomCamera(float Value)
 {
 	
-		float temp = ((ZoomSpeed) * Value) + ZoomPercent;
-	
-		ZoomPercent = UKismetMathLibrary::FClamp (temp,0,1 );
-	
-		SetCameraTransformAlongSpline(ZoomPercent);
+	float temp = ((ZoomSpeed) * Value) + ZoomPercent;
+
+	ZoomPercent = UKismetMathLibrary::FClamp (temp,0,1 );
+
+	SetCameraTransformAlongSpline(ZoomPercent);
+		
 		
 	
 	
@@ -185,6 +186,10 @@ void ACustomCamera::SetCameraTransformAlongSpline(float percent)
 	{
 		ZoomPercent = ToPerspectiveThreshold;     // start at beginning of new spline but give a bit so we dont switch back instantly
 		bShouldToggle = true;
+	}
+	else if (!bInTopDownMode && ZoomPercent <= ZoomMinPercent)
+	{
+		ZoomPercent = ZoomMinPercent;
 	}
 	else if (bInTopDownMode && ZoomPercent <= 0)
 	{

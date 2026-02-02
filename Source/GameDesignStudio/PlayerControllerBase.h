@@ -99,6 +99,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
 	float PawnMovementSpeed = 500;
 	
+	//MPC for camera cutout material
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	UMaterialParameterCollection* CameraMPC;
+	
+	
 	void StartClick(const FInputActionValue& Value);
 	void StopClick(const FInputActionValue& Value);
 	
@@ -110,6 +115,7 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 
 private:
 	

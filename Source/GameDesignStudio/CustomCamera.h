@@ -78,7 +78,7 @@ public:
 
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zoom")
-	float ZoomMinPercent = 0.4f;
+	float ZoomMinPercent = 0.1f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zoom")
 	float ZoomPercent = ZoomMinPercent;
