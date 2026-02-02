@@ -96,7 +96,7 @@ float ACustomCamera::SetCameraHeight()
 		Params.AddIgnoredActor(Pawn);
 		Params.bTraceComplex = true;             // Use complex collision if needed
 		Params.bReturnPhysicalMaterial = false;
-		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, start, end, ECC_Visibility,Params );
+		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, start, end, ECC_Camera,Params );
 		if (bHit)
 		{
 			CameraHeight = HalfHeight + HitResult.Location.Z;
