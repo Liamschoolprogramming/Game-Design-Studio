@@ -21,10 +21,19 @@ public:
 	virtual void Initialize(UGameManagerSubsystem* InstanceOwner) override;
 	virtual void Shutdown() override;
 	
+	UFUNCTION(Blueprintable)
+	void SetPressurePlatePressed(bool BoolValue);
+	
 	UFUNCTION(BlueprintPure)
 	int CalculateValues(int a, int b);
 	
 	UFUNCTION(BlueprintCallable)
 	void TestingPuzzleNonBlueprint();
+	
+	UPROPERTY(BlueprintReadWrite)
+	bool PressurePlatePressed;
+	
+	UPROPERTY(BlueprintReadWrite)
+	bool ColumnKnockedDown;
 	
 };
