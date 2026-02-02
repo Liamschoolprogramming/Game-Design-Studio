@@ -52,12 +52,6 @@ protected:
 	
 	
 	
-	//MPC for camera cutout material
-	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-	UMaterialParameterCollection* CameraMPC;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-	float CameraCutoutCompensation = 100;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Prototype Variables")
 	bool hasItem = false;

@@ -66,14 +66,6 @@ void APlayerCharacter::BeginPlay()
 		}
 	}
 	
-	//Update the cutout distance in the MPC
-	if (!CameraMPC) return;
-	UMaterialParameterCollectionInstance* MPCInstance =
-		GetWorld()->GetParameterCollectionInstance(CameraMPC);
-	if (!MPCInstance) return;
-	MPCInstance->SetScalarParameterValue(
-		FName("CameraArmLength"),((CameraBoom->TargetArmLength)-CameraCutoutCompensation)
-	);
 	
 }
 
@@ -83,6 +75,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+//TODO should be moved to PlayerController.cpp
 void APlayerCharacter::DoKnockback(float _power, AActor* origin)
 {
 	

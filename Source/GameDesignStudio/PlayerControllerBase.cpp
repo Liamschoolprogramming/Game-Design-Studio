@@ -5,7 +5,11 @@
 #include "GameFramework/InputDeviceSubsystem.h"
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Components/SplineComponent.h"
+
 #include "Kismet/GameplayStatics.h"
+#include "Materials/MaterialParameterCollection.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
 
 DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
 
@@ -41,6 +45,11 @@ void APlayerControllerBase::StartClick(const FInputActionValue& Value)
 	if (Hit.bBlockingHit && CameraReference->bLockCameraToCharacter == true)
 	{
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Hit.Location);
+		if (ParticleSystem)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),ParticleSystem, Hit.Location);
+		}
+		
 	}
 }
 
@@ -77,6 +86,11 @@ void APlayerControllerBase::ToggleLockCameraToPawn(const FInputActionValue& Valu
 	if (CameraReference)
 	{
 		CameraReference->bLockCameraToCharacter = !(CameraReference->bLockCameraToCharacter);
+		APawn* OurPawn = GetPawn();
+		if (CameraReference->bLockCameraToCharacter && OurPawn)
+		{
+			CameraReference->PerspectiveZoomSpline->SetWorldRotation(OurPawn->GetActorRotation());
+		}
 		CameraReference->AllowCameraRotation(false);
 	}
 }
@@ -102,10 +116,18 @@ void APlayerControllerBase::Look(const FInputActionValue& Value)
 	{
 		if (bUsingGamepad)
 		{
+			
 			CameraReference->AllowCameraRotation(true);
+			
+			CameraReference->ZoomCamera(Value.Get<FVector2D>().Y);
+			CameraReference->RotateCamera(Value.Get<FVector2D>());
+			
+		}else
+		{
+			CameraReference->RotateCamera(Value.Get<FVector2D>());
 		}
 		
-		CameraReference->RotateCamera(Value.Get<FVector2D>());
+		
 	}
 }
 
@@ -117,6 +139,36 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 		if (CameraReference->bLockCameraToCharacter == false)
 		{
 			CameraReference->MoveCamera(Value.Get<FVector2D>());
+		}
+		else
+		{
+			//only move the pawn if we are using gamepad or override
+			APawn* OurPawn = GetPawn();
+			if ((OurPawn && bUsingGamepad) || (OurPawn && bCanUseWASDToMovePawn))
+			{
+				FVector2D ActionValue = Value.Get<FVector2D>();
+				FVector pos = OurPawn->GetActorLocation();
+				FVector f = CameraReference->ForwardVector();
+				FVector r = CameraReference->RightVector();
+				f = f * ActionValue.Y;
+				r = r * ActionValue.X;
+				
+				FVector Dir = f + r;
+				
+				Dir.Normalize();
+				pos = pos + (Dir * PawnMovementSpeed * GetWorld()->GetDeltaSeconds());
+				OurPawn->SetActorLocation(pos);
+				
+				//Smoothly rotate to new direction
+				FRotator CurrentRotation = OurPawn->GetActorRotation();
+				FRotator TargetRotation = Dir.Rotation();
+				
+				FRotator SmoothRot = FMath::RInterpTo(CurrentRotation, TargetRotation, GetWorld()->GetDeltaSeconds(), PawnRotationSpeed);
+				
+				
+				OurPawn->SetActorRotation(SmoothRot);
+			}
+			
 		}
 		
 	}
@@ -178,13 +230,24 @@ void APlayerControllerBase::BeginPlay()
 
 	
 	
+	
 	//setup cursor 
 	bShowMouseCursor = true;
 	bEnableClickEvents = true;
+	
+}
 
+void APlayerControllerBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 	
-	
-	
+	//Set player pawn position in the MPC
+	if (!GetPawn()) return;
+	if (!CameraMPC) return;
+	UMaterialParameterCollectionInstance* MPCInstance =
+		GetWorld()->GetParameterCollectionInstance(CameraMPC);
+	if (!MPCInstance) return;
+	MPCInstance->SetVectorParameterValue(FName("PlayerLocation"), GetPawn()->GetActorLocation());
 }
 
 void APlayerControllerBase::CheckControlDevice(FPlatformUserId PlatformUserId, FInputDeviceId InputDeviceId)
