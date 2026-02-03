@@ -29,3 +29,8 @@ void UPuzzleRiverManager::TestingPuzzleNonBlueprint()
 {
 	
 }
+
+void UPuzzleRiverManager::SetPressurePlatePressed(bool BoolValue)
+{
+	PressurePlatePressed = BoolValue;
+}

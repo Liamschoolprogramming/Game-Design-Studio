@@ -33,10 +33,12 @@ public:
 	void SetStepComplete(FString Id, FString Step);
 	
 	template<typename T>
-	T* GetManager() const;
+	T* GetManager();
+	
+	UFUNCTION(BlueprintCallable, Category = "Managers")
+	UGameManagerBase* GetManagerByClass(TSubclassOf<UGameManagerBase> ManagerClass);
 	
 	// Template is used for the UClass type
-	UFUNCTION(BlueprintPure, Category = "Managers")
 	UGameManagerBase* GetManager(TSubclassOf<UGameManagerBase> ManagerClass) const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Managers")
@@ -44,6 +46,8 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UInventoryManager* GetInventoryManager() const;
+	
+	void RegisterActorToManager(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, const FPersistantActorValues& ActorValues);
 		
 	UPROPERTY()
 	FPlayerStats PlayerStats;
