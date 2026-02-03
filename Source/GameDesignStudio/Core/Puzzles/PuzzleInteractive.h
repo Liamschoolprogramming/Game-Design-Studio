@@ -18,6 +18,10 @@ public:
 	
 	UPROPERTY(BlueprintReadWrite)
 	double InteractRange = 100;
+	
+	UPROPERTY(BlueprintReadWrite)
+	TArray<EPlayerCharacterType> InteractableCharacterTypes;
+	
 protected:
 	virtual bool IsInRange(APlayerCharacter* PlayerCharacter);
 };

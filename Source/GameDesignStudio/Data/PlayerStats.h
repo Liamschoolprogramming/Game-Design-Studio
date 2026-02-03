@@ -21,14 +21,14 @@ struct FPlayerStats
 	}
 };
 
-UENUM()
+UENUM(Blueprintable)
 enum class EPlayerCharacterType : uint8
 {
 	Default UMETA(DisplayName = "Default"),
 	Golem UMETA(DisplayName = "Golem"),
 };
 
-UENUM()
+UENUM(Blueprintable)
 enum class EInventoryItemType : uint8
 {
 	Quest UMETA(DisplayName = "Quest"),
