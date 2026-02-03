@@ -12,10 +12,6 @@
  * 
  */
 
-//**************************************************//
-//		RENAME THIS TO PuzzleProgressSubsystem		//
-//**************************************************//
-
 class UGameManagerBase;
 
 UCLASS()
@@ -29,6 +25,8 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 	
+	// These should be in the manager baseclass that return a boolean if the puzzle is complete
+	// or not. It should do a check on the managers data if it has all states needed to return true
 	void IsPuzzleSolved(FString Id);
 	void SetStepComplete(FString Id, FString Step);
 	
