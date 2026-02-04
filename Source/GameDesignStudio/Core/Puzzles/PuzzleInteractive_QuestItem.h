@@ -14,7 +14,10 @@ class GAMEDESIGNSTUDIO_API APuzzleInteractive_QuestItem : public APuzzleInteract
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(BlueprintReadWrite)
 	FName InventoryItemName;
 	
+	UFUNCTION(BlueprintCallable)
 	virtual void Interact(APlayerCharacter* PlayerCharacter) override;
 };
