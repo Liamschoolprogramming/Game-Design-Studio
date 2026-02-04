@@ -19,7 +19,8 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	double InteractRange = 100;
 	
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (
+		InstanceEditable = "true", ExposeOnSpawn = "true"))
 	TArray<EPlayerCharacterType> InteractableCharacterTypes;
 	
 protected:
