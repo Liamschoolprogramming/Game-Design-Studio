@@ -28,7 +28,7 @@ enum class EPlayerCharacterType : uint8
 	Golem UMETA(DisplayName = "Golem"),
 };
 
-UENUM()
+UENUM(Blueprintable)
 enum class EInventoryItemType : uint8
 {
 	Quest UMETA(DisplayName = "Quest"),
