@@ -69,6 +69,24 @@ void UGameManagerSubsystem::RegisterManager()
 	Managers.Add(T::StaticClass(), Manager);
 }
 
+
+template <typename T>
+T* UGameManagerSubsystem::GetManager()
+{
+	if (T* Manager = Cast<T>(UGameManagerBase::StaticClass()))
+	{
+		return Manager;
+	}
+	return nullptr;
+}
+
+// For runtime variables
+UGameManagerBase* UGameManagerSubsystem::GetManagerByClass(TSubclassOf<UGameManagerBase> ManagerClass)
+{
+	return Managers.FindRef(ManagerClass);
+}
+
+
 UPuzzleRiverManager* UGameManagerSubsystem::GetPuzzleRiverManager() const
 {
 	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UPuzzleRiverManager::StaticClass()))
@@ -98,4 +116,17 @@ UGameManagerBase* UGameManagerSubsystem::GetManager(TSubclassOf<UGameManagerBase
 	}
 	
 	return nullptr;
+}
+
+void UGameManagerSubsystem::RegisterActorToManager(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, const FPersistantActorValues& ActorValues)
+{
+	
+	if (UGameManagerBase* Manager = GetManagerByClass(ManagerClass))
+	{
+		Manager->RegisterActor(Id, ActorValues);
+		
+		UE_LOG(LogTemp, Warning, TEXT("Registering Actor"));
+		
+	}
+	
 }
