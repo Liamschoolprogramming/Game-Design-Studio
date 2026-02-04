@@ -12,6 +12,9 @@ struct FPersistantActorValues
 	UPROPERTY()
 	FTransform ActorLocation;
 	
-	//UPROPERTY()
-	//TSet<FName> VisualStates;
+	UPROPERTY()
+	TSet<FName> VisualStates;
+	
+	UPROPERTY()
+	FName StateId;
 };

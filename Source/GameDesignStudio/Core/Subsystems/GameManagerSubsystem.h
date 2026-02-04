@@ -30,21 +30,30 @@ public:
 	void IsPuzzleSolved(FString Id);
 	void SetStepComplete(FString Id, FString Step);
 	
+	void SetPuzzleState(TSubclassOf<UGameManagerBase> ManagerClass, FName StateId);
+	
 	template<typename T>
 	T* GetManager();
 	
-	UFUNCTION(BlueprintCallable, Category = "Managers")
+	UFUNCTION(BlueprintCallable, Category = "Managers", meta = (DeterminesOutputType = "ManagerClass"))
 	UGameManagerBase* GetManagerByClass(TSubclassOf<UGameManagerBase> ManagerClass);
 	
 	// Template is used for the UClass type
 	UGameManagerBase* GetManager(TSubclassOf<UGameManagerBase> ManagerClass) const;
 	
+	//***********************************************************//
+	// To be depreciated as we have a general method now for this
+	//***********************************************************//
 	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UPuzzleRiverManager* GetPuzzleRiverManager() const;
 	
+	//***********************************************************//
+	// To be depreciated as we have a general method now for this
+	//***********************************************************//
 	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UInventoryManager* GetInventoryManager() const;
 	
+	// This probably shouldn't be public
 	void RegisterActorToManager(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, const FPersistantActorValues& ActorValues);
 		
 	UPROPERTY()

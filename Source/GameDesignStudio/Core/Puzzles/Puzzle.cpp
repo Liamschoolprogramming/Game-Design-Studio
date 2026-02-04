@@ -35,24 +35,16 @@ void APuzzle::BeginPlay()
 	
 }
 
-UGameManagerBase* APuzzle::GetOwningManagerClass(TSubclassOf<UGameManagerBase> ManagerClass)
+/*
+UGameManagerBase* APuzzle::GetOwningManagerClass()
 {
+	
 	UGameManagerSubsystem* Subsystem = GetGameInstance()->GetSubsystem<UGameManagerSubsystem>();
-	UGameManagerBase* Manager = Subsystem->GetManagerByClass(ManagerClass);
+	UGameManagerBase* Manager = Subsystem->GetManagerByClass(OwningManager);
 	
 	return Manager;
-	
-	
-	
-	// Key map of managers by type set in the editor
-	
-	//return Cast<OwningManager>(UGameManagerBase);
-	
-	//return Cast<UPuzzleRiverManager>(OwningManager);
-	
-	
-	
 }
+*/
 
 // Called every frame
 void APuzzle::Tick(float DeltaTime)
@@ -60,11 +52,4 @@ void APuzzle::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
-/*
-void APuzzle::SetActorID(FName Id) const
-{
-	ActorId = Id;
-}
-*/
 

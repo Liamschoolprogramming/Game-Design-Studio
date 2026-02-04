@@ -13,8 +13,10 @@ class GAMEDESIGNSTUDIO_API APuzzle : public AActor
 {
 	GENERATED_BODY()
 	
+	/*
 	UFUNCTION(BlueprintCallable, Category = "Managers", meta = (DeterminesOutputType = "ManagerClass"))
-	UGameManagerBase* GetOwningManagerClass(TSubclassOf<UGameManagerBase> ManagerClass);
+	UGameManagerBase* GetOwningManagerClass();
+	*/
 	
 	
 public:	
@@ -23,6 +25,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite);
 	FName ActorId;
+	
+	UPROPERTY(EditAnywhere)
+	FName StateId;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<UGameManagerBase> OwningManager;

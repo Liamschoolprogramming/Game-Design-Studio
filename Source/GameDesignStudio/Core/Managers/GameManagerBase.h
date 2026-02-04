@@ -27,6 +27,8 @@ public:
 	UPROPERTY()
 	TObjectPtr<UGameManagerSubsystem> Owner;
 	
+	//TMap<FPuzzleId, FPersistantPuzzleState> PuzzleStates;
+	
 	// Registers actor
 	void RegisterActor(const FName Id, const FPersistantActorValues& ActorValues);
 	

@@ -11,6 +11,8 @@
 
 // Add more structs for more features
 
+
+// Depreciated struct do not use
 USTRUCT(BlueprintType)
 struct FPuzzleId
 {

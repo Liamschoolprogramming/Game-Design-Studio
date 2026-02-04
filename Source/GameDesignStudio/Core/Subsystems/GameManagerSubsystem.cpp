@@ -69,7 +69,6 @@ void UGameManagerSubsystem::RegisterManager()
 	Managers.Add(T::StaticClass(), Manager);
 }
 
-
 template <typename T>
 T* UGameManagerSubsystem::GetManager()
 {
@@ -80,13 +79,16 @@ T* UGameManagerSubsystem::GetManager()
 	return nullptr;
 }
 
-// For runtime variables
 UGameManagerBase* UGameManagerSubsystem::GetManagerByClass(TSubclassOf<UGameManagerBase> ManagerClass)
 {
-	return Managers.FindRef(ManagerClass);
+	UGameManagerBase* Manager = Managers.FindRef(ManagerClass);
+	
+	return Manager;
 }
 
-
+//***********************************************************//
+// To be depreciated as we have a general method now for this
+//***********************************************************//
 UPuzzleRiverManager* UGameManagerSubsystem::GetPuzzleRiverManager() const
 {
 	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UPuzzleRiverManager::StaticClass()))
@@ -97,6 +99,9 @@ UPuzzleRiverManager* UGameManagerSubsystem::GetPuzzleRiverManager() const
 	return nullptr;
 }
 
+//***********************************************************//
+// To be depreciated as we have a general method now for this
+//***********************************************************//
 UInventoryManager* UGameManagerSubsystem::GetInventoryManager() const
 {
 	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UInventoryManager::StaticClass()))
