@@ -6,8 +6,12 @@
 
 void APuzzleInteractive_QuestItem::Interact(APlayerCharacter* PlayerCharacter)
 {
-	UInventoryManager* InventoryManager = GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetInventoryManager();
-	InventoryManager->AddToInventory(InventoryItemName, 1);
-	
-	Destroy();
+	if (!bPickedUp)
+	{
+		bPickedUp = true;
+		UInventoryManager* InventoryManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetInventoryManager();
+		InventoryManager->AddToInventory(InventoryItemName, 1);
+		
+		Destroy();
+	}
 }

@@ -27,15 +27,15 @@ void APuzzleInteractive_Pickupable::Interact(APlayerCharacter* PlayerCharacter)
 	{
 		if (IsInRange(PlayerCharacter))
 		{
-			bool Pushable = false;
+			bool bPickupable = false;
 			for (int i = 0; i < InteractableCharacterTypes.Num(); i++)
 			{
 				if (InteractableCharacterTypes[i] == PlayerCharacter-> PlayerCharacterType)
 				{
-					Pushable = true;
+					bPickupable = true;
 				}
 			}
-			if (Pushable)
+			if (bPickupable)
 			{
 				CarryingCharacter = PlayerCharacter;
 				bBeingCarried = true;

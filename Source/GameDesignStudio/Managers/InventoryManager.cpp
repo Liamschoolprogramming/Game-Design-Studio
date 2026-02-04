@@ -17,6 +17,11 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 // Tries to add an item to the inventory, returns new amount in inventory for that item.
 int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 {
+	if (ItemName ==  NAME_None)
+	{
+		return -1;
+	}
+	
 	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);
 
 	if (FoundItem == nullptr)

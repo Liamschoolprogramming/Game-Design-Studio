@@ -15,9 +15,11 @@ class GAMEDESIGNSTUDIO_API APuzzleInteractive_QuestItem : public APuzzleInteract
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"))
 	FName InventoryItemName;
 	
 	UFUNCTION(BlueprintCallable)
 	virtual void Interact(APlayerCharacter* PlayerCharacter) override;
+	
+	bool bPickedUp = false;
 };
