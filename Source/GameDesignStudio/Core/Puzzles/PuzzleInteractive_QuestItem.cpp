@@ -6,7 +6,7 @@
 
 void APuzzleInteractive_QuestItem::Interact(APlayerCharacter* PlayerCharacter)
 {
-	if (!bPickedUp)
+	if (!bPickedUp && PlayerCharacter->PlayerCharacterType == EPlayerCharacterType::Default)
 	{
 		bPickedUp = true;
 		UInventoryManager* InventoryManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetInventoryManager();
