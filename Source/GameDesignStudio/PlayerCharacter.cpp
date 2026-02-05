@@ -81,27 +81,7 @@ void APlayerCharacter::DoKnockback(float _power, AActor* origin)
 	
 	FVector locations;
 	locations = this->GetActorLocation() - origin->GetActorLocation();
-	GEngine->AddOnScreenDebugMessage(
-		-1,         // Key for the message (use -1 for a new key each time, or a specific key to update an existing message)
-		5.0f,       // Duration the message is displayed (in seconds)
-		FColor::Yellow, // Color of the text
-		FString::Printf(TEXT("%f locations x power"), locations.X) // The message itself as an FString
-
-	);
-	GEngine->AddOnScreenDebugMessage(
-		-1,         // Key for the message (use -1 for a new key each time, or a specific key to update an existing message)
-		5.0f,       // Duration the message is displayed (in seconds)
-		FColor::Yellow, // Color of the text
-		FString::Printf(TEXT("%f locations x power"), locations.Y) // The message itself as an FString
-
-	);
-	GEngine->AddOnScreenDebugMessage(
-		-1,         // Key for the message (use -1 for a new key each time, or a specific key to update an existing message)
-		5.0f,       // Duration the message is displayed (in seconds)
-		FColor::Yellow, // Color of the text
-		FString::Printf(TEXT("%f locations x power"), locations.Z) // The message itself as an FString
-
-	);
+	
 	locations *= FVector(1,1,0);
 	
 	locations = locations.GetSafeNormal(1.0);
