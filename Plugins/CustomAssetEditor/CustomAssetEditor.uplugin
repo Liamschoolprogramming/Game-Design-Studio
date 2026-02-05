@@ -17,6 +17,11 @@
 	"Modules": [
 		{
 			"Name": "CustomAssetEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "CustomAssetEditorRuntime",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}

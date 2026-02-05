@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class CustomAssetEditor : ModuleRules
+public class CustomAssetEditorRuntime : ModuleRules
 {
-	public CustomAssetEditor(ReadOnlyTargetRules Target) : base(Target)
+	public CustomAssetEditorRuntime(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -38,9 +38,6 @@ public class CustomAssetEditor : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"CustomAssetEditorRuntime",
-				"AssetTools",
-				"UnrealEd"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

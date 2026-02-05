@@ -11,8 +11,11 @@ public class GameDesignStudio : ModuleRules
 	
 		PublicIncludePaths.Add("GameDesignStudio");
 		
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" , "CustomAssetEditorRuntime"});
 
+		if(Target.bBuildEditor){
+			PublicDependencyModuleNames.AddRange(new string[] { "CustomAssetEditor"});
+		}
 		
 
 		// Uncomment if you are using Slate UI
