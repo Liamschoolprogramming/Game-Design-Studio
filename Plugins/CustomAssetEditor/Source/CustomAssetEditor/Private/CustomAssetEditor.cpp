@@ -4,6 +4,8 @@
 #include "CustomAssetAction.h"
 #include "IAssetTools.h"
 #include "AssetToolsModule.h"
+#include "Styling/SlateStyleRegistry.h"
+#include "Interfaces/IPluginManager.h"
 
 #define LOCTEXT_NAMESPACE "FCustomAssetEditorModule"
 

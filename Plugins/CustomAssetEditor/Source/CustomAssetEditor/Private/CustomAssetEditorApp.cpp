@@ -2,6 +2,7 @@
 
 #include "CustomAssetAppMode.h"
 #include "CustomAssetAppMode.h"
+#include "CustomAsset.h"
 
 void FCustomAssetEditorApp::RegisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
 {
@@ -13,6 +14,8 @@ void FCustomAssetEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSha
 {
 	TArray<UObject*> ObjectsToEdit;
 	ObjectsToEdit.Add(InObject);
+	
+	WorkingAsset = Cast<UCustomAsset>(InObject);
 
 	InitAssetEditor(
 		Mode,

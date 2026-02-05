@@ -9,6 +9,10 @@ public:
 	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& InTabManager) override;
 	void InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<class IToolkitHost>& InToolkitHost, UObject* InObject);
 	
+	class UCustomAsset* GetWorkingAsset()
+	{
+		return WorkingAsset;
+	}
 
 public: //FAssetEditorToolkit interface
 	virtual FText GetToolkitName() const override
@@ -38,4 +42,7 @@ public: //FAssetEditorToolkit interface
 	virtual void OnToolkitHostingStarted(const TSharedRef<IToolkit>& Toolkit) override {}
 	virtual void OnToolkitHostingFinished(const TSharedRef<IToolkit>& Toolkit) override {}
 	
+private:
+	UPROPERTY()
+	UCustomAsset* WorkingAsset = nullptr;
 };
