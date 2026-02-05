@@ -3,6 +3,7 @@
 
 #include "PossessableEntity.h"
 #include "PlayerCharacter.h"
+#include "PlayerControllerBase.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Materials/MaterialParameterCollection.h"
@@ -19,7 +20,7 @@ APossessableEntity::APossessableEntity()
 void APossessableEntity::BeginPlay()
 {
 	Super::BeginPlay();
-	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	PlayerController = Cast<APlayerControllerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(),0));
 }
 
@@ -46,6 +47,8 @@ void APossessableEntity::OnTogglePossession()
 void APossessableEntity::OnPossess()
 {
 	PlayerController->Possess(this);
+	
+	
 	bPossessed = true;
 }
 

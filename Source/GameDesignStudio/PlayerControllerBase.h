@@ -96,6 +96,7 @@ public:
 	UNiagaraSystem* ParticleSystem;
 	
 	
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
 	float PawnMovementSpeed = 500;
 	
