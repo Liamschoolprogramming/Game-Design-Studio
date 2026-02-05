@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PlayerCharacter.h"
+#include "PlayerControllerBase.h"
 #include "GameFramework/Character.h"
 #include "PossessableEntity.generated.h"
 
@@ -20,7 +21,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	
 	UPROPERTY()
-	APlayerController* PlayerController;
+	APlayerControllerBase* PlayerController;
 	
 	UPROPERTY()
 	APlayerCharacter* PlayerCharacter;

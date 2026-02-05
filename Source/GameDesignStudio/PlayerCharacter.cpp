@@ -24,8 +24,6 @@ APlayerCharacter::APlayerCharacter()
 	bUseControllerRotationRoll = false;
 	
 	
-	//Initialize camera arm
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -33,20 +31,7 @@ APlayerCharacter::APlayerCharacter()
 	//GetCharacterMovement()->bConstrainToPlane = true;
 	//GetCharacterMovement()->bSnapToPlaneAtStart = true;
 	
-	//Setup camera arm 
-	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->bUsePawnControlRotation = true;
-	CameraBoom->SetUsingAbsoluteRotation(true);
-	CameraBoom->TargetArmLength = 800.f;
-	CameraBoom->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
-	CameraBoom->bDoCollisionTest = false;
 	
-	//Initialize Camera
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-
-	//Setup camera
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-	FollowCamera->bUsePawnControlRotation = false;
 	
 }
 
@@ -81,27 +66,7 @@ void APlayerCharacter::DoKnockback(float _power, AActor* origin)
 	
 	FVector locations;
 	locations = this->GetActorLocation() - origin->GetActorLocation();
-	GEngine->AddOnScreenDebugMessage(
-		-1,         // Key for the message (use -1 for a new key each time, or a specific key to update an existing message)
-		5.0f,       // Duration the message is displayed (in seconds)
-		FColor::Yellow, // Color of the text
-		FString::Printf(TEXT("%f locations x power"), locations.X) // The message itself as an FString
-
-	);
-	GEngine->AddOnScreenDebugMessage(
-		-1,         // Key for the message (use -1 for a new key each time, or a specific key to update an existing message)
-		5.0f,       // Duration the message is displayed (in seconds)
-		FColor::Yellow, // Color of the text
-		FString::Printf(TEXT("%f locations x power"), locations.Y) // The message itself as an FString
-
-	);
-	GEngine->AddOnScreenDebugMessage(
-		-1,         // Key for the message (use -1 for a new key each time, or a specific key to update an existing message)
-		5.0f,       // Duration the message is displayed (in seconds)
-		FColor::Yellow, // Color of the text
-		FString::Printf(TEXT("%f locations x power"), locations.Z) // The message itself as an FString
-
-	);
+	
 	locations *= FVector(1,1,0);
 	
 	locations = locations.GetSafeNormal(1.0);
