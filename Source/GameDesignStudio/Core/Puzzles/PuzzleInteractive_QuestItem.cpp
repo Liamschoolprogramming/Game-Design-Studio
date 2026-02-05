@@ -3,6 +3,7 @@
 
 #include "Core/Subsystems/GameManagerSubsystem.h"
 #include "Managers/InventoryManager.h"
+#include "Managers/QuestManager.h"
 
 void APuzzleInteractive_QuestItem::Interact(APlayerCharacter* PlayerCharacter)
 {
@@ -14,4 +15,11 @@ void APuzzleInteractive_QuestItem::Interact(APlayerCharacter* PlayerCharacter)
 		
 		Destroy();
 	}
+}
+
+void APuzzleInteractive_QuestItem::BeginPlay()
+{
+	// check if activated on quest manager
+	// if so, turn "on"
+	UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager();
 }

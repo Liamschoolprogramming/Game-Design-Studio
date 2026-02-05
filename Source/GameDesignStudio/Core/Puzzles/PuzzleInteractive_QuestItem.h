@@ -22,4 +22,6 @@ public:
 	virtual void Interact(APlayerCharacter* PlayerCharacter) override;
 	
 	bool bPickedUp = false;
+protected:
+	virtual void BeginPlay() override;
 };
