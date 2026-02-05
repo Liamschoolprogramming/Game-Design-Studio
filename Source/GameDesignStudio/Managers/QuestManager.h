@@ -19,12 +19,8 @@ public:
 	TMap<FName, FQuest> Quests;
 	
 	UFUNCTION(BlueprintCallable)
-	void ActivateQuest(FName QuestName)
-	{
-		FQuest* FoundQuest = Quests.Find(QuestName);
-		if (FoundQuest != nullptr)
-		{
-			FoundQuest->Active = true;
-		}
-	}
+	bool IsQuestForItemActive(FName ItemName); 
+	
+	UFUNCTION(BlueprintCallable)
+	void ActivateQuest(FName QuestName);
 };

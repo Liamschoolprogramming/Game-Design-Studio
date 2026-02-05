@@ -61,6 +61,7 @@ void UGameManagerSubsystem::RegisterManagers()
 {
 	RegisterManager<UPuzzleRiverManager>();
 	RegisterManager<UInventoryManager>();
+	RegisterManager<UQuestManager>();
 }
 
 template <typename T>

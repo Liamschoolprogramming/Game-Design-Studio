@@ -1,6 +1,7 @@
 
 #include "PuzzleInteractive_QuestItem.h"
 
+#include "Macros.h"
 #include "Core/Subsystems/GameManagerSubsystem.h"
 #include "Managers/InventoryManager.h"
 #include "Managers/QuestManager.h"
@@ -11,7 +12,7 @@ void APuzzleInteractive_QuestItem::Interact(APlayerCharacter* PlayerCharacter)
 	{
 		bPickedUp = true;
 		UInventoryManager* InventoryManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetInventoryManager();
-		InventoryManager->AddToInventory(InventoryItemName, 1);
+		InventoryManager->AddToInventory(ItemName, 1);
 		
 		Destroy();
 	}
@@ -19,7 +20,10 @@ void APuzzleInteractive_QuestItem::Interact(APlayerCharacter* PlayerCharacter)
 
 void APuzzleInteractive_QuestItem::BeginPlay()
 {
-	// check if activated on quest manager
-	// if so, turn "on"
+	Super::BeginPlay();
 	UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager();
+	SetQuestItemActive(QuestManager->IsQuestForItemActive(ItemName));
 }
+
+void APuzzleInteractive_QuestItem::SetQuestItemActive_Implementation(bool Active) {}
+
