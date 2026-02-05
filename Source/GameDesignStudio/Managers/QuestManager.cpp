@@ -3,12 +3,13 @@
 
 #include "QuestManager.h"
 
+#include "InventoryManager.h"
 #include "Macros.h"
+#include "Core/Subsystems/GameManagerSubsystem.h"
 #include "Data/PlayerStats.h"
 
 void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 {
-	Debug::PrintToScreen(("UQuestManager::Initialize()"));
 	Super::Initialize(InstanceOwner);
 	
 	Quests = {
@@ -17,10 +18,10 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 	};
 	
 	// testing only
-	ActivateQuest("TestItem");
+	ActivateQuestForItem("TestItem");
 }
 
-void UQuestManager::ActivateQuest(FName ItemName)
+void UQuestManager::ActivateQuestForItem(FName ItemName)
 {
 	FQuest* FoundQuest = Quests.Find(ItemName);
 	if (FoundQuest != nullptr)
@@ -29,9 +30,25 @@ void UQuestManager::ActivateQuest(FName ItemName)
 	}
 }
 
+void UQuestManager::UpdateCompletionStatusForQuestItem(FName ItemName)
+{
+	FQuest* Quest = Quests.Find(ItemName);
+	if (Quest == nullptr)
+	{
+		return;
+	}
+	
+	int RequiredAmount = Quest->ItemAmountRequired;
+	UInventoryManager* InventoryManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetInventoryManager();
+	
+	if (InventoryManager->GetCurrentAmountForItem(ItemName) >= RequiredAmount)
+	{
+		Quest->Completed = true;
+	}
+}
+
 bool UQuestManager::IsQuestForItemActive(FName ItemName)
 {
-	Debug::PrintToScreen((ItemName));
 	FQuest* Quest = Quests.Find(ItemName);
 	if (Quest == nullptr)
 	{

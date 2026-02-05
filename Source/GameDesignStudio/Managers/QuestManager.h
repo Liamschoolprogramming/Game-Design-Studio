@@ -22,5 +22,8 @@ public:
 	bool IsQuestForItemActive(FName ItemName); 
 	
 	UFUNCTION(BlueprintCallable)
-	void ActivateQuest(FName QuestName);
+	void ActivateQuestForItem(FName ItemName);
+	
+	UFUNCTION(BlueprintCallable)
+	void UpdateCompletionStatusForQuestItem(FName ItemName);
 };

@@ -8,11 +8,18 @@
 
 void APuzzleInteractive_QuestItem::Interact(APlayerCharacter* PlayerCharacter)
 {
+	UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager();
+	if (!QuestManager->IsQuestForItemActive(ItemName))
+	{
+		return;
+	}
+	
 	if (!bPickedUp && PlayerCharacter->PlayerCharacterType == EPlayerCharacterType::Default)
 	{
 		bPickedUp = true;
 		UInventoryManager* InventoryManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetInventoryManager();
 		InventoryManager->AddToInventory(ItemName, 1);
+		QuestManager->UpdateCompletionStatusForQuestItem(ItemName);
 		
 		Destroy();
 	}
