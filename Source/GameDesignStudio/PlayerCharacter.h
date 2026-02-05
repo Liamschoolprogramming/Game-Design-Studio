@@ -38,13 +38,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
 	float CameraSensitivity = .5;
 	
-	//Camera arm
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
-	class USpringArmComponent* CameraBoom;
-
-	//Camera
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
-	class UCameraComponent* FollowCamera;
 	
 	//IMC
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")

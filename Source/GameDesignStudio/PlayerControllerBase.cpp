@@ -4,6 +4,7 @@
 #include "PlayerControllerBase.h"
 #include "GameFramework/InputDeviceSubsystem.h"
 #include "EnhancedInputSubsystems.h"
+#include "Macros.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Components/SplineComponent.h"
 
@@ -229,6 +230,7 @@ void APlayerControllerBase::BeginPlay()
 	}
 
 	
+	bAutoManageActiveCameraTarget = false;
 	
 	
 	//setup cursor 

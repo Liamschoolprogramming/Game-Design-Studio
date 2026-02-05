@@ -16,8 +16,13 @@ class GAMEDESIGNSTUDIO_API APuzzleInteractive : public APuzzle
 public:
 	virtual void Interact(APlayerCharacter* PlayerCharacter);
 	
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	double InteractRange = 100;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (
+		InstanceEditable = "true", ExposeOnSpawn = "true"))
+	TArray<EPlayerCharacterType> InteractableCharacterTypes;
+	
 protected:
 	virtual bool IsInRange(APlayerCharacter* PlayerCharacter);
 };
