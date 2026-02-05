@@ -15,6 +15,10 @@ public: //FAssetEditorToolkit interface
 	{
 		return FText::FromString(TEXT("CustomAssetEditorApp"));
 	}
+	virtual FName GetToolkitFName() const override
+	{
+		return FName(TEXT("CustomAssetEditorApp"));
+	}
 	virtual FText GetBaseToolkitName() const override
 	{
 		return FText::FromString(TEXT("CustomAssetEditorApp"));
