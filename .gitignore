@@ -54,3 +54,4 @@ Saved/*
 *.csproj
 *.sln.DotSettings
 *.sln.DotSettings.user
+Plugins/CustomAssetEditor/Intermediate/Build
