@@ -5,22 +5,40 @@
 
 #include "CustomAssetEditorApp.h"
 #include "CustomAssetPrimaryTabFactory.h"
-
+#include "CustomAssetPropertiesTabFactory.h"
 
 FCustomAssetAppMode::FCustomAssetAppMode(TSharedPtr<class FCustomAssetEditorApp> InApp): FApplicationMode(TEXT("CustomAssetAppMode"))
 {
 	App = InApp;
 	Tabs.RegisterFactory(MakeShareable(new FCustomAssetPrimaryTabFactory(InApp)));
+	Tabs.RegisterFactory(MakeShareable(new FCustomAssetPropertiesTabFactory(InApp)));
+	
 
 	TabLayout = FTabManager::NewLayout("CustomAssetAppMode_Layout_v1")
 	->AddArea
 	(
-		FTabManager::NewPrimaryArea()->SetOrientation(Orient_Vertical)
-		->Split
-		(
-			FTabManager::NewStack()->AddTab(FName(TEXT("CustomAssetPrimaryTab")), ETabState::OpenedTab)
-		)
+		
+		FTabManager::NewPrimaryArea()
+			->SetOrientation(Orient_Vertical)
+			->Split //add child
+			(
+				FTabManager::NewSplitter()
+					->SetOrientation(Orient_Horizontal)
+					->Split
+					(
+						FTabManager::NewStack()
+							->SetSizeCoefficient(0.75)
+							->AddTab(FName(TEXT("CustomAssetPrimaryTab")), ETabState::OpenedTab)
+					)
+					->Split
+					(
+						FTabManager::NewStack()
+							->SetSizeCoefficient(0.25)
+							->AddTab(FName(TEXT("CustomAssetPropertiesTab")), ETabState::OpenedTab)
+					)
+			)
 	);
+	
 	
 }
 
