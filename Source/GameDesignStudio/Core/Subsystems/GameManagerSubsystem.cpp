@@ -2,6 +2,8 @@
 
 
 #include "GameManagerSubsystem.h"
+
+#include "PuzzleWorldSubsystem.h"
 #include "Core/Managers/GameManagerBase.h"
 #include "Managers/PuzzleRiverManager.h"
 #include "Kismet/GameplayStatics.h"
@@ -69,6 +71,7 @@ void UGameManagerSubsystem::RegisterManager()
 	Managers.Add(T::StaticClass(), Manager);
 }
 
+
 template <typename T>
 T* UGameManagerSubsystem::GetManager()
 {
@@ -78,6 +81,7 @@ T* UGameManagerSubsystem::GetManager()
 	}
 	return nullptr;
 }
+
 
 UGameManagerBase* UGameManagerSubsystem::GetManagerByClass(TSubclassOf<UGameManagerBase> ManagerClass)
 {
@@ -120,9 +124,12 @@ UGameManagerBase* UGameManagerSubsystem::GetManager(TSubclassOf<UGameManagerBase
 		return Found->Get();
 	}
 	
+	
+	
 	return nullptr;
 }
 
+// Defining type at runtime for registering actors to managers
 void UGameManagerSubsystem::RegisterActorToManager(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, const FPersistantActorValues& ActorValues)
 {
 	
@@ -133,5 +140,14 @@ void UGameManagerSubsystem::RegisterActorToManager(TSubclassOf<UGameManagerBase>
 		UE_LOG(LogTemp, Warning, TEXT("Registering Actor"));
 		
 	}
+	
+}
+
+void UGameManagerSubsystem::SnapshotActorValues(TSubclassOf<UGameManagerBase> ManagerClass, FName Id)
+{
+	
+	UGameManagerSubsystem* Subsystem = GetWorld()->GetSubsystem<UGameManagerSubsystem>();
+	UPuzzleWorldSubsystem* WorldSubsystem = GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>();
+	
 	
 }
