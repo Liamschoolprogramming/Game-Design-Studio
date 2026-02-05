@@ -42,7 +42,14 @@ public:
 	// Stricter type safety for C++ for getting a manager from the list of managers
 	UGameManagerBase* GetManager(TSubclassOf<UGameManagerBase> ManagerClass) const;
 	
-	void SnapshotActorValues(TSubclassOf<UGameManagerBase> ManagerClass, FName Id);
+	// For calling in C++ just pass in the this keyword for the argument. Do not call on beginplay
+	UFUNCTION(BlueprintCallable, Category = "Managers", meta = (DefaultToSelf = "Actor"))
+	void SnapshotActorValues(APuzzle* Actor);
+	
+	/*
+	UFUNCTION(BlueprintCallable, Category = "Managers", meta = (DefaultToSelf = "TargetObject"))
+	void SnapshotActorValues(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, FPersistantActorValues& ActorValues);
+	*/
 	
 	//***********************************************************//
 	// To be depreciated as we have a general method now for this
@@ -56,6 +63,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UInventoryManager* GetInventoryManager() const;
 	
+	//***********************************************************//
+	// To be depreciated as we have a general method now for this
+	//***********************************************************//
 	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UQuestManager* GetQuestManager() const;
 	

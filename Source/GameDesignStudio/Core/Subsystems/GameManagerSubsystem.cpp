@@ -155,11 +155,26 @@ void UGameManagerSubsystem::RegisterActorToManager(TSubclassOf<UGameManagerBase>
 	
 }
 
-void UGameManagerSubsystem::SnapshotActorValues(TSubclassOf<UGameManagerBase> ManagerClass, FName Id)
+/*
+void UGameManagerSubsystem::SnapshotActorValues(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, FPersistantActorValues& ActorValues, APuzzle* Actor)
 {
-	
+	// Gives the manager class and actor Id, calls the manager by the class key in the list
+	// of managers
 	UGameManagerSubsystem* Subsystem = GetWorld()->GetSubsystem<UGameManagerSubsystem>();
-	UPuzzleWorldSubsystem* WorldSubsystem = GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>();
+	//UPuzzleWorldSubsystem* WorldSubsystem = GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>();
 	
+	// Finds the manager in the list and registers its current values with the manager
+	Subsystem->GetManager(ManagerClass)->Snapshot(Id, ActorValues);
+}
+*/
+
+void UGameManagerSubsystem::SnapshotActorValues(APuzzle* Actor)
+{
+	// Add an assert for if an actor is missing an owning manager
+	if (!Actor)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Actor is NULL"));
+	}
 	
+	this->GetManager(Actor->OwningManager)->Snapshot(Actor->ActorId, Actor->ActorValues);
 }

@@ -32,6 +32,8 @@ public:
 	// Registers actor
 	void RegisterActor(const FName Id, const FPersistantActorValues& ActorValues);
 	
+	void Snapshot(const FName Id, const FPersistantActorValues& ActorValues);
+	
 	// Sets the owning subsystem
 	virtual void Initialize(UGameManagerSubsystem* InstanceOwner);
 	
