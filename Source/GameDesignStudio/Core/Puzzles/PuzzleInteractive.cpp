@@ -11,6 +11,6 @@ void APuzzleInteractive::Interact(APlayerCharacter* PlayerCharacter) { }
 
 bool APuzzleInteractive::IsInRange(APlayerCharacter* PlayerCharacter)
 {
-	const FPlayerStats PlayerStats = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->PlayerStats;
+	const FPlayerStats PlayerStats = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPlayerStatManager().PlayerStats;
 	return ((this->GetActorTransform().GetLocation() - PlayerCharacter->GetActorTransform().GetLocation()).Size() <= PlayerStats.InteractRange);
 }

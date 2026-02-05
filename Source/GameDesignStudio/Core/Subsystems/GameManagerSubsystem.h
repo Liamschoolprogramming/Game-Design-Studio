@@ -48,12 +48,12 @@ public:
 	UInventoryManager* GetInventoryManager() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Managers")
+	UPlayerStatManager* GetPlayerStatManager() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UQuestManager* GetQuestManager() const;
 	
 	void RegisterActorToManager(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, const FPersistantActorValues& ActorValues);
-		
-	UPROPERTY()
-	FPlayerStats PlayerStats;
 	
 protected:
 	
