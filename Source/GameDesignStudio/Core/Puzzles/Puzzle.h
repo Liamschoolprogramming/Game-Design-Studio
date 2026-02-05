@@ -6,6 +6,14 @@
 #include "GameFramework/Actor.h"
 #include "Puzzle.generated.h"
 
+UENUM(Blueprintable)
+enum class EPuzzleElementState : uint8
+{
+	Default UMETA(DisplayName = "Default"),
+	Preserved UMETA(DisplayName = "Preserved"),
+	Inverted UMETA(DisplayName = "Inverted"),
+};
+
 UCLASS(Abstract)
 class GAMEDESIGNSTUDIO_API APuzzle : public AActor
 {
