@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Managers/PlayerStatManager.h"
 #include "PuzzleInteractive_StatBooster.generated.h"
 
 UCLASS()
@@ -16,7 +17,7 @@ public:
 	EPlayerBoostableStat StatToBoost;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"))
-	double BoostAmount;
+	float BoostAmount;
 	
 	UFUNCTION(BlueprintCallable)
 	void PickupStatBoost();

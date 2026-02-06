@@ -7,21 +7,6 @@
 #include "Core/Managers/GameManagerBase.h"
 #include "PlayerStatManager.generated.h"
 
-/**
- * 
- */
-UCLASS()
-class GAMEDESIGNSTUDIO_API UPlayerStatManager : public UGameManagerBase
-{
-	GENERATED_BODY()
-	
-	virtual void Initialize(UGameManagerSubsystem* InstanceOwner) override;
-	
-public:
-	UFUNCTION(BlueprintCallable)
-	void BoostPlayerStat(EPlayerBoostableStat StatToBoost, double Amount);
-};
-
 USTRUCT(BlueprintType)
 struct FPlayerStats
 {
@@ -67,3 +52,22 @@ enum class EPlayerCharacterType : uint8
 	Default UMETA(DisplayName = "Default"),
 	Golem UMETA(DisplayName = "Golem"),
 };
+
+UCLASS()
+class GAMEDESIGNSTUDIO_API UPlayerStatManager : public UGameManagerBase
+{
+	GENERATED_BODY()
+	
+	virtual void Initialize(UGameManagerSubsystem* InstanceOwner) override;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void BoostPlayerStat(EPlayerBoostableStat StatToBoost, double Amount);
+	
+	UFUNCTION(BlueprintCallable)
+	FPlayerStats GetPlayerStats();
+
+protected:
+	FPlayerStats PlayerStats;
+};
+

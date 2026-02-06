@@ -5,7 +5,7 @@
 #include "PlayerCharacter.h"
 #include "Core/Managers/GameManagerBase.h"
 #include "Core/Subsystems/GameManagerSubsystem.h"
-#include "Data/PlayerStats.h"
+
 
 void APuzzleInteractive::Interact(APlayerCharacter* PlayerCharacter) { }
 

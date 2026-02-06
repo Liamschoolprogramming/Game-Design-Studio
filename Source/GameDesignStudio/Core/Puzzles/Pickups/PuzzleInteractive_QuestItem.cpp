@@ -1,9 +1,8 @@
 
 #include "PuzzleInteractive_QuestItem.h"
-
-#include "Macros.h"
 #include "Core/Subsystems/GameManagerSubsystem.h"
 #include "Managers/InventoryManager.h"
+#include "Managers/PlayerStatManager.h"
 #include "Managers/QuestManager.h"
 
 void APuzzleInteractive_QuestItem::Interact(APlayerCharacter* PlayerCharacter)

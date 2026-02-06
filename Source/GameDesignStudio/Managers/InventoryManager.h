@@ -4,39 +4,6 @@
 #include "Core/Managers/GameManagerBase.h"
 #include "InventoryManager.generated.h"
 
-/**
- * 
- */
-UCLASS()
-class GAMEDESIGNSTUDIO_API UInventoryManager : public UGameManagerBase
-{
-	GENERATED_BODY()
-	
-	virtual void Initialize(UGameManagerSubsystem* InstanceOwner) override;
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<FName, FPlayerInventoryItem> PlayerInventory;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<FName, FPlayerInventoryItem> AllItems;
-	
-	UFUNCTION(BlueprintCallable)
-	int AddToInventory(FName ItemName, int Amount);
-	
-	UFUNCTION(BlueprintCallable)
-	int RemoveFromInventory(FName ItemName, int Amount);
-
-	UFUNCTION(BlueprintCallable)
-	void SetMaxAmountForItem(FName ItemName, int MaxAmount);
-	
-	UFUNCTION(BlueprintCallable)
-	FPlayerInventoryItem GetItemDetails(FName ItemName);
-
-	UFUNCTION(BlueprintCallable)
-	int GetCurrentAmountForItem(FName ItemName);
-};
-
 UENUM(Blueprintable)
 enum class EInventoryItemType : uint8
 {
@@ -75,4 +42,34 @@ struct FPlayerInventoryItem
 		ItemDisplayName = ItemName;
 		ItemType = InvItemType;
 	}
+};
+
+UCLASS()
+class GAMEDESIGNSTUDIO_API UInventoryManager : public UGameManagerBase
+{
+	GENERATED_BODY()
+	
+	virtual void Initialize(UGameManagerSubsystem* InstanceOwner) override;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FName, FPlayerInventoryItem> PlayerInventory;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FName, FPlayerInventoryItem> AllItems;
+	
+	UFUNCTION(BlueprintCallable)
+	int AddToInventory(FName ItemName, int Amount);
+	
+	UFUNCTION(BlueprintCallable)
+	int RemoveFromInventory(FName ItemName, int Amount);
+
+	UFUNCTION(BlueprintCallable)
+	void SetMaxAmountForItem(FName ItemName, int MaxAmount);
+	
+	UFUNCTION(BlueprintCallable)
+	FPlayerInventoryItem GetItemDetails(FName ItemName);
+
+	UFUNCTION(BlueprintCallable)
+	int GetCurrentAmountForItem(FName ItemName);
 };

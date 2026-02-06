@@ -5,9 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "EnhancedInputComponent.h"
-#include "Data/PlayerStats.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Managers/PlayerStatManager.h"
 #include "PlayerCharacter.generated.h"
 
 

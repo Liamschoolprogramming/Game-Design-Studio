@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Data/PlayerStats.h"
 #include "Managers/InventoryManager.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "GameManagerSubsystem.generated.h"
