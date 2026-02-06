@@ -6,7 +6,6 @@
 #include "InventoryManager.h"
 #include "Macros.h"
 #include "Core/Subsystems/GameManagerSubsystem.h"
-#include "Data/PlayerStats.h"
 
 void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 {
