@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Managers/InventoryManager.h"
+#include "Managers/PlayerStatManager.h"
+#include "Managers/PuzzleRiverManager.h"
+#include "Managers/QuestManager.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "GameManagerSubsystem.generated.h"
 
