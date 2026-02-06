@@ -3,6 +3,13 @@
 
 #include "PlayerStatManager.h"
 
+void UPlayerStatManager::Initialize(UGameManagerSubsystem* InstanceOwner)
+{
+	Super::Initialize(InstanceOwner);
+	
+	PlayerStats = FPlayerStats();
+}
+
 FPlayerStats UPlayerStatManager::GetPlayerStats()
 {
 	return PlayerStats;
@@ -14,10 +21,12 @@ void UPlayerStatManager::BoostPlayerStat(EPlayerBoostableStat StatToBoost, doubl
 	{
 		case EPlayerBoostableStat::Health:
 			PlayerStats.HealthPoints += Amount;
+			break;
 		case EPlayerBoostableStat::Stamina:
 			PlayerStats.StaminaPoints += Amount;
+			break;
 		case EPlayerBoostableStat::Mind:
 			PlayerStats.MindPoints += Amount;
-		default:
+			break;
 	}
 }
