@@ -11,10 +11,15 @@
 UENUM(Blueprintable)
 enum class EPuzzleActorType : uint8
 {
-	PowerEmitter UMETA(DisplayName = "PowerEmitter"),
-	PowerReceiver UMETA(DisplayName = "PowerReceiver"),
-	Trigger UMETA(DisplayName = "Trigger"),
+	// Also called Triggers, e.g. Pressure Plants and PhotonPowerTriggers. Send red/green signals to Receivers.
+	SignalEmitter UMETA(DisplayName = "SignalEmitter"),
+	// Vine Doors and Turrets. Red/green signals change their behavior.
+	SignalReceiver UMETA(DisplayName = "SignalReceiver"),
+	// Light Sources and Movable Light Sources. 
+	PowerSource UMETA(DisplayName = "PowerSource"),
+	// Channels and Preservers/Inverters
 	Redirector UMETA(DisplayName = "Redirector"),
+	// Boulders, etc.
 	Basic UMETA(DisplayName = "Basic"),
 };
 
@@ -28,7 +33,6 @@ class GAMEDESIGNSTUDIO_API APuzzle : public AActor
 	
 	
 public:	
-	// Sets default values for this actor's properties
 	APuzzle();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite);
@@ -43,6 +47,12 @@ public:
 	// Weak pointers don't prevent another actor from being destroyed
 	TWeakObjectPtr<AActor> WorldSubsytem;
 	FPersistantActorValues ActorValues;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"))
+	APuzzle* LinkedEmitter;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"))
+	APuzzle* LinkedReceiver;
 	
 	//void SetActorID(FName Id) const;
 
