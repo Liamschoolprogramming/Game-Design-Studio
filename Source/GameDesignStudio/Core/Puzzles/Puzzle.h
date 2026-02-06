@@ -8,6 +8,16 @@
 #include "Core/Managers/GameManagerBase.h"
 #include "Puzzle.generated.h"
 
+UENUM(Blueprintable)
+enum class EPuzzleActorType : uint8
+{
+	PowerEmitter UMETA(DisplayName = "PowerEmitter"),
+	PowerReceiver UMETA(DisplayName = "PowerReceiver"),
+	Trigger UMETA(DisplayName = "Trigger"),
+	Redirector UMETA(DisplayName = "Redirector"),
+	Basic UMETA(DisplayName = "Basic"),
+};
+
 UCLASS(Abstract)
 class GAMEDESIGNSTUDIO_API APuzzle : public AActor
 {
@@ -23,6 +33,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite);
 	FName ActorId;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite);
+	EPuzzleActorType PuzzleActorType;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<UGameManagerBase> OwningManager;
