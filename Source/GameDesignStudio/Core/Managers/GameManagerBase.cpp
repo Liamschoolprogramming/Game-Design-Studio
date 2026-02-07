@@ -35,9 +35,12 @@ void UGameManagerBase::RegisterActor(const FName Id, const FPersistantActorValue
 
 void UGameManagerBase::Snapshot(const FName Id, const FPersistantActorValues& ActorValues)
 {
-	FPersistantActorValues* Current = PersistantActorValues.Find(Id);
+	//FPersistantActorValues* Current = PersistantActorValues.Find(Id);
 	
-	Current->ActorLocation = ActorValues.ActorLocation;
-	Current->VisualStates = ActorValues.VisualStates;
-	Current->StateId = ActorValues.StateId;
+	PersistantActorValues.Add(Id, ActorValues);
+	
+	//Current->ActorLocation = ActorValues.ActorLocation;
+	//Current->VisualStates = ActorValues.VisualStates;
+	//Current->StateId = ActorValues.StateId;
 }
+

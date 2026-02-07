@@ -3,6 +3,15 @@
 #include "CoreMinimal.h"
 #include "PersistantActorValues.generated.h"
 
+UENUM(BlueprintType)
+enum class EPuzzleState : uint8
+{
+	Start UMETA(DisplayName = "Start"),
+	Inactive UMETA(DisplayName = "Inactive"),
+	Active UMETA(DisplayName = "Active"),
+	Solved UMETA(DisplayName = "Solved"),
+	Failed UMETA(DisplayName = "Failed"),
+};
 
 USTRUCT()
 struct FPersistantActorValues
@@ -12,9 +21,13 @@ struct FPersistantActorValues
 	UPROPERTY()
 	FTransform ActorLocation;
 	
+	//UPROPERTY()
+	//FName CurrentState;
+	
 	UPROPERTY()
-	TSet<FName> VisualStates;
+	EPuzzleState PuzzleState;
 	
 	UPROPERTY()
 	FName StateId;
+	
 };

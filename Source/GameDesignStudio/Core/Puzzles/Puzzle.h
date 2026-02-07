@@ -13,12 +13,6 @@ class GAMEDESIGNSTUDIO_API APuzzle : public AActor
 {
 	GENERATED_BODY()
 	
-	/*
-	UFUNCTION(BlueprintCallable, Category = "Managers", meta = (DeterminesOutputType = "ManagerClass"))
-	UGameManagerBase* GetOwningManagerClass();
-	*/
-	
-	
 public:	
 	// Sets default values for this actor's properties
 	APuzzle();
@@ -26,8 +20,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite);
 	FName ActorId;
 	
-	UPROPERTY(EditAnywhere)
-	FName StateId;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
+	EPuzzleState PuzzleStatus = EPuzzleState::Start;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<UGameManagerBase> OwningManager;
@@ -36,11 +30,20 @@ public:
 	TWeakObjectPtr<AActor> WorldSubsytem;
 	FPersistantActorValues ActorValues;
 	
-	//void SetActorID(FName Id) const;
+	//UPROPERTY(EditAnywhere)
+	//FName StateId;
+	
+	UFUNCTION(BlueprintCallable, Category = "Puzzle Actors")
+	void SetState(EPuzzleState State);
+	
+	// Set as blueprint overrideable
+	//virtual void DoActionBasedOnState(EPuzzleStatus State);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	//void InitializeState();
 
 public:	
 	// Called every frame

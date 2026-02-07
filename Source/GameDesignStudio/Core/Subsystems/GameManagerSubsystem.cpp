@@ -73,7 +73,6 @@ void UGameManagerSubsystem::RegisterManager()
 	Managers.Add(T::StaticClass(), Manager);
 }
 
-
 template <typename T>
 T* UGameManagerSubsystem::GetManager()
 {
@@ -84,7 +83,6 @@ T* UGameManagerSubsystem::GetManager()
 	return nullptr;
 }
 
-
 UGameManagerBase* UGameManagerSubsystem::GetManagerByClass(TSubclassOf<UGameManagerBase> ManagerClass)
 {
 	UGameManagerBase* Manager = Managers.FindRef(ManagerClass);
@@ -92,9 +90,6 @@ UGameManagerBase* UGameManagerSubsystem::GetManagerByClass(TSubclassOf<UGameMana
 	return Manager;
 }
 
-//***********************************************************//
-// To be depreciated as we have a general method now for this
-//***********************************************************//
 UPuzzleRiverManager* UGameManagerSubsystem::GetPuzzleRiverManager() const
 {
 	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UPuzzleRiverManager::StaticClass()))
@@ -105,9 +100,6 @@ UPuzzleRiverManager* UGameManagerSubsystem::GetPuzzleRiverManager() const
 	return nullptr;
 }
 
-//***********************************************************//
-// To be depreciated as we have a general method now for this
-//***********************************************************//
 UInventoryManager* UGameManagerSubsystem::GetInventoryManager() const
 {
 	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UInventoryManager::StaticClass()))
@@ -175,6 +167,13 @@ void UGameManagerSubsystem::SnapshotActorValues(APuzzle* Actor)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Actor is NULL"));
 	}
+	
+	
+	// Include a state keyword to the struct that every method when it enters a state sets its FName State
+	// field to that state
+	
+	// Add enum state name to the struct
+	// Enum state name->ActorStats->State
 	
 	this->GetManager(Actor->OwningManager)->Snapshot(Actor->ActorId, Actor->ActorValues);
 }

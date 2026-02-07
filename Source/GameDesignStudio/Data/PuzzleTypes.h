@@ -24,11 +24,3 @@ struct FPuzzleId
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName Name;
 };
-
-enum class EPuzzleStatus : uint8
-{
-	Inactive,
-	Active,
-	Solved,
-	Failed,
-};

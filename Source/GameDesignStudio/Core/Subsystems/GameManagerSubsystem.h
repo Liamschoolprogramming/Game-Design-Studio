@@ -46,26 +46,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Managers", meta = (DefaultToSelf = "Actor"))
 	void SnapshotActorValues(APuzzle* Actor);
 	
-	/*
-	UFUNCTION(BlueprintCallable, Category = "Managers", meta = (DefaultToSelf = "TargetObject"))
-	void SnapshotActorValues(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, FPersistantActorValues& ActorValues);
-	*/
-	
-	//***********************************************************//
-	// To be depreciated as we have a general method now for this
-	//***********************************************************//
 	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UPuzzleRiverManager* GetPuzzleRiverManager() const;
 	
-	//***********************************************************//
-	// To be depreciated as we have a general method now for this
-	//***********************************************************//
 	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UInventoryManager* GetInventoryManager() const;
 	
-	//***********************************************************//
-	// To be depreciated as we have a general method now for this
-	//***********************************************************//
 	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UQuestManager* GetQuestManager() const;
 	

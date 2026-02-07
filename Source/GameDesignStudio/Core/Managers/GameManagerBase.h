@@ -24,6 +24,7 @@ class GAMEDESIGNSTUDIO_API UGameManagerBase : public UObject
 
 public:
 	
+	// These should be protected or private
 	UPROPERTY()
 	TObjectPtr<UGameManagerSubsystem> Owner;
 	
@@ -40,8 +41,6 @@ public:
 	virtual void Shutdown();
 	
 	virtual void PostInitialize();
-	
-	
 	
 	//UFUNCTION(BlueprintPure, Category = "Puzzle")
 	//bool IsPuzzleSolved(const FPuzzleId& Id) const;
