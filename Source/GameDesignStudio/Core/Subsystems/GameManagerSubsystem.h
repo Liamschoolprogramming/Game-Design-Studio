@@ -3,8 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Data/PlayerStats.h"
 #include "Managers/InventoryManager.h"
+#include "Managers/PlayerStatManager.h"
+#include "Managers/PuzzleRiverManager.h"
+#include "Managers/QuestManager.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "GameManagerSubsystem.generated.h"
 
@@ -47,10 +49,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UInventoryManager* GetInventoryManager() const;
 	
+	UFUNCTION(BlueprintCallable, Category = "Managers")
+	UPlayerStatManager* GetPlayerStatManager() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Managers")
+	UQuestManager* GetQuestManager() const;
+	
 	void RegisterActorToManager(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, const FPersistantActorValues& ActorValues);
-		
-	UPROPERTY()
-	FPlayerStats PlayerStats;
 	
 protected:
 	
