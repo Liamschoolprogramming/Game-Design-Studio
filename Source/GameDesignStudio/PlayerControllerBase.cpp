@@ -37,13 +37,25 @@ void APlayerControllerBase::StopJumping(const FInputActionValue& Value)
 	}
 }
 
+void APlayerControllerBase::UpdateMPC()
+{
+	
+	//Set player pawn position in the MPC
+	if (!GetPawn()) return;
+	if (!CameraMPC) return;
+	UMaterialParameterCollectionInstance* MPCInstance =
+		GetWorld()->GetParameterCollectionInstance(CameraMPC);
+	if (!MPCInstance) return;
+	MPCInstance->SetVectorParameterValue(FName("PlayerLocation"), GetPawn()->GetActorLocation());
+}
+
 void APlayerControllerBase::StartClick(const FInputActionValue& Value)
 {
 	//Do the move to here instead of blueprints
 	FHitResult Hit;
 	GetHitResultUnderCursor(ECC_Visibility,true, Hit);
 	
-	if (Hit.bBlockingHit && CameraReference->bLockCameraToCharacter == true)
+	if (Hit.bBlockingHit && CameraReference->bLockCameraToCharacter == true && !bIsMoving)
 	{
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Hit.Location);
 		if (ParticleSystem)
@@ -56,6 +68,11 @@ void APlayerControllerBase::StartClick(const FInputActionValue& Value)
 
 void APlayerControllerBase::StopClick(const FInputActionValue& Value)
 {
+}
+
+void APlayerControllerBase::StopMove(const FInputActionValue& Value)
+{
+	bIsMoving = false;
 }
 
 void APlayerControllerBase::LookGate(const FInputActionValue& Value)
@@ -147,8 +164,21 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 			APawn* OurPawn = GetPawn();
 			if ((OurPawn && bUsingGamepad) || (OurPawn && bCanUseWASDToMovePawn))
 			{
+				
 				FVector2D ActionValue = Value.Get<FVector2D>();
+				
+				
 				FVector pos = OurPawn->GetActorLocation();
+				
+				
+				
+				
+				//Stop any move to commands as we would double in speed
+				StopMovement();
+				bIsMoving = true;
+				
+				
+				
 				FVector f = CameraReference->ForwardVector();
 				FVector r = CameraReference->RightVector();
 				f = f * ActionValue.Y;
@@ -243,13 +273,9 @@ void APlayerControllerBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	//Set player pawn position in the MPC
-	if (!GetPawn()) return;
-	if (!CameraMPC) return;
-	UMaterialParameterCollectionInstance* MPCInstance =
-		GetWorld()->GetParameterCollectionInstance(CameraMPC);
-	if (!MPCInstance) return;
-	MPCInstance->SetVectorParameterValue(FName("PlayerLocation"), GetPawn()->GetActorLocation());
+	
+	
+	UpdateMPC();
 }
 
 void APlayerControllerBase::CheckControlDevice(FPlatformUserId PlatformUserId, FInputDeviceId InputDeviceId)
@@ -295,6 +321,7 @@ void APlayerControllerBase::SetupInputComponent()
 		if (MoveAction)
 		{
 			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerControllerBase::Move);
+			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &APlayerControllerBase::StopMove);
 		}
 		
 		if (LookAction)

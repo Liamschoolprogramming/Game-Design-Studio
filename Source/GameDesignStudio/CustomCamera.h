@@ -58,10 +58,10 @@ public:
 	void MoveCamera(FVector2D ActionValue);
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
-	void RotateCamera(FVector2D ActionValue);
+	void RotateCamera(FVector2D ActionValue) const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Movement")
-	float GetCameraSpeedFromDesiredDirection(FVector2D InputValue);
+	float GetCameraSpeedFromDesiredDirection(FVector2D InputValue) const;
 	
 	float MaxDistanceFromCharacter = 5000.0f;
 	
@@ -87,11 +87,17 @@ public:
 	void AllowCameraRotation(bool bValue);
 	bool bAllowRotation = false;
 	bool bLockCameraToCharacter = true;
-
-	FVector ForwardVector();
-	FVector RightVector();
 	
-	void SetCameraTransformAlongSpline(float percent);
+	FRotator BasePawnRotation;
+
+	FVector ForwardVector() const;
+	FVector RightVector() const;
+	
+	
+	UFUNCTION(BlueprintInternalUseOnly)
+	void SetupCameraLag() const;
+	
+	void SetCameraTransformAlongSpline(float Percent);
 	
 protected:
 	// Called when the game starts or when spawned

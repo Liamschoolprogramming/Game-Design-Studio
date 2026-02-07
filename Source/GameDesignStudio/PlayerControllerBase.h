@@ -46,6 +46,8 @@ public:
 	//IMC
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
+	
+	bool bIsMoving = false;
 
 	//Zoom action
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
@@ -95,7 +97,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effects")
 	UNiagaraSystem* ParticleSystem;
 	
-	
+	UFUNCTION(BlueprintCallable, Category="Effects")
+	void UpdateMPC();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
 	float PawnMovementSpeed = 500;
@@ -117,6 +120,8 @@ public:
 	
 	void StartClick(const FInputActionValue& Value);
 	void StopClick(const FInputActionValue& Value);
+	
+	void StopMove(const FInputActionValue& Value);
 	
 	void LookGate(const FInputActionValue& Value);
 	void LookGateStart();
