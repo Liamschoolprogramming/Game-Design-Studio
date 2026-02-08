@@ -6,6 +6,7 @@
 #include "DelayAction.h"
 #include "Macros.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -78,36 +79,37 @@ void ACustomCamera::ToggleCameraMode()
 
 float ACustomCamera::SetCameraHeight()
 {
-	APawn* Pawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	ACharacter* Character = GetWorld()->GetFirstPlayerController()->GetCharacter();
 	
-	if (Pawn)
+	if (Character)
 	{
-		float PawnDesiredHeight = Pawn->GetActorLocation().Z;
-		FVector Origin;
-		FVector BoxExtent;
-		Pawn->GetActorBounds(true,Origin, BoxExtent);
-		float HalfHeight = BoxExtent.Z;
+		float PawnDesiredHeight = Character->GetActorLocation().Z;
+		
+		float HalfHeight = Character->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 		FVector start = FVector(GetActorLocation().X, GetActorLocation().Y, PawnDesiredHeight + 2000);
 		FVector end = FVector(GetActorLocation().X, GetActorLocation().Y, PawnDesiredHeight - HalfHeight);
 		FHitResult HitResult;
 		
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(this);            // Ignore self
-		Params.AddIgnoredActor(Pawn);
+		Params.AddIgnoredActor(Character);
+		
 		Params.bTraceComplex = true;             // Use complex collision if needed
 		Params.bReturnPhysicalMaterial = false;
 		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, start, end, ECC_Camera,Params );
 		if (bHit)
 		{
 			CameraHeight = HalfHeight + HitResult.Location.Z;
+			Debug::PrintToScreen(HitResult.Location.Z);
 		}
 		else
 		{
 			CameraHeight = PawnDesiredHeight;
 		}
-		
+		return CameraHeight;
 	}
-	return CameraHeight;
+	return 0.0f;
+	
 	
 }
 
@@ -132,7 +134,10 @@ void ACustomCamera::RotateCamera(FVector2D ActionValue) const
 	{
 		
 		FRotator rot = PerspectiveZoomSpline->GetComponentRotation();
-		rot.Yaw = rot.Yaw + (ActionValue.X * CameraRotationSpeed);
+		
+		float deltaYaw = ActionValue.X * CameraRotationSpeed * GetWorld()->GetDeltaSeconds();
+		deltaYaw = FMath::Clamp(deltaYaw, -MaxYawSpeed, MaxYawSpeed);
+		rot.Yaw = rot.Yaw + deltaYaw;
 		
 		PerspectiveZoomSpline->SetWorldRotation(rot);
 	}
@@ -203,6 +208,8 @@ void ACustomCamera::SetupCameraLag() const
 	//Wait to set position the first time before enabling the smoothing
 	CameraBoom->bEnableCameraLag = true;
 	CameraBoom->bEnableCameraRotationLag = true;
+	CameraBoom->CameraLagSpeed = 5.0f;
+	CameraBoom->CameraRotationLagSpeed = 5.0f;
 }
 
 void ACustomCamera::SetCameraTransformAlongSpline(float Percent)
@@ -210,7 +217,7 @@ void ACustomCamera::SetCameraTransformAlongSpline(float Percent)
 	ZoomPercent = Percent;
 
 	bool bShouldToggle = false;
-
+	FTimerHandle TimerHandle;
 	if (!bInTopDownMode && ZoomPercent >= 1)
 	{
 		ZoomPercent = ToPerspectiveThreshold;     // start at beginning of new spline but give a bit so we dont switch back instantly
@@ -219,6 +226,7 @@ void ACustomCamera::SetCameraTransformAlongSpline(float Percent)
 	else if (!bInTopDownMode && ZoomPercent <= ZoomMinPercent)
 	{
 		ZoomPercent = ZoomMinPercent;
+		
 	}
 	else if (bInTopDownMode && ZoomPercent <= 0)
 	{
@@ -229,6 +237,15 @@ void ACustomCamera::SetCameraTransformAlongSpline(float Percent)
 	if (bShouldToggle)
 	{
 		bInTopDownMode = !bInTopDownMode;
+		CameraBoom->CameraRotationLagSpeed = 1.5f;
+		
+		if (TimerHandle.IsValid())
+		{
+			TimerHandle.Invalidate();
+		}
+		FTimerDelegate TimerDelegate;
+		TimerDelegate.BindUFunction(this, FName("SetupCameraLag"));
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, .7f, false);
 	}
 
 	
@@ -252,6 +269,9 @@ void ACustomCamera::SetCameraTransformAlongSpline(float Percent)
 		FVector pos = SplineComponent->GetLocationAtTime(Percent,ESplineCoordinateSpace::World);
 		CameraBoom->SetWorldLocation(pos);
 	}
+	
+	
+	
 	
 	
 	
@@ -302,7 +322,7 @@ void ACustomCamera::BeginPlay()
 			RootComponent->SetWorldLocation(PlayerCharacter->GetActorLocation());
 			RootComponent->SetWorldRotation(PlayerCharacter->GetActorRotation());
 			BasePawnRotation = PlayerCharacter->GetActorRotation();
-			Debug::PrintToScreen("We set the value");
+			
 			SetCameraTransformAlongSpline(ZoomPercent);
 		}
 		
@@ -333,6 +353,7 @@ void ACustomCamera::Tick(float DeltaTime)
 	{
 		SetCameraTransformAlongSpline(ZoomPercent);
 		float h = SetCameraHeight();
+		
 		RootComponent->SetWorldLocation(FVector(GetActorLocation().X,GetActorLocation().Y, h));
 	}
 

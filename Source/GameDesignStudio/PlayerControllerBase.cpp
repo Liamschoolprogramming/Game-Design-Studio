@@ -11,8 +11,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
+#include "PlayerControllerBase.h"
+
 
 DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
+
 
 
 void APlayerControllerBase::Jump(const FInputActionValue& Value)
@@ -48,6 +51,54 @@ void APlayerControllerBase::UpdateMPC()
 	if (!MPCInstance) return;
 	MPCInstance->SetVectorParameterValue(FName("PlayerLocation"), GetPawn()->GetActorLocation());
 }
+//This adds a possessable entity to our array only if the Entity given is not a null pointer or if it is already in it
+void APlayerControllerBase::AddPossessableEntity(APossessableEntity* Entity)
+{
+	if (ClosestPossessableEntities.Find(Entity) != INDEX_NONE) return;
+	if (Entity)
+	{
+		ClosestPossessableEntities.Add(Entity);
+	}
+}
+//This removes a possessable entity from our array only if the Entity given is not a null pointer. 
+void APlayerControllerBase::RemovePossessableEntity(APossessableEntity* Entity)
+{
+	
+	
+	if (Entity == GetPawn() && PlayerReference)
+	{
+		/*This bit was for switching back to player however we probably want to instead do nothing
+		 *Entity->SetPossessed(false);
+		Possess(PlayerReference);
+		ClosestPossessableEntities.Remove(Entity);
+		IndexForPossessables = -1;*/
+		
+	}
+	else if (Entity)
+	{
+		ClosestPossessableEntities.Remove(Entity);
+	}
+}
+
+APossessableEntity* APlayerControllerBase::FindPossessableEntityAtIndex(const int IndexToSearch)
+{
+	if (!ClosestPossessableEntities.IsEmpty())
+	{
+		return nullptr;
+	}
+	if (ClosestPossessableEntities.IsValidIndex(IndexToSearch))
+	{
+		if (ClosestPossessableEntities[IndexToSearch] != nullptr)
+		{
+			return ClosestPossessableEntities[IndexToSearch];
+		}
+		else
+		{
+			ClosestPossessableEntities.RemoveAt(IndexToSearch);
+		}
+	}
+	return nullptr;
+}
 
 void APlayerControllerBase::StartClick(const FInputActionValue& Value)
 {
@@ -73,6 +124,33 @@ void APlayerControllerBase::StopClick(const FInputActionValue& Value)
 void APlayerControllerBase::StopMove(const FInputActionValue& Value)
 {
 	bIsMoving = false;
+}
+
+
+void APlayerControllerBase::CyclePossessionUp()
+{
+	if (IndexForPossessables + 1 >= ClosestPossessableEntities.Num())
+	{
+		IndexForPossessables = -1;
+	}
+	else
+	{
+		IndexForPossessables++;
+	}
+	CyclePossesion();
+}
+
+void APlayerControllerBase::CyclePossessionDown()
+{
+	if (IndexForPossessables - 1 < -1)
+	{
+		IndexForPossessables = ClosestPossessableEntities.Num()-1;
+	}
+	else
+	{
+		IndexForPossessables--;
+	}
+	CyclePossesion();
 }
 
 void APlayerControllerBase::LookGate(const FInputActionValue& Value)
@@ -124,7 +202,7 @@ void APlayerControllerBase::Zoom(const FInputActionValue& Value)
 	if (CameraReference)
 	{
 		CameraReference->ZoomCamera(Value.Get<float>());
-		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, "ZoomCamera");
+		
 	}
 }
 
@@ -136,9 +214,19 @@ void APlayerControllerBase::Look(const FInputActionValue& Value)
 		{
 			
 			CameraReference->AllowCameraRotation(true);
+			FVector2D ActionValue = Value.Get<FVector2D>();
 			
-			CameraReference->ZoomCamera(Value.Get<FVector2D>().Y);
-			CameraReference->RotateCamera(Value.Get<FVector2D>());
+			//just so we only do one or the other and not both
+			if (FMath::Abs(ActionValue.X)  > FMath::Abs(ActionValue.Y))
+			{
+				CameraReference->RotateCamera(Value.Get<FVector2D>());
+			}
+			else if (FMath::Abs(ActionValue.X) < FMath::Abs(ActionValue.Y))
+			{
+				//compensation for direction and speed
+				CameraReference->ZoomCamera(-Value.Get<FVector2D>().Y * ControllerSensitivity);
+				
+			}
 			
 		}else
 		{
@@ -205,6 +293,57 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 	}
 }
 
+void APlayerControllerBase::CyclePossesion()
+{
+	if (ClosestPossessableEntities.IsEmpty()) return;
+	
+	Debug::PrintToScreen(IndexForPossessables);
+	
+	if (IndexForPossessables == -1)
+	{
+		
+		
+		APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
+		if (PossessableEntity && PlayerReference)
+		{
+			PossessableEntity->SetPossessed(false);
+			Possess(PlayerReference);
+		}
+		
+		
+		
+	}
+	else if (IndexForPossessables >= 0)
+	{
+		if (!ClosestPossessableEntities.IsValidIndex(IndexForPossessables)) return;
+		if (GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()) &&
+	GetPawn()->GetClass()->GetSuperClass() == APossessableEntity::StaticClass())
+		{
+			APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
+			if (PossessableEntity)
+			{
+				PossessableEntity->SetPossessed(false);
+			}
+			
+			if (ClosestPossessableEntities[IndexForPossessables] != PossessableEntity)
+			{
+				
+				ClosestPossessableEntities[IndexForPossessables]->SetPossessed(true);
+				Possess(ClosestPossessableEntities[IndexForPossessables]);
+			}
+		}
+		else
+		{
+			if (ClosestPossessableEntities[IndexForPossessables] != nullptr)
+			{
+				ClosestPossessableEntities[IndexForPossessables]->SetPossessed(true);
+				Possess(ClosestPossessableEntities[IndexForPossessables]);
+			}
+		}
+		
+	}
+}
+
 void APlayerControllerBase::DoMove(float Right, float Forward)
 {
 }
@@ -236,11 +375,17 @@ void APlayerControllerBase::BeginPlay()
 		FVector _SpawnLocation = GetPawn()->GetActorLocation();
 		
 		FRotator _SpawnRotation = GetPawn()->GetActorRotation();
+		
+		PlayerReference = Cast<APlayerCharacter>(GetCharacter());
+		
+		
 		APlayerCameraManager* pcm = PlayerCameraManager.Get();
 		
 		
 		CameraReference = GetWorld()->SpawnActor<ACustomCamera>(ACustomCamera::StaticClass(), _SpawnLocation, _SpawnRotation, SpawnParams);
 	
+		
+		
 		SetViewTarget(CameraReference);
 		if (pcm && CameraReference)
 		{
@@ -266,6 +411,7 @@ void APlayerControllerBase::BeginPlay()
 	//setup cursor 
 	bShowMouseCursor = true;
 	bEnableClickEvents = true;
+	
 	
 }
 
@@ -357,6 +503,15 @@ void APlayerControllerBase::SetupInputComponent()
 		if (SelectAction)
 		{
 			EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Triggered, this, &APlayerControllerBase::Select);
+		}
+		
+		if (CyclePossessionUpAction)
+		{
+			EnhancedInputComponent->BindAction(CyclePossessionUpAction, ETriggerEvent::Completed, this, &APlayerControllerBase::CyclePossessionUp);
+		}
+		if (CyclePossessionDownAction)
+		{
+			EnhancedInputComponent->BindAction(CyclePossessionDownAction, ETriggerEvent::Completed, this, &APlayerControllerBase::CyclePossessionDown);
 		}
 		
 	}

@@ -35,8 +35,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zoom")
 	bool bInTopDownMode;
 	
-	const float ToTopDownThreshold = 0.9f;
-	const float ToPerspectiveThreshold = 0.1f;
+	const float ToTopDownThreshold = 0.8f;
+	const float ToPerspectiveThreshold = 0.2f;
 	
 	
 
@@ -47,7 +47,11 @@ public:
 	float DefaultCameraMovementSpeed = 800;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
-	float CameraRotationSpeed = 10;
+	float CameraRotationSpeed = 100;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
+	float MaxYawSpeed = 100;
+	
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
 	float CameraHeight;
@@ -63,7 +67,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Movement")
 	float GetCameraSpeedFromDesiredDirection(FVector2D InputValue) const;
 	
-	float MaxDistanceFromCharacter = 5000.0f;
+	float MaxDistanceFromCharacter = 2600.0f;
 	
 	float SlowDownRange = 1000.0f;
 
@@ -78,10 +82,10 @@ public:
 
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zoom")
-	float ZoomMinPercent = 0.1f;
+	float ZoomMinPercent = 0.25f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zoom")
-	float ZoomPercent = ZoomMinPercent;
+	float ZoomPercent = ZoomMinPercent * 1.2;
 	float pitchMax;
 	float pitchMin;
 	void AllowCameraRotation(bool bValue);

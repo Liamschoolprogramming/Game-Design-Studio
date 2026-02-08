@@ -4,11 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "PlayerCharacter.h"
-#include "PlayerControllerBase.h"
+
+
+
 #include "GameFramework/Character.h"
 #include "PossessableEntity.generated.h"
 
 DECLARE_DELEGATE(FOnPossessedDelegate);
+
+class APlayerControllerBase;
 
 UCLASS()
 class GAMEDESIGNSTUDIO_API APossessableEntity : public APlayerCharacter
@@ -25,6 +29,9 @@ public:
 	
 	UPROPERTY()
 	APlayerCharacter* PlayerCharacter;
+	
+	UFUNCTION()
+	void SetPossessed(bool NewPossessed);
 	
 protected:
 	virtual void BeginPlay() override;
