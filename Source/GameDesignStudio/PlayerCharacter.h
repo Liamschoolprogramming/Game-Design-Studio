@@ -7,9 +7,15 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+
+#include "Components/SphereComponent.h"
+#include "Core/Subsystems/GameManagerSubsystem.h"
+#include "Engine/TriggerSphere.h"
 #include "Managers/PlayerStatManager.h"
 #include "PlayerCharacter.generated.h"
 
+
+class APlayerControllerBase;
 
 UCLASS()
 class GAMEDESIGNSTUDIO_API APlayerCharacter : public ACharacter
@@ -23,6 +29,8 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	EPlayerCharacterType PlayerCharacterType = EPlayerCharacterType::Default;
 
+	
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -43,9 +51,30 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
 	
+	UFUNCTION()
+	void OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComp, 
+							  AActor* OtherActor, 
+							  UPrimitiveComponent* OtherComp, 
+							  int32 OtherBodyIndex, 
+							  bool bFromSweep, 
+							  const FHitResult& SweepResult);
+	
+	UFUNCTION()
+	void OnSphereOverlapEnd(UPrimitiveComponent* OverlappedComp, 
+							  AActor* OtherActor, 
+							  UPrimitiveComponent* OtherComp, 
+							  int32 OtherBodyIndex);
+	
+	USphereComponent* TriggerSphere;
+	
+	UFUNCTION()
+	void SetSphereToPossessionRange();
 	
 	
-
+	
+	APlayerControllerBase* PlayerController;
+	
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Prototype Variables")
 	bool hasItem = false;
 	

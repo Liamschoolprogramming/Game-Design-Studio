@@ -2,13 +2,18 @@
 
 
 #include "PlayerCharacter.h"
+
+#include "Macros.h"
+#include "PossessableEntity.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "Kismet/GameplayStatics.h"
-
+#include  "PlayerControllerBase.h"
 
 
 // Sets default values
@@ -23,7 +28,7 @@ APlayerCharacter::APlayerCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 	
-	
+	GetCapsuleComponent()->ComponentTags.Add("PlayerHitBox");
 	
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -33,16 +38,20 @@ APlayerCharacter::APlayerCharacter()
 	
 	
 	
+	
 }
+
+
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	if (const APlayerController* PC = Cast<APlayerController>(GetController()))
+	PlayerController =  Cast<APlayerControllerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if (PlayerController )
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
-			PC->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+			PlayerController->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
 		{
 			if (DefaultMappingContext)
 			{
@@ -51,6 +60,79 @@ void APlayerCharacter::BeginPlay()
 		}
 	}
 	
+	//only spawn a trigger sphere for the actual player
+	if (GetClass()->IsChildOf(APlayerCharacter::StaticClass()) &&
+	GetClass()->GetSuperClass() == APlayerCharacter::StaticClass())
+	{
+		TriggerSphere = NewObject<USphereComponent>(this,FName("TriggerSphere"));
+		
+		TriggerSphere->AttachToComponent(RootComponent,FAttachmentTransformRules::KeepRelativeTransform);
+		TriggerSphere->SetupAttachment(RootComponent);
+		TriggerSphere->SetGenerateOverlapEvents(true);
+		
+		TriggerSphere->RegisterComponent();
+		
+		TriggerSphere->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnSphereOverlapBegin);
+		TriggerSphere->OnComponentEndOverlap.AddDynamic(this, &APlayerCharacter::OnSphereOverlapEnd);
+	}
+	
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindUFunction(this, FName("SetSphereToPossessionRange"));
+	GetWorld()->GetTimerManager().SetTimerForNextTick(TimerDelegate);
+	
+
+	
+}
+
+void APlayerCharacter::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor && OtherActor != this && OtherComp)
+	{
+		if (OtherActor->GetClass()->IsChildOf(APossessableEntity::StaticClass()))
+		{
+			APossessableEntity* PossessableEntity = Cast<APossessableEntity>(OtherActor);
+			if (PlayerController && PossessableEntity)
+			{
+				Debug::PrintToScreen(PossessableEntity->GetName(), 10.0f);
+				PlayerController->AddPossessableEntity(PossessableEntity);
+			}
+			
+		}
+	}
+}
+
+void APlayerCharacter::OnSphereOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor && OtherActor != this && OtherComp)
+	{
+		APossessableEntity* PossessableEntity = Cast<APossessableEntity>(OtherActor);
+		
+		if (PlayerController && PossessableEntity)
+		{
+			Debug::PrintToScreen(PossessableEntity->GetName(), 10.0f, FColor::Red);
+			PlayerController->RemovePossessableEntity(PossessableEntity);
+		}
+	}
+}
+
+
+void APlayerCharacter::SetSphereToPossessionRange()
+{
+	if (!TriggerSphere) return;
+	
+	UGameInstance* GI = GetGameInstance();
+	if (!GI) return;
+
+	UGameManagerSubsystem* GMSub = GI->GetSubsystem<UGameManagerSubsystem>();
+	if (!GMSub) return;
+
+	UPlayerStatManager* PlayerStatManager = GMSub->GetPlayerStatManager();
+	if (!PlayerStatManager) return;
+
+	TriggerSphere->SetSphereRadius(PlayerStatManager->GetPlayerStats().PossessRange);
+
 	
 }
 

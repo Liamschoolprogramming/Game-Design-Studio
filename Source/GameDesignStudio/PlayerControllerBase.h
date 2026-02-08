@@ -4,13 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "CustomCamera.h"
-#include "PlayerCharacter.h"
+
 #include "GameFramework/PlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "PossessableEntity.h"
 #include "PlayerControllerBase.generated.h"
 
+
+class APlayerCharacter;
 /**
  * 
  */
@@ -30,10 +33,19 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category="Camera")
 	ACustomCamera* CameraReference;
 	
+	APlayerCharacter* PlayerReference;
+	
+	void CyclePossesion();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
+	float ControllerSensitivity = 0.2f;
+	
 	/** Handles move inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoMove(float Right, float Forward);
 
+	
+	
 	/** Handles look inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoLook(float Yaw, float Pitch);
@@ -46,6 +58,8 @@ public:
 	//IMC
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
+	
+	bool bIsMoving = false;
 
 	//Zoom action
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
@@ -79,6 +93,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	UInputAction* SelectAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* CyclePossessionUpAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* CyclePossessionDownAction;
+	
 	UFUNCTION(BlueprintCallable, Category="Input")
 	void CheckControlDevice(FPlatformUserId PlatformUserId, FInputDeviceId InputDeviceId);
 
@@ -95,7 +115,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effects")
 	UNiagaraSystem* ParticleSystem;
 	
-	
+	UFUNCTION(BlueprintCallable, Category="Effects")
+	void UpdateMPC();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
 	float PawnMovementSpeed = 500;
@@ -106,6 +127,22 @@ public:
 	FRotator PawnDesiredRotation;
 	bool bPawnHasMovementInput = false;
 	
+	TArray<APossessableEntity*> ClosestPossessableEntities;
+	
+	
+	//-1 will be the index for the player character
+	int IndexForPossessables = -1;
+	
+	UFUNCTION(BlueprintCallable, Category="Possession")
+	void AddPossessableEntity(APossessableEntity* Entity);
+	
+	UFUNCTION(BlueprintCallable, Category="Possession")
+	void RemovePossessableEntity(APossessableEntity* Entity);
+	
+	UFUNCTION(BlueprintCallable, Category="Possession")
+	APossessableEntity* FindPossessableEntityAtIndex(const int IndexToSearch);
+	
+	
 	//Essentially a toggle for if we want to be able to move the pawn without always point and click
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
 	bool bCanUseWASDToMovePawn = true;
@@ -115,8 +152,15 @@ public:
 	UMaterialParameterCollection* CameraMPC;
 	
 	
+	
+	
 	void StartClick(const FInputActionValue& Value);
 	void StopClick(const FInputActionValue& Value);
+	
+	void StopMove(const FInputActionValue& Value);
+	
+	void CyclePossessionUp();
+	void CyclePossessionDown();
 	
 	void LookGate(const FInputActionValue& Value);
 	void LookGateStart();
