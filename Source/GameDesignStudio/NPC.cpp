@@ -16,6 +16,6 @@ ANPC::ANPC()
 	}
 	
 	GetCapsuleComponent()->ComponentTags.Empty();
-	
+	GetCapsuleComponent()->ComponentTags.Add("HitBox");
 	
 }
