@@ -25,8 +25,11 @@ public:
 	UPROPERTY()
 	APlayerCharacter* CarryingCharacter;
 	
-protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bBeingCarried = false;
+	
+protected:
+	
 	FVector Offset = FVector(200,200,0);
 	
 };
