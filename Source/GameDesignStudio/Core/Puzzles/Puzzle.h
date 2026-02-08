@@ -23,6 +23,14 @@ enum class EPuzzleActorType : uint8
 	Basic UMETA(DisplayName = "Basic"),
 };
 
+UENUM(Blueprintable)
+enum class EPuzzleElementState : uint8
+{
+	Default UMETA(DisplayName = "Default"),
+	Preserved UMETA(DisplayName = "Preserved"),
+	Inverted UMETA(DisplayName = "Inverted"),
+};
+
 UCLASS(Abstract)
 class GAMEDESIGNSTUDIO_API APuzzle : public AActor
 {
@@ -53,6 +61,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"))
 	APuzzle* LinkedReceiver;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite);
+	EPuzzleElementState PuzzleElementState;
 	
 	//void SetActorID(FName Id) const;
 
