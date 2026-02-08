@@ -29,6 +29,15 @@ public:
 	
 	// Actor needs to call this method
 	void RegisterPuzzleActor(APuzzle* Actor);
+	
+	
+	
+	// A helper method to search through the list of actors in the WorldSubsystem
+	// and return a map of them that is a local variable
+	
+	// for (declaration : range)
+	// declaration->action()
+	void GetActorsOfManagerType(TSubclassOf<UGameManagerBase> Manager);
 
 private:
 	

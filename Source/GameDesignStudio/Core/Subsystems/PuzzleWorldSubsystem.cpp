@@ -36,6 +36,17 @@ void UPuzzleWorldSubsystem::RegisterPuzzleActor(APuzzle* Actor)
 	}
 }
 
+
+void UPuzzleWorldSubsystem::GetActorsOfManagerType(TSubclassOf<UGameManagerBase> Manager)
+{
+	TMap<TSubclassOf<UGameManagerBase>, APuzzle> Actors;
+	
+	for (auto& Actor : RuntimeActors)
+	{
+		
+	}
+}
+
 void UPuzzleWorldSubsystem::PostInitialize()
 {
 	Super::PostInitialize();
