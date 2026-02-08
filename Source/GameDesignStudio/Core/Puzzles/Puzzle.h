@@ -23,6 +23,13 @@ enum class EPuzzleActorType : uint8
 	Basic UMETA(DisplayName = "Basic"),
 };
 
+/*
+UENUM(Blueprintable)
+enum class EPuzzleActorSignalState : uint8 {
+	Active UMETA(DisplayName = "Green"),
+	Red UMETA(DisplayName = "Red"),
+};*/
+
 UCLASS(Abstract)
 class GAMEDESIGNSTUDIO_API APuzzle : public AActor
 {
@@ -31,6 +38,7 @@ class GAMEDESIGNSTUDIO_API APuzzle : public AActor
 	UFUNCTION(BlueprintCallable, Category = "Managers", meta = (DeterminesOutputType = "ManagerClass"))
 	UGameManagerBase* GetOwningManagerClass(TSubclassOf<UGameManagerBase> ManagerClass);
 	
+
 	
 public:	
 	APuzzle();
@@ -49,19 +57,14 @@ public:
 	FPersistantActorValues ActorValues;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"))
-	APuzzle* LinkedEmitter;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"))
 	APuzzle* LinkedReceiver;
 	
 	//void SetActorID(FName Id) const;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 };
