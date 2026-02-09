@@ -24,11 +24,16 @@ class GAMEDESIGNSTUDIO_API UGameManagerBase : public UObject
 
 public:
 	
+	// These should be protected or private
 	UPROPERTY()
 	TObjectPtr<UGameManagerSubsystem> Owner;
 	
+	//TMap<FPuzzleId, FPersistantPuzzleState> PuzzleStates;
+	
 	// Registers actor
 	void RegisterActor(const FName Id, const FPersistantActorValues& ActorValues);
+	
+	void Snapshot(const FName Id, const FPersistantActorValues& ActorValues);
 	
 	// Sets the owning subsystem
 	virtual void Initialize(UGameManagerSubsystem* InstanceOwner);
@@ -36,8 +41,6 @@ public:
 	virtual void Shutdown();
 	
 	virtual void PostInitialize();
-	
-	
 	
 	//UFUNCTION(BlueprintPure, Category = "Puzzle")
 	//bool IsPuzzleSolved(const FPuzzleId& Id) const;
