@@ -23,12 +23,6 @@ enum class EPuzzleActorType : uint8
 	Basic UMETA(DisplayName = "Basic"),
 };
 
-/*
-UENUM(Blueprintable)
-enum class EPuzzleActorSignalState : uint8 {
-	Active UMETA(DisplayName = "Green"),
-	Red UMETA(DisplayName = "Red"),
-};*/
 
 UENUM(Blueprintable)
 enum class EPuzzleElementState : uint8
