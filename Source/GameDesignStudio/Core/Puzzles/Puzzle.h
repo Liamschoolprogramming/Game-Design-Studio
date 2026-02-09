@@ -24,7 +24,6 @@ enum class EPuzzleActorType : uint8
 	Basic UMETA(DisplayName = "Basic"),
 };
 
-
 UENUM(Blueprintable)
 enum class EPuzzleElementState : uint8
 {
@@ -33,16 +32,10 @@ enum class EPuzzleElementState : uint8
 	Inverted UMETA(DisplayName = "Inverted"),
 };
 
-
 UCLASS(Abstract)
 class GAMEDESIGNSTUDIO_API APuzzle : public AActor, public IPuzzleActorInterface
 {
 	GENERATED_BODY()
-	
-	UFUNCTION(BlueprintCallable, Category = "Managers", meta = (DeterminesOutputType = "ManagerClass"))
-	UGameManagerBase* GetOwningManagerClass(TSubclassOf<UGameManagerBase> ManagerClass);
-	
-
 	
 public:	
 	APuzzle();
@@ -84,11 +77,13 @@ public:
 	//void SetActorID(FName Id) const;
 
 protected:
+	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
 	//void InitializeState();
 
 public:	
+	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 };

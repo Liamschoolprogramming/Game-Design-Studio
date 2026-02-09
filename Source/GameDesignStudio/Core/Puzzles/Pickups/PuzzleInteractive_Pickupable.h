@@ -28,8 +28,13 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bBeingCarried = false;
 	
-protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsPushable = false;
 	
+	UPROPERTY(BlueprintReadOnly)
+	FVector PushDirection;
+	
+protected:
 	FVector Offset = FVector(200,200,0);
 	
 };

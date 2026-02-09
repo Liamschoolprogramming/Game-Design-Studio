@@ -1,6 +1,8 @@
 #include "PuzzleInteractive_Pickupable.h"
 #include "EditorCategoryUtils.h"
 #include "VectorTypes.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 APuzzleInteractive_Pickupable::APuzzleInteractive_Pickupable()
 {
@@ -9,6 +11,14 @@ APuzzleInteractive_Pickupable::APuzzleInteractive_Pickupable()
 
 void APuzzleInteractive_Pickupable::Tick(float DeltaTime)
 {
+	if (bIsPushable)
+	{
+		if (bBeingCarried && CarryingCharacter != nullptr)
+		{
+			
+		}
+		return;
+	}
 	
 	if (bBeingCarried && CarryingCharacter != nullptr)
 	{
@@ -40,6 +50,19 @@ void APuzzleInteractive_Pickupable::Interact(APlayerCharacter* PlayerCharacter)
 				CarryingCharacter = PlayerCharacter;
 				bBeingCarried = true;
 			}
+			
+			if (bIsPushable)
+			{
+				FVector ForwardDirection = CarryingCharacter->GetActorForwardVector();
+				FVector NormalizedPushDirection (
+					UKismetMathLibrary::Round(ForwardDirection.X), 
+					UKismetMathLibrary::Round(ForwardDirection.Y), 
+					UKismetMathLibrary::Round(ForwardDirection.Z));
+		
+				CarryingCharacter->GetCharacterMovement()->DisableMovement();
+				CarryingCharacter->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+				PushDirection = NormalizedPushDirection;
+			}
 		}
 	}
 }
@@ -48,4 +71,8 @@ void APuzzleInteractive_Pickupable::Drop()
 {
 	bBeingCarried = false;
 	CarryingCharacter = nullptr;
+	if (bIsPushable)
+	{
+		CarryingCharacter->GetCharacterMovement()->MovementMode = EMovementMode::MOVE_Walking;
+	}
 }
