@@ -31,6 +31,22 @@ concept HasToString = requires(T a)
 			PrintToScreen(FString(LexToString(Value)), Time, Color);
 		}
 	}
+	
+	// Overload: only override time
+	template<typename T>
+	void PrintToScreen(const T& Value, float Time)
+	{
+		PrintToScreen(Value, Time, FColor::Green);
+	}
+
+	// Overload: only override color
+	template<typename T>
+	void PrintToScreen(const T& Value, FColor Color)
+	{
+		PrintToScreen(Value, 1.0f, Color);
+	}
+	
+	
 }
 
 

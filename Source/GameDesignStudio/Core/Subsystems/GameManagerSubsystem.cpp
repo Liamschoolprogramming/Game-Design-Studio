@@ -8,6 +8,7 @@
 #include "Managers/PuzzleRiverManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Managers/InventoryManager.h"
+#include "Managers/PlayerStatManager.h"
 #include "Managers/QuestManager.h"
 
 void UGameManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -41,8 +42,6 @@ void UGameManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 		Pair.Value->Initialize(this);
 	}
 	
-	PlayerStats = FPlayerStats(); 
-	
 }
 
 void UGameManagerSubsystem::Deinitialize()
@@ -64,6 +63,7 @@ void UGameManagerSubsystem::RegisterManagers()
 	RegisterManager<UPuzzleRiverManager>();
 	RegisterManager<UInventoryManager>();
 	RegisterManager<UQuestManager>();
+	RegisterManager<UPlayerStatManager>();
 }
 
 template <typename T>
@@ -120,6 +120,15 @@ UQuestManager* UGameManagerSubsystem::GetQuestManager() const
 	return nullptr;
 }
 
+UPlayerStatManager* UGameManagerSubsystem::GetPlayerStatManager() const
+{
+	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UPlayerStatManager::StaticClass()))
+	{
+		return Cast<UPlayerStatManager>(Found->Get());
+	}
+	
+	return nullptr;
+}
 
 UGameManagerBase* UGameManagerSubsystem::GetManager(TSubclassOf<UGameManagerBase> ManagerClass) const
 {
