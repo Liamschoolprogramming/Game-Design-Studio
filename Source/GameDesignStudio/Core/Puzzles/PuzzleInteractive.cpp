@@ -2,10 +2,15 @@
 
 
 #include "PuzzleInteractive.h"
+#include "PlayerCharacter.h"
+#include "Core/Managers/GameManagerBase.h"
+#include "Core/Subsystems/GameManagerSubsystem.h"
 
-void APuzzleInteractive::Interact(APawn* Pawn) { }
 
-bool APuzzleInteractive::IsInRange(APawn* Pawn)
+void APuzzleInteractive::Interact(APlayerCharacter* PlayerCharacter) { }
+
+bool APuzzleInteractive::IsInRange(APlayerCharacter* PlayerCharacter)
 {
-	return ((this->GetActorTransform().GetLocation() - Pawn->GetActorTransform().GetLocation()).Size() <= InteractRange);
+	const FPlayerStats PlayerStats = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPlayerStatManager()->GetPlayerStats();
+	return ((this->GetActorTransform().GetLocation() - PlayerCharacter->GetActorTransform().GetLocation()).Size() <= PlayerStats.InteractRange);
 }

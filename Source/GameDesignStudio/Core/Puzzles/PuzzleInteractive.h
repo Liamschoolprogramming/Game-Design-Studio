@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PlayerCharacter.h"
 #include "Puzzle.h"
 #include "PuzzleInteractive.generated.h"
 
@@ -13,10 +14,15 @@ class GAMEDESIGNSTUDIO_API APuzzleInteractive : public APuzzle
 	GENERATED_BODY()
 	
 public:
-	virtual void Interact(APawn* Pawn);
+	virtual void Interact(APlayerCharacter* PlayerCharacter);
 	
-	UPROPERTY(BlueprintReadWrite)
-	double InteractRange = 10;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	double InteractRange = 100;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (
+		InstanceEditable = "true", ExposeOnSpawn = "true"))
+	TArray<EPlayerCharacterType> InteractableCharacterTypes;
+	
 protected:
-	virtual bool IsInRange(APawn* Pawn);
+	virtual bool IsInRange(APlayerCharacter* PlayerCharacter);
 };

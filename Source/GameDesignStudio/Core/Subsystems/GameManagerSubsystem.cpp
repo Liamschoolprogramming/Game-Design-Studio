@@ -5,6 +5,9 @@
 #include "Core/Managers/GameManagerBase.h"
 #include "Managers/PuzzleRiverManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "Managers/InventoryManager.h"
+#include "Managers/PlayerStatManager.h"
+#include "Managers/QuestManager.h"
 
 void UGameManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -56,6 +59,9 @@ void UGameManagerSubsystem::Deinitialize()
 void UGameManagerSubsystem::RegisterManagers()
 {
 	RegisterManager<UPuzzleRiverManager>();
+	RegisterManager<UInventoryManager>();
+	RegisterManager<UQuestManager>();
+	RegisterManager<UPlayerStatManager>();
 }
 
 template <typename T>
@@ -65,11 +71,59 @@ void UGameManagerSubsystem::RegisterManager()
 	Managers.Add(T::StaticClass(), Manager);
 }
 
+
+template <typename T>
+T* UGameManagerSubsystem::GetManager()
+{
+	if (T* Manager = Cast<T>(UGameManagerBase::StaticClass()))
+	{
+		return Manager;
+	}
+	return nullptr;
+}
+
+// For runtime variables
+UGameManagerBase* UGameManagerSubsystem::GetManagerByClass(TSubclassOf<UGameManagerBase> ManagerClass)
+{
+	return Managers.FindRef(ManagerClass);
+}
+
+
 UPuzzleRiverManager* UGameManagerSubsystem::GetPuzzleRiverManager() const
 {
 	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UPuzzleRiverManager::StaticClass()))
 	{
 		return Cast<UPuzzleRiverManager>(Found->Get());
+	}
+	
+	return nullptr;
+}
+
+UInventoryManager* UGameManagerSubsystem::GetInventoryManager() const
+{
+	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UInventoryManager::StaticClass()))
+	{
+		return Cast<UInventoryManager>(Found->Get());
+	}
+	
+	return nullptr;
+}
+
+UQuestManager* UGameManagerSubsystem::GetQuestManager() const
+{
+	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UQuestManager::StaticClass()))
+	{
+		return Cast<UQuestManager>(Found->Get());
+	}
+	
+	return nullptr;
+}
+
+UPlayerStatManager* UGameManagerSubsystem::GetPlayerStatManager() const
+{
+	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UPlayerStatManager::StaticClass()))
+	{
+		return Cast<UPlayerStatManager>(Found->Get());
 	}
 	
 	return nullptr;
@@ -83,4 +137,17 @@ UGameManagerBase* UGameManagerSubsystem::GetManager(TSubclassOf<UGameManagerBase
 	}
 	
 	return nullptr;
+}
+
+void UGameManagerSubsystem::RegisterActorToManager(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, const FPersistantActorValues& ActorValues)
+{
+	
+	if (UGameManagerBase* Manager = GetManagerByClass(ManagerClass))
+	{
+		Manager->RegisterActor(Id, ActorValues);
+		
+		UE_LOG(LogTemp, Warning, TEXT("Registering Actor"));
+		
+	}
+	
 }
