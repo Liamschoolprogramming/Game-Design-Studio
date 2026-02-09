@@ -30,4 +30,8 @@ struct FPersistantActorValues
 	UPROPERTY()
 	FName StateId;
 	
+	FPersistantActorValues() {
+		PuzzleState = EPuzzleState::Start;
+	}
+	
 };

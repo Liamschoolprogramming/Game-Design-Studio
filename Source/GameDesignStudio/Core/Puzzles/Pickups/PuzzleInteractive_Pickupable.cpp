@@ -1,7 +1,4 @@
 #include "PuzzleInteractive_Pickupable.h"
-#include "EditorCategoryUtils.h"
-#include "VectorTypes.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
 APuzzleInteractive_Pickupable::APuzzleInteractive_Pickupable()
