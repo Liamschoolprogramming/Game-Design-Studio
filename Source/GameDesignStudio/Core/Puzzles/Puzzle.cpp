@@ -36,21 +36,6 @@ void APuzzle::BeginPlay()
 	
 }
 
-//void APuzzle::InitializeState()
-//{
-	//const UEnum* Enum = StaticEnum<EPuzzleStatus>();
-	
-	//FName StateName = Enum->GetNameByValue(static_cast<int64>(PuzzleStatus));
-	//StateName = FName(*Enum->GetNameStringByValue(static_cast<int64>(PuzzleStatus)));
-	
-	//ActorValues.CurrentState = StateName;
-	
-	//IsOpen = ActorStates.State.Contains(EPuzzleStatus::Start)
-	
-	//ActorValues.States.Add(StateName);
-//}
-
-
 // Getting the name of the current enum state to store
 // on the manager to later be compared
 void APuzzle::SetState(EPuzzleState State)
@@ -70,27 +55,10 @@ void APuzzle::SetState(EPuzzleState State)
 	//ActorValues.CurrentState = StateName;
 }
 
-
-// Call Super first when implementing custom functionality 
-// to make sure the state is set properly
-
-/*
-void DoActionBasedOnState(FName State)
+void APuzzle::ApplyPuzzleState_Implementation()
 {
 	
 }
-*/
-
-/*
-UGameManagerBase* APuzzle::GetOwningManagerClass()
-{
-	
-	UGameManagerSubsystem* Subsystem = GetGameInstance()->GetSubsystem<UGameManagerSubsystem>();
-	UGameManagerBase* Manager = Subsystem->GetManagerByClass(OwningManager);
-	
-	return Manager;
-}
-*/
 
 // Called every frame
 void APuzzle::Tick(float DeltaTime)
@@ -98,4 +66,6 @@ void APuzzle::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+
 

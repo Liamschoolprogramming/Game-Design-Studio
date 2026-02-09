@@ -6,10 +6,11 @@
 #include "GameFramework/Actor.h"
 #include "Data/PersistantActorValues.h"
 #include "Core/Managers/GameManagerBase.h"
+#include "PuzzleActorInterface.h"
 #include "Puzzle.generated.h"
 
 UCLASS(Abstract)
-class GAMEDESIGNSTUDIO_API APuzzle : public AActor
+class GAMEDESIGNSTUDIO_API APuzzle : public AActor, public IPuzzleActorInterface
 {
 	GENERATED_BODY()
 	
@@ -35,6 +36,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Puzzle Actors")
 	void SetState(EPuzzleState State);
+	
+	
+	virtual void ApplyPuzzleState_Implementation();
 	
 	// Set as blueprint overrideable
 	//virtual void DoActionBasedOnState(EPuzzleStatus State);
