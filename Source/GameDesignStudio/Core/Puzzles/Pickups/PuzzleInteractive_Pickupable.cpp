@@ -11,16 +11,7 @@ APuzzleInteractive_Pickupable::APuzzleInteractive_Pickupable()
 
 void APuzzleInteractive_Pickupable::Tick(float DeltaTime)
 {
-	if (bIsPushable)
-	{
-		if (bBeingCarried && CarryingCharacter != nullptr)
-		{
-			
-		}
-		return;
-	}
-	
-	if (bBeingCarried && CarryingCharacter != nullptr)
+	if (!bPushable && bBeingCarried && CarryingCharacter != nullptr)
 	{
 		this->SetActorLocation(CarryingCharacter->GetActorLocation() + CarryingCharacter->GetActorForwardVector() * 200);
 	}
@@ -51,16 +42,14 @@ void APuzzleInteractive_Pickupable::Interact(APlayerCharacter* PlayerCharacter)
 				bBeingCarried = true;
 			}
 			
-			if (bIsPushable)
+			if (bPushable)
 			{
 				FVector ForwardDirection = CarryingCharacter->GetActorForwardVector();
 				FVector NormalizedPushDirection (
 					UKismetMathLibrary::Round(ForwardDirection.X), 
 					UKismetMathLibrary::Round(ForwardDirection.Y), 
 					UKismetMathLibrary::Round(ForwardDirection.Z));
-		
-				CarryingCharacter->GetCharacterMovement()->DisableMovement();
-				CarryingCharacter->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+				
 				PushDirection = NormalizedPushDirection;
 			}
 		}
@@ -71,8 +60,4 @@ void APuzzleInteractive_Pickupable::Drop()
 {
 	bBeingCarried = false;
 	CarryingCharacter = nullptr;
-	if (bIsPushable)
-	{
-		CarryingCharacter->GetCharacterMovement()->MovementMode = EMovementMode::MOVE_Walking;
-	}
 }

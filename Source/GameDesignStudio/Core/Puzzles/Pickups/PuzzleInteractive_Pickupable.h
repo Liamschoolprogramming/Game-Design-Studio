@@ -29,7 +29,7 @@ public:
 	bool bBeingCarried = false;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	bool bIsPushable = false;
+	bool bPushable = false;
 	
 	UPROPERTY(BlueprintReadOnly)
 	FVector PushDirection;
