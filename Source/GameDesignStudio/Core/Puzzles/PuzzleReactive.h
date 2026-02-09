@@ -20,6 +20,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category=SignalReceiver)
 	void OnReceiveRedSignal();
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"), Category=SignalReceiver)
 	bool bANDSignalReceiver;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"), Category=SignalReceiver)
+	int RequiredGreenSignals;
 };
