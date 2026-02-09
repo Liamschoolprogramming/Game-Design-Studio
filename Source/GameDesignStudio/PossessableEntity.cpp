@@ -6,14 +6,25 @@
 #include "PlayerControllerBase.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "Kismet/GameplayStatics.h"
+
 
 // Sets default values
 APossessableEntity::APossessableEntity()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	
+	GetCapsuleComponent()->ComponentTags.Empty();
+	GetCapsuleComponent()->ComponentTags.Add("HitBox");
+	
+}
+
+void APossessableEntity::SetPossessed(bool NewPossessed)
+{
+	bPossessed = NewPossessed;
 }
 
 // Called when the game starts or when spawned
