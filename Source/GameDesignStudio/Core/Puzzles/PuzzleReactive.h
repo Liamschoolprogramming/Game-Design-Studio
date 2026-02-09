@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -9,9 +8,21 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class GAMEDESIGNSTUDIO_API APuzzleReactive : public APuzzle
 {
 	GENERATED_BODY()
 	
+public:
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category=SignalReceiver)
+	void OnReceiveGreenSignal();
+	
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category=SignalReceiver)
+	void OnReceiveRedSignal();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"), Category=SignalReceiver)
+	bool bANDSignalReceiver;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"), Category=SignalReceiver)
+	int RequiredGreenSignals;
 };

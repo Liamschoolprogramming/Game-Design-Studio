@@ -14,8 +14,8 @@ class ISignalReceiver
 	
 public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category=SignalReceiver)
-	void OnReceiveGreenSignal();
+	void ReceiveGreenSignal();
 	
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category=SignalReceiver)
-	void OnReceiveRedSignal();
+	void ReceiveRedSignal();
 };

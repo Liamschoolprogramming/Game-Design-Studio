@@ -1,6 +1,8 @@
 #include "PuzzleInteractive_Pickupable.h"
 #include "EditorCategoryUtils.h"
 #include "VectorTypes.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 APuzzleInteractive_Pickupable::APuzzleInteractive_Pickupable()
 {
@@ -9,8 +11,7 @@ APuzzleInteractive_Pickupable::APuzzleInteractive_Pickupable()
 
 void APuzzleInteractive_Pickupable::Tick(float DeltaTime)
 {
-	
-	if (bBeingCarried && CarryingCharacter != nullptr)
+	if (!bPushable && bBeingCarried && CarryingCharacter != nullptr)
 	{
 		this->SetActorLocation(CarryingCharacter->GetActorLocation() + CarryingCharacter->GetActorForwardVector() * 200);
 	}
@@ -39,6 +40,17 @@ void APuzzleInteractive_Pickupable::Interact(APlayerCharacter* PlayerCharacter)
 			{
 				CarryingCharacter = PlayerCharacter;
 				bBeingCarried = true;
+			}
+			
+			if (bPushable)
+			{
+				FVector ForwardDirection = CarryingCharacter->GetActorForwardVector();
+				FVector NormalizedPushDirection (
+					UKismetMathLibrary::Round(ForwardDirection.X), 
+					UKismetMathLibrary::Round(ForwardDirection.Y), 
+					UKismetMathLibrary::Round(ForwardDirection.Z));
+				
+				PushDirection = NormalizedPushDirection;
 			}
 		}
 	}

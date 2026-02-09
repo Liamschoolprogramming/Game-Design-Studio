@@ -22,14 +22,19 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 	
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	APlayerCharacter* CarryingCharacter;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bBeingCarried = false;
 	
-protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bPushable = false;
 	
+	UPROPERTY(BlueprintReadOnly)
+	FVector PushDirection;
+	
+protected:
 	FVector Offset = FVector(200,200,0);
 	
 };

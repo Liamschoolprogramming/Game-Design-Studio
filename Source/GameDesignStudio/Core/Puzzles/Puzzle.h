@@ -69,9 +69,6 @@ public:
 	//virtual void DoActionBasedOnState(EPuzzleStatus State);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"))
-	APuzzle* LinkedEmitter;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"))
 	APuzzle* LinkedReceiver;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite);
