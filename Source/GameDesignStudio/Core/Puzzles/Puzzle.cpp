@@ -21,6 +21,7 @@ void APuzzle::BeginPlay()
 	Super::BeginPlay();
 	
 	ActorValues.ActorLocation = GetActorTransform();
+	SetState(PuzzleStatus);
 	
 	if (ActorId.IsNone())
 	{
@@ -35,22 +36,27 @@ void APuzzle::BeginPlay()
 	
 }
 
-UGameManagerBase* APuzzle::GetOwningManagerClass(TSubclassOf<UGameManagerBase> ManagerClass)
+// Getting the name of the current enum state to store
+// on the manager to later be compared
+void APuzzle::SetState(EPuzzleState State)
 {
-	UGameManagerSubsystem* Subsystem = GetGameInstance()->GetSubsystem<UGameManagerSubsystem>();
-	UGameManagerBase* Manager = Subsystem->GetManagerByClass(ManagerClass);
+	//***************************************************//
+	// For debug display naming of states
+	//const UEnum* Enum = StaticEnum<EPuzzleState>();
 	
-	return Manager;
+	//FName StateName = Enum->GetNameByValue(static_cast<int64>(State));
+	//StateName = FName(*Enum->GetNameStringByValue(static_cast<int64>(PuzzleStatus)));
+	//****************************************************//
 	
+	PuzzleStatus = State;
 	
+	GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->SnapshotActorValues(this);
 	
-	// Key map of managers by type set in the editor
-	
-	//return Cast<OwningManager>(UGameManagerBase);
-	
-	//return Cast<UPuzzleRiverManager>(OwningManager);
-	
-	
+	//ActorValues.CurrentState = StateName;
+}
+
+void APuzzle::ApplyPuzzleState_Implementation()
+{
 	
 }
 
@@ -61,10 +67,5 @@ void APuzzle::Tick(float DeltaTime)
 
 }
 
-/*
-void APuzzle::SetActorID(FName Id) const
-{
-	ActorId = Id;
-}
-*/
+
 

@@ -36,6 +36,27 @@ void UPuzzleWorldSubsystem::RegisterPuzzleActor(APuzzle* Actor)
 	}
 }
 
+
+TArray<APuzzle*> UPuzzleWorldSubsystem::GetActorsOfManagerType(TSubclassOf<UGameManagerBase> Manager)
+{
+	//TMap<TSubclassOf<UGameManagerBase>, APuzzle> Actors;
+	
+	// Should probably be weak ref array
+	TArray<APuzzle*> Actors;
+	
+	for (const TPair<FName, TWeakObjectPtr<APuzzle>>& Pair : RuntimeActors)
+	{
+		APuzzle* Actor = Pair.Value.Get();
+		
+		if (Actor->OwningManager == Manager)
+		{
+			Actors.Add(Actor);
+		}
+	}
+	
+	return Actors;
+}
+
 void UPuzzleWorldSubsystem::PostInitialize()
 {
 	Super::PostInitialize();

@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Data/PersistantActorValues.h"
 #include "Core/Managers/GameManagerBase.h"
+#include "PuzzleActorInterface.h"
 #include "Puzzle.generated.h"
 
 UENUM(Blueprintable)
@@ -32,19 +33,18 @@ enum class EPuzzleElementState : uint8
 };
 
 UCLASS(Abstract)
-class GAMEDESIGNSTUDIO_API APuzzle : public AActor
+class GAMEDESIGNSTUDIO_API APuzzle : public AActor, public IPuzzleActorInterface
 {
 	GENERATED_BODY()
-	
-	UFUNCTION(BlueprintCallable, Category = "Managers", meta = (DeterminesOutputType = "ManagerClass"))
-	UGameManagerBase* GetOwningManagerClass(TSubclassOf<UGameManagerBase> ManagerClass);
-	
 	
 public:	
 	APuzzle();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite);
 	FName ActorId;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
+	EPuzzleState PuzzleStatus = EPuzzleState::Start;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite);
 	EPuzzleActorType PuzzleActorType;
@@ -55,6 +55,18 @@ public:
 	// Weak pointers don't prevent another actor from being destroyed
 	TWeakObjectPtr<AActor> WorldSubsytem;
 	FPersistantActorValues ActorValues;
+	
+	//UPROPERTY(EditAnywhere)
+	//FName StateId;
+	
+	UFUNCTION(BlueprintCallable, Category = "Puzzle Actors")
+	void SetState(EPuzzleState State);
+	
+	
+	virtual void ApplyPuzzleState_Implementation();
+	
+	// Set as blueprint overrideable
+	//virtual void DoActionBasedOnState(EPuzzleStatus State);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"))
 	APuzzle* LinkedEmitter;
@@ -70,6 +82,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	//void InitializeState();
 
 public:	
 	// Called every frame

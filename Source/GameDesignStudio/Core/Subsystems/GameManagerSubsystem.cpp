@@ -2,6 +2,8 @@
 
 
 #include "GameManagerSubsystem.h"
+
+#include "PuzzleWorldSubsystem.h"
 #include "Core/Managers/GameManagerBase.h"
 #include "Managers/PuzzleRiverManager.h"
 #include "Kismet/GameplayStatics.h"
@@ -71,7 +73,6 @@ void UGameManagerSubsystem::RegisterManager()
 	Managers.Add(T::StaticClass(), Manager);
 }
 
-
 template <typename T>
 T* UGameManagerSubsystem::GetManager()
 {
@@ -82,12 +83,12 @@ T* UGameManagerSubsystem::GetManager()
 	return nullptr;
 }
 
-// For runtime variables
 UGameManagerBase* UGameManagerSubsystem::GetManagerByClass(TSubclassOf<UGameManagerBase> ManagerClass)
 {
-	return Managers.FindRef(ManagerClass);
+	UGameManagerBase* Manager = Managers.FindRef(ManagerClass);
+	
+	return Manager;
 }
-
 
 UPuzzleRiverManager* UGameManagerSubsystem::GetPuzzleRiverManager() const
 {
@@ -136,9 +137,12 @@ UGameManagerBase* UGameManagerSubsystem::GetManager(TSubclassOf<UGameManagerBase
 		return Found->Get();
 	}
 	
+	
+	
 	return nullptr;
 }
 
+// Defining type at runtime for registering actors to managers
 void UGameManagerSubsystem::RegisterActorToManager(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, const FPersistantActorValues& ActorValues)
 {
 	
@@ -150,4 +154,35 @@ void UGameManagerSubsystem::RegisterActorToManager(TSubclassOf<UGameManagerBase>
 		
 	}
 	
+}
+
+/*
+void UGameManagerSubsystem::SnapshotActorValues(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, FPersistantActorValues& ActorValues, APuzzle* Actor)
+{
+	// Gives the manager class and actor Id, calls the manager by the class key in the list
+	// of managers
+	UGameManagerSubsystem* Subsystem = GetWorld()->GetSubsystem<UGameManagerSubsystem>();
+	//UPuzzleWorldSubsystem* WorldSubsystem = GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>();
+	
+	// Finds the manager in the list and registers its current values with the manager
+	Subsystem->GetManager(ManagerClass)->Snapshot(Id, ActorValues);
+}
+*/
+
+void UGameManagerSubsystem::SnapshotActorValues(APuzzle* Actor)
+{
+	// Add an assert for if an actor is missing an owning manager
+	if (!Actor)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Actor is NULL"));
+	}
+	
+	
+	// Include a state keyword to the struct that every method when it enters a state sets its FName State
+	// field to that state
+	
+	// Add enum state name to the struct
+	// Enum state name->ActorStats->State
+	
+	this->GetManager(Actor->OwningManager)->Snapshot(Actor->ActorId, Actor->ActorValues);
 }
