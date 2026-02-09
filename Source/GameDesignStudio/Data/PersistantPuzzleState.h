@@ -12,4 +12,6 @@ struct FPersistantPuzzleState
 	UPROPERTY()
 	TSet<FName> CompletedStates;
 	
+	FPersistantPuzzleState() { };
+	
 };
