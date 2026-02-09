@@ -22,7 +22,7 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 	
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	APlayerCharacter* CarryingCharacter;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

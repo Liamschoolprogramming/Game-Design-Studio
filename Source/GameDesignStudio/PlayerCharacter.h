@@ -76,7 +76,7 @@ protected:
 	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Prototype Variables")
-	bool hasItem = false;
+	bool bIsInItemGate = false;
 	
 	
 
