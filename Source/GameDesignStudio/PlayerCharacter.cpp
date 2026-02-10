@@ -14,6 +14,8 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include  "PlayerControllerBase.h"
+#include "StructUtils/PropertyBag.h"
+#include "VerseVM/VBPVMRuntimeType.h"
 
 
 // Sets default values
@@ -37,10 +39,71 @@ APlayerCharacter::APlayerCharacter()
 	//GetCharacterMovement()->bSnapToPlaneAtStart = true;
 	
 	
+	TriggerSphere = CreateDefaultSubobject<USphereComponent>(FName("TriggerSphere"));
 	
+	TriggerSphere->SetupAttachment(RootComponent);
+	TriggerSphere->SetGenerateOverlapEvents(true);
+	TriggerSphere->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnSphereOverlapBegin);
+	TriggerSphere->OnComponentEndOverlap.AddDynamic(this, &APlayerCharacter::OnSphereOverlapEnd);
 	
 }
 
+void APlayerCharacter::AddInteractableObject(APuzzleInteractive* Object)
+{
+	ClosestInteractiveObjects.Remove(nullptr);
+	
+	if (Object)
+	{
+		ClosestInteractiveObjects.Add(Object);
+	}
+}
+
+void APlayerCharacter::RemoveInteractableObject(APuzzleInteractive* Object)
+{
+	ClosestInteractiveObjects.Remove(nullptr);
+	if (Object)
+	{
+		ClosestInteractiveObjects.Remove(Object);
+	}
+}
+
+void APlayerCharacter::InteractWithClosestObject()
+{
+	if (ClosestInteractiveObjects.IsEmpty()) return;
+	
+	
+	FVector PlayerPosition = GetActorLocation();
+	const FPlayerStats PlayerStats = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPlayerStatManager()->GetPlayerStats();
+	
+	TWeakObjectPtr<APuzzleInteractive> ClosestObject = nullptr;
+	float ClosestDistance = PlayerStats.InteractRange;
+	for (const TWeakObjectPtr<APuzzleInteractive>& Obj : ClosestInteractiveObjects)
+	{
+		
+		if (Obj.IsValid())
+		{
+			
+			float dist = FVector::Dist(PlayerPosition, Obj->GetActorLocation());
+			if (dist < ClosestDistance)
+			{
+				ClosestDistance = dist;
+				ClosestObject = Obj;
+			}
+		}
+	}
+	
+	if (ClosestObject.IsValid())
+	{
+		
+		
+		Debug::PrintToScreen(FString::Printf(TEXT("%s is interacting with %s"), *GetName(), *ClosestObject->GetName()), 10.0f, FColor::Cyan);
+		//call BP first as some things need it first (big boulder)
+		ClosestObject->OnInteract(this);
+		//then try the Cpp file
+		ClosestObject->Interact(this);
+		
+	}
+}
 
 
 // Called when the game starts or when spawned
@@ -91,7 +154,7 @@ void APlayerCharacter::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComp,
 			if (PlayerController && Puzzle)
 			{
 				Debug::PrintToScreen(Puzzle->GetName(), 10.0f);
-				PlayerController->AddInteractableObject(Puzzle);
+				AddInteractableObject(Puzzle);
 			}
 		}
 	}
@@ -119,7 +182,7 @@ void APlayerCharacter::OnSphereOverlapEnd(UPrimitiveComponent* OverlappedComp, A
 			if (PlayerController && Puzzle)
 			{
 				Debug::PrintToScreen(Puzzle->GetName(), 10.0f, FColor::Red);
-				PlayerController->RemoveInteractableObject(Puzzle);
+				RemoveInteractableObject(Puzzle);
 			}
 		}
 		

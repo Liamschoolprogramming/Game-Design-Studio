@@ -82,106 +82,18 @@ void APlayerControllerBase::RemovePossessableEntity(APossessableEntity* Entity)
 	}
 }
 
-//Return possessable at index or remove stale pointer
-APossessableEntity* APlayerControllerBase::FindPossessableEntityAtIndex(const int IndexToSearch)
-{
-	if (ClosestPossessableEntities.IsEmpty())
-	{
-		return nullptr;
-	}
-	if (ClosestPossessableEntities.IsValidIndex(IndexToSearch))
-	{
-		if (ClosestPossessableEntities[IndexToSearch] != nullptr)
-		{
-			return ClosestPossessableEntities[IndexToSearch];
-		}
-		else
-		{
-			ClosestPossessableEntities.RemoveAt(IndexToSearch);
-		}
-	}
-	return nullptr;
-}
-
-void APlayerControllerBase::AddInteractableObject(APuzzleInteractive* Object)
-{
-	if (ClosestInteractiveObjects.Find(Object) != INDEX_NONE) return;
-	if (Object)
-	{
-		ClosestInteractiveObjects.Add(Object);
-	}
-}
 
 
 void APlayerControllerBase::InteractWithClosestObject()
 {
-	if (ClosestInteractiveObjects.IsEmpty()) return;
-	if (!PlayerReference) return;
-	Debug::PrintToScreen("Closest Interactable Object");
-	FVector PlayerPosition = PlayerReference->GetActorLocation();
-	const FPlayerStats PlayerStats = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPlayerStatManager()->GetPlayerStats();
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
 	
-	int IndexOfClosestObject = -1;
-	float ClosestDistance = PlayerStats.InteractRange;
-	for (int i = 0; i < ClosestInteractiveObjects.Num(); i++)
+	if (PlayerCharacter)
 	{
-		Debug::PrintToScreen(i, FColor::White);
-		if (APuzzleInteractive* Object = FindInteractableObjectAtIndex(i))
-		{
-			Debug::PrintToScreen(Object->GetName(), FColor::Blue);
-			float dist = FVector::Dist(PlayerPosition, Object->GetActorLocation());
-			if (dist < ClosestDistance)
-			{
-				ClosestDistance = dist;
-				IndexOfClosestObject = i;
-			}
-		}
-	}
-	Debug::PrintToScreen(IndexOfClosestObject, FColor::Red);
-	if (IndexOfClosestObject != -1)
-	{
-		Debug::PrintToScreen("Closest Interactable Object");
-		if (APuzzleInteractive* ClosestObject = FindInteractableObjectAtIndex(IndexOfClosestObject))
-		{
-			Debug::PrintToScreen(ClosestObject->GetName(), 10.0f, FColor::Cyan);
-			ClosestObject->Interact(PlayerReference);
-		}
+		PlayerCharacter->InteractWithClosestObject();
 	}
 }
 
-
-void APlayerControllerBase::RemoveInteractableObject(APuzzleInteractive* Object)
-{
-	if (ClosestInteractiveObjects.Find(Object) != INDEX_NONE) return;
-	if (Object)
-	{
-		ClosestInteractiveObjects.Remove(Object);
-	}
-}
-
-APuzzleInteractive* APlayerControllerBase::FindInteractableObjectAtIndex(const int IndexToSearch)
-{
-	if (ClosestInteractiveObjects.IsEmpty())
-	{
-		Debug::PrintToScreen("Empty array", 3.f, FColor::Purple);
-		return nullptr;
-	}
-	if (ClosestInteractiveObjects.IsValidIndex(IndexToSearch))
-	{
-		if (ClosestInteractiveObjects[IndexToSearch] != nullptr)
-		{
-			Debug::PrintToScreen("Found object", 3.f, FColor::Purple);
-			return ClosestInteractiveObjects[IndexToSearch];
-		}
-		else
-		{
-			Debug::PrintToScreen("Found a nullptr", 3.f, FColor::Purple);
-			ClosestInteractiveObjects.RemoveAt(IndexToSearch);
-		}
-	}
-	Debug::PrintToScreen(FString::Printf(TEXT("%i is not a valid index"), IndexToSearch), 3.f, FColor::Purple);
-	return nullptr;
-}
 
 void APlayerControllerBase::StartClick(const FInputActionValue& Value)
 {

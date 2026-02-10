@@ -131,9 +131,12 @@ public:
 	FRotator PawnDesiredRotation;
 	bool bPawnHasMovementInput = false;
 	
+	
 	TArray<APossessableEntity*> ClosestPossessableEntities;
-
-	TArray<APuzzleInteractive*> ClosestInteractiveObjects;
+	
+	
+	
+	
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement")
 	FVector PawnVelocity;
@@ -147,17 +150,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Possession")
 	void RemovePossessableEntity(APossessableEntity* Entity);
 
-	UFUNCTION(BlueprintCallable, Category="Possession")
-	APossessableEntity* FindPossessableEntityAtIndex(const int IndexToSearch);
 	
-	UFUNCTION(BlueprintCallable, Category="Interaction")
-	void AddInteractableObject(APuzzleInteractive* Object);
-	UFUNCTION(BlueprintCallable, Category="Interaction")
-	void RemoveInteractableObject(APuzzleInteractive* Object);
-
-	
-	UFUNCTION(BlueprintCallable, Category="Interaction")
-	APuzzleInteractive* FindInteractableObjectAtIndex(const int IndexToSearch);
 
 	
 	
