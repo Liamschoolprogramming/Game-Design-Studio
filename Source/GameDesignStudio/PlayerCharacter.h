@@ -59,6 +59,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
 	float CameraSensitivity = .5;
 	
+	virtual void PossessedBy(AController* NewController) override;
 	
 	//IMC
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
