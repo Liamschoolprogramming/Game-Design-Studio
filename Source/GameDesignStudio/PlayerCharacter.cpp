@@ -60,21 +60,7 @@ void APlayerCharacter::BeginPlay()
 		}
 	}
 	
-	//only spawn a trigger sphere for the actual player
-	if (GetClass()->IsChildOf(APlayerCharacter::StaticClass()) &&
-	GetClass()->GetSuperClass() == APlayerCharacter::StaticClass())
-	{
-		TriggerSphere = NewObject<USphereComponent>(this,FName("TriggerSphere"));
-		
-		TriggerSphere->AttachToComponent(RootComponent,FAttachmentTransformRules::KeepRelativeTransform);
-		TriggerSphere->SetupAttachment(RootComponent);
-		TriggerSphere->SetGenerateOverlapEvents(true);
-		
-		TriggerSphere->RegisterComponent();
-		
-		TriggerSphere->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnSphereOverlapBegin);
-		TriggerSphere->OnComponentEndOverlap.AddDynamic(this, &APlayerCharacter::OnSphereOverlapEnd);
-	}
+	
 	
 	FTimerDelegate TimerDelegate;
 	TimerDelegate.BindUFunction(this, FName("SetSphereToPossessionRange"));
