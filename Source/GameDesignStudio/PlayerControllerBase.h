@@ -24,6 +24,11 @@ class GAMEDESIGNSTUDIO_API APlayerControllerBase : public APlayerController
 
 public:
 
+	UFUNCTION(BlueprintCallable)
+	bool GetCanMove();
+	
+	UFUNCTION(BlueprintCallable)
+	void SetCanMove(bool CanMove);
 	
 	bool bSettingDestination = false;
 
@@ -43,8 +48,6 @@ public:
 	/** Handles move inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoMove(float Right, float Forward);
-
-	
 	
 	/** Handles look inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
@@ -171,6 +174,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	
+	//Whether the player is able to move or not (controlled by possessable entity for possessables that can't move
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
+	bool bCanMove = true;
 
 private:
 	

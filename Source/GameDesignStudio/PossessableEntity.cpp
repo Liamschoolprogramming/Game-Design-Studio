@@ -25,6 +25,7 @@ APossessableEntity::APossessableEntity()
 void APossessableEntity::SetPossessed(bool NewPossessed)
 {
 	bPossessed = NewPossessed;
+
 }
 
 // Called when the game starts or when spawned
@@ -47,11 +48,28 @@ void APossessableEntity::OnTogglePossession()
 	{
 		PlayerController->Possess(PlayerCharacter);
 		bPossessed = false;
+		if (!bCanMove)
+		{
+			PlayerController->SetIgnoreMoveInput(true);
+		}
 	}
 	else
 	{
 		PlayerController->Possess(this);
 		bPossessed = true;
+		if (!bCanMove)
+		{
+			PlayerController->SetIgnoreMoveInput(false);
+		}
+	}
+	//If the possessable entity is set to be unable to move, tell the controller to block move inputs
+	if (!bCanMove)
+	{
+		PlayerController->SetCanMove(false);
+	}
+	else
+	{
+		PlayerController->SetCanMove(true);
 	}
 }
 
