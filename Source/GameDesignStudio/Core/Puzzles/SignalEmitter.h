@@ -13,9 +13,5 @@ class ISignalEmitter
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category=SignalEmitter)
-	void EmitGreenSignal();
 	
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category=SignalEmitter)
-	void EmitRedSignal();
 };

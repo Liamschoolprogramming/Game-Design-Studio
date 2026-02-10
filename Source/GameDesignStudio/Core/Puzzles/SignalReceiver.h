@@ -13,9 +13,5 @@ class ISignalReceiver
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category=SignalReceiver)
-	void ReceiveGreenSignal();
 	
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category=SignalReceiver)
-	void ReceiveRedSignal();
 };

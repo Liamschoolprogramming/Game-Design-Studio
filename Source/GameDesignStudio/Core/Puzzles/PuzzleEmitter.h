@@ -5,10 +5,10 @@
 #include "CoreMinimal.h"
 #include "Puzzle.h"
 #include "GameFramework/Actor.h"
-#include "PuzzleTrigger.generated.h"
+#include "PuzzleEmitter.generated.h"
 
 UCLASS()
-class GAMEDESIGNSTUDIO_API APuzzleTrigger : public APuzzle
+class GAMEDESIGNSTUDIO_API APuzzleEmitter : public APuzzle
 {
 	GENERATED_BODY()
 	
@@ -19,5 +19,5 @@ class GAMEDESIGNSTUDIO_API APuzzleTrigger : public APuzzle
 	void EmitRedSignal();
 
 public:
-	APuzzleTrigger();
+	APuzzleEmitter();
 };
