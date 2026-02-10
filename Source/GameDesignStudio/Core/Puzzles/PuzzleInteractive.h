@@ -16,6 +16,9 @@ class GAMEDESIGNSTUDIO_API APuzzleInteractive : public APuzzle
 public:
 	virtual void Interact(APlayerCharacter* PlayerCharacter);
 	
+	UFUNCTION(BlueprintImplementableEvent, Category="Interaction")
+	void OnInteract(APlayerCharacter* PlayerCharacter);
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	double InteractRange = 100;
 	

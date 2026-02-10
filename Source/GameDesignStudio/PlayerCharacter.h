@@ -9,12 +9,14 @@
 #include "InputActionValue.h"
 
 #include "Components/SphereComponent.h"
+
 #include "Core/Subsystems/GameManagerSubsystem.h"
 #include "Engine/TriggerSphere.h"
 #include "Managers/PlayerStatManager.h"
 #include "PlayerCharacter.generated.h"
 
 
+class APuzzleInteractive;
 class APlayerControllerBase;
 
 UCLASS()
@@ -30,6 +32,17 @@ public:
 	EPlayerCharacterType PlayerCharacterType = EPlayerCharacterType::Default;
 
 	
+	TSet<TWeakObjectPtr<APuzzleInteractive>> ClosestInteractiveObjects;
+	
+	UFUNCTION(BlueprintCallable, Category="Interaction")
+	void AddInteractableObject( APuzzleInteractive* Object);
+	UFUNCTION(BlueprintCallable, Category="Interaction")
+	void RemoveInteractableObject(APuzzleInteractive* Object);
+
+	
+	
+	UFUNCTION(BlueprintCallable, Category="Interaction")
+	void InteractWithClosestObject();	
 	
 protected:
 	// Called when the game starts or when spawned

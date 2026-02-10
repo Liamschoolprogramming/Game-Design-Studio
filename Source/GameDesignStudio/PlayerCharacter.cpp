@@ -14,6 +14,8 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include  "PlayerControllerBase.h"
+#include "StructUtils/PropertyBag.h"
+#include "VerseVM/VBPVMRuntimeType.h"
 
 
 // Sets default values
@@ -37,10 +39,71 @@ APlayerCharacter::APlayerCharacter()
 	//GetCharacterMovement()->bSnapToPlaneAtStart = true;
 	
 	
+	TriggerSphere = CreateDefaultSubobject<USphereComponent>(FName("TriggerSphere"));
 	
+	TriggerSphere->SetupAttachment(RootComponent);
+	TriggerSphere->SetGenerateOverlapEvents(true);
+	TriggerSphere->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnSphereOverlapBegin);
+	TriggerSphere->OnComponentEndOverlap.AddDynamic(this, &APlayerCharacter::OnSphereOverlapEnd);
 	
 }
 
+void APlayerCharacter::AddInteractableObject(APuzzleInteractive* Object)
+{
+	ClosestInteractiveObjects.Remove(nullptr);
+	
+	if (Object)
+	{
+		ClosestInteractiveObjects.Add(Object);
+	}
+}
+
+void APlayerCharacter::RemoveInteractableObject(APuzzleInteractive* Object)
+{
+	ClosestInteractiveObjects.Remove(nullptr);
+	if (Object)
+	{
+		ClosestInteractiveObjects.Remove(Object);
+	}
+}
+
+void APlayerCharacter::InteractWithClosestObject()
+{
+	if (ClosestInteractiveObjects.IsEmpty()) return;
+	
+	
+	FVector PlayerPosition = GetActorLocation();
+	const FPlayerStats PlayerStats = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPlayerStatManager()->GetPlayerStats();
+	
+	TWeakObjectPtr<APuzzleInteractive> ClosestObject = nullptr;
+	float ClosestDistance = PlayerStats.InteractRange;
+	for (const TWeakObjectPtr<APuzzleInteractive>& Obj : ClosestInteractiveObjects)
+	{
+		
+		if (Obj.IsValid())
+		{
+			
+			float dist = FVector::Dist(PlayerPosition, Obj->GetActorLocation());
+			if (dist < ClosestDistance)
+			{
+				ClosestDistance = dist;
+				ClosestObject = Obj;
+			}
+		}
+	}
+	
+	if (ClosestObject.IsValid())
+	{
+		
+		
+		Debug::PrintToScreen(FString::Printf(TEXT("%s is interacting with %s"), *GetName(), *ClosestObject->GetName()), 10.0f, FColor::Cyan);
+		//call BP first as some things need it first (big boulder)
+		ClosestObject->OnInteract(this);
+		//then try the Cpp file
+		ClosestObject->Interact(this);
+		
+	}
+}
 
 
 // Called when the game starts or when spawned
@@ -60,21 +123,7 @@ void APlayerCharacter::BeginPlay()
 		}
 	}
 	
-	//only spawn a trigger sphere for the actual player
-	if (GetClass()->IsChildOf(APlayerCharacter::StaticClass()) &&
-	GetClass()->GetSuperClass() == APlayerCharacter::StaticClass())
-	{
-		TriggerSphere = NewObject<USphereComponent>(this,FName("TriggerSphere"));
-		
-		TriggerSphere->AttachToComponent(RootComponent,FAttachmentTransformRules::KeepRelativeTransform);
-		TriggerSphere->SetupAttachment(RootComponent);
-		TriggerSphere->SetGenerateOverlapEvents(true);
-		
-		TriggerSphere->RegisterComponent();
-		
-		TriggerSphere->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnSphereOverlapBegin);
-		TriggerSphere->OnComponentEndOverlap.AddDynamic(this, &APlayerCharacter::OnSphereOverlapEnd);
-	}
+	
 	
 	FTimerDelegate TimerDelegate;
 	TimerDelegate.BindUFunction(this, FName("SetSphereToPossessionRange"));
@@ -94,12 +143,21 @@ void APlayerCharacter::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComp,
 		if (OtherActor->GetClass()->IsChildOf(APossessableEntity::StaticClass()))
 		{
 			APossessableEntity* PossessableEntity = Cast<APossessableEntity>(OtherActor);
-			if (PlayerController && PossessableEntity)
+			if (PlayerController && PossessableEntity && OtherComp->ComponentHasTag("HitBox"))
 			{
 				Debug::PrintToScreen(PossessableEntity->GetName(), 10.0f);
 				PlayerController->AddPossessableEntity(PossessableEntity);
 			}
 			
+		}
+		else if (OtherActor->GetClass()->IsChildOf(APuzzleInteractive::StaticClass()))
+		{
+			APuzzleInteractive* Puzzle = Cast<APuzzleInteractive>(OtherActor);
+			if (PlayerController && Puzzle)
+			{
+				Debug::PrintToScreen(Puzzle->GetName(), 10.0f);
+				AddInteractableObject(Puzzle);
+			}
 		}
 	}
 }
@@ -109,13 +167,27 @@ void APlayerCharacter::OnSphereOverlapEnd(UPrimitiveComponent* OverlappedComp, A
 {
 	if (OtherActor && OtherActor != this && OtherComp)
 	{
-		APossessableEntity* PossessableEntity = Cast<APossessableEntity>(OtherActor);
-		
-		if (PlayerController && PossessableEntity)
+
+		if (OtherActor->GetClass()->IsChildOf(APossessableEntity::StaticClass()))
 		{
-			Debug::PrintToScreen(PossessableEntity->GetName(), 10.0f, FColor::Red);
-			PlayerController->RemovePossessableEntity(PossessableEntity);
+			APossessableEntity* PossessableEntity = Cast<APossessableEntity>(OtherActor);
+			if (PlayerController && PossessableEntity  && OtherComp->ComponentHasTag("HitBox"))
+			{
+				Debug::PrintToScreen(PossessableEntity->GetName(), 10.0f, FColor::Red);
+				PlayerController->RemovePossessableEntity(PossessableEntity);
+			}
+			
 		}
+		else if (OtherActor->GetClass()->IsChildOf(APuzzleInteractive::StaticClass()))
+		{
+			APuzzleInteractive* Puzzle = Cast<APuzzleInteractive>(OtherActor);
+			if (PlayerController && Puzzle)
+			{
+				Debug::PrintToScreen(Puzzle->GetName(), 10.0f, FColor::Red);
+				RemoveInteractableObject(Puzzle);
+			}
+		}
+		
 	}
 }
 
