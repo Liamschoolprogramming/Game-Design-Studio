@@ -3,22 +3,24 @@
 
 #include "CoreMinimal.h"
 #include "Puzzle.h"
-#include "PuzzleReactive.generated.h"
+#include "SignalReceiver.h"
+#include "PuzzleReceiver.generated.h"
 
 /**
  * 
  */
 UCLASS(Blueprintable)
-class GAMEDESIGNSTUDIO_API APuzzleReactive : public APuzzle
+class GAMEDESIGNSTUDIO_API APuzzleReceiver : public APuzzle
 {
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category=SignalReceiver)
-	void OnReceiveGreenSignal();
 	
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category=SignalReceiver)
-	void OnReceiveRedSignal();
+	void ReceiveGreenSignal(FName EmitterId);
+	
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category=SignalReceiver)
+	void ReceiveRedSignal(FName EmitterId);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"), Category=SignalReceiver)
 	bool bANDSignalReceiver;

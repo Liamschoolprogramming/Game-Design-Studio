@@ -68,6 +68,9 @@ public:
 	// Set as blueprint overrideable
 	//virtual void DoActionBasedOnState(EPuzzleStatus State);
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FName, bool> Signals;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"))
 	APuzzle* LinkedReceiver;
 	
