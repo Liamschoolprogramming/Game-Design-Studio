@@ -38,7 +38,8 @@ UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHi
 	if (OtherActor == UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
 	{
 		APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
-		if (PlayerCharacter != nullptr && (PlayerCharacter->PlayerCharacterType == PlayerToKill || KillAnyPlayer))
+		if (PlayerCharacter != nullptr && (PlayerCharacter->PlayerCharacterType == PlayerToKill || KillAnyPlayer)
+			&& OtherComp->ComponentHasTag("PlayerHitBox"))
 		{
 			PlayerCharacter->SetActorLocation(PlayerCharacter->SafeLocation);
 		}
