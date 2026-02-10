@@ -31,10 +31,16 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bPushable = false;
 	
+	UFUNCTION()
+	void ResetCollision();
+	
 	UPROPERTY(BlueprintReadOnly)
 	FVector PushDirection;
 	
 protected:
 	FVector Offset = FVector(200,200,0);
+	
+private:
+	
 	
 };

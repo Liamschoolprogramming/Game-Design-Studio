@@ -134,9 +134,32 @@ void APlayerCharacter::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimerForNextTick(SafeTimerDelegate);
 	
 }
+//sorta dirty fix to keep the player from flying away by spam swapping
+void APlayerCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	
+	FHitResult HitResult;
+	FVector Start = GetActorLocation();
+	
+	FVector End = GetActorLocation() + (-GetActorUpVector() * 5000.f);
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);            // Ignore self
+	float HalfHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+		
+	Params.bTraceComplex = true;             // Use complex collision if needed
+	Params.bReturnPhysicalMaterial = false;
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Camera,Params );
+	if (bHit)
+	{
+		HalfHeight += HitResult.Location.Z;
+		Debug::PrintToScreen(HitResult.Location.Z);
+	}
+	SetActorLocation(FVector(Start.X, Start.Y, HalfHeight));
+}
 
 void APlayerCharacter::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                            UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor && OtherActor != this && OtherComp)
 	{
