@@ -47,7 +47,7 @@ public:
 	float DefaultCameraMovementSpeed = 800;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
-	float CameraRotationSpeed = 100;
+	float CameraRotationSpeed = 200;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
 	float MaxYawSpeed = 100;

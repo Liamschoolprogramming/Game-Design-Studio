@@ -92,12 +92,21 @@ void APlayerCharacter::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComp,
 		if (OtherActor->GetClass()->IsChildOf(APossessableEntity::StaticClass()))
 		{
 			APossessableEntity* PossessableEntity = Cast<APossessableEntity>(OtherActor);
-			if (PlayerController && PossessableEntity)
+			if (PlayerController && PossessableEntity && OtherComp->ComponentHasTag("HitBox"))
 			{
 				Debug::PrintToScreen(PossessableEntity->GetName(), 10.0f);
 				PlayerController->AddPossessableEntity(PossessableEntity);
 			}
 			
+		}
+		else if (OtherActor->GetClass()->IsChildOf(APuzzleInteractive::StaticClass()))
+		{
+			APuzzleInteractive* Puzzle = Cast<APuzzleInteractive>(OtherActor);
+			if (PlayerController && Puzzle)
+			{
+				Debug::PrintToScreen(Puzzle->GetName(), 10.0f);
+				PlayerController->AddInteractableObject(Puzzle);
+			}
 		}
 	}
 }
@@ -107,13 +116,27 @@ void APlayerCharacter::OnSphereOverlapEnd(UPrimitiveComponent* OverlappedComp, A
 {
 	if (OtherActor && OtherActor != this && OtherComp)
 	{
-		APossessableEntity* PossessableEntity = Cast<APossessableEntity>(OtherActor);
-		
-		if (PlayerController && PossessableEntity)
+
+		if (OtherActor->GetClass()->IsChildOf(APossessableEntity::StaticClass()))
 		{
-			Debug::PrintToScreen(PossessableEntity->GetName(), 10.0f, FColor::Red);
-			PlayerController->RemovePossessableEntity(PossessableEntity);
+			APossessableEntity* PossessableEntity = Cast<APossessableEntity>(OtherActor);
+			if (PlayerController && PossessableEntity  && OtherComp->ComponentHasTag("HitBox"))
+			{
+				Debug::PrintToScreen(PossessableEntity->GetName(), 10.0f, FColor::Red);
+				PlayerController->RemovePossessableEntity(PossessableEntity);
+			}
+			
 		}
+		else if (OtherActor->GetClass()->IsChildOf(APuzzleInteractive::StaticClass()))
+		{
+			APuzzleInteractive* Puzzle = Cast<APuzzleInteractive>(OtherActor);
+			if (PlayerController && Puzzle)
+			{
+				Debug::PrintToScreen(Puzzle->GetName(), 10.0f, FColor::Red);
+				PlayerController->RemoveInteractableObject(Puzzle);
+			}
+		}
+		
 	}
 }
 

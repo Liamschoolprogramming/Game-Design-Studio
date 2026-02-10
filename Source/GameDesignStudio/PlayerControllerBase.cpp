@@ -13,6 +13,8 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "PlayerControllerBase.h"
 
+#include "GameFramework/PawnMovementComponent.h"
+
 
 DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
 
@@ -80,9 +82,10 @@ void APlayerControllerBase::RemovePossessableEntity(APossessableEntity* Entity)
 	}
 }
 
+//Return possessable at index or remove stale pointer
 APossessableEntity* APlayerControllerBase::FindPossessableEntityAtIndex(const int IndexToSearch)
 {
-	if (!ClosestPossessableEntities.IsEmpty())
+	if (ClosestPossessableEntities.IsEmpty())
 	{
 		return nullptr;
 	}
@@ -97,6 +100,86 @@ APossessableEntity* APlayerControllerBase::FindPossessableEntityAtIndex(const in
 			ClosestPossessableEntities.RemoveAt(IndexToSearch);
 		}
 	}
+	return nullptr;
+}
+
+void APlayerControllerBase::AddInteractableObject(APuzzleInteractive* Object)
+{
+	if (ClosestInteractiveObjects.Find(Object) != INDEX_NONE) return;
+	if (Object)
+	{
+		ClosestInteractiveObjects.Add(Object);
+	}
+}
+
+
+void APlayerControllerBase::InteractWithClosestObject()
+{
+	if (ClosestInteractiveObjects.IsEmpty()) return;
+	if (!PlayerReference) return;
+	Debug::PrintToScreen("Closest Interactable Object");
+	FVector PlayerPosition = PlayerReference->GetActorLocation();
+	const FPlayerStats PlayerStats = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPlayerStatManager()->GetPlayerStats();
+	
+	int IndexOfClosestObject = -1;
+	float ClosestDistance = PlayerStats.InteractRange;
+	for (int i = 0; i < ClosestInteractiveObjects.Num(); i++)
+	{
+		Debug::PrintToScreen(i, FColor::White);
+		if (APuzzleInteractive* Object = FindInteractableObjectAtIndex(i))
+		{
+			Debug::PrintToScreen(Object->GetName(), FColor::Blue);
+			float dist = FVector::Dist(PlayerPosition, Object->GetActorLocation());
+			if (dist < ClosestDistance)
+			{
+				ClosestDistance = dist;
+				IndexOfClosestObject = i;
+			}
+		}
+	}
+	Debug::PrintToScreen(IndexOfClosestObject, FColor::Red);
+	if (IndexOfClosestObject != -1)
+	{
+		Debug::PrintToScreen("Closest Interactable Object");
+		if (APuzzleInteractive* ClosestObject = FindInteractableObjectAtIndex(IndexOfClosestObject))
+		{
+			Debug::PrintToScreen(ClosestObject->GetName(), 10.0f, FColor::Cyan);
+			ClosestObject->Interact(PlayerReference);
+		}
+	}
+}
+
+
+void APlayerControllerBase::RemoveInteractableObject(APuzzleInteractive* Object)
+{
+	if (ClosestInteractiveObjects.Find(Object) != INDEX_NONE) return;
+	if (Object)
+	{
+		ClosestInteractiveObjects.Remove(Object);
+	}
+}
+
+APuzzleInteractive* APlayerControllerBase::FindInteractableObjectAtIndex(const int IndexToSearch)
+{
+	if (ClosestInteractiveObjects.IsEmpty())
+	{
+		Debug::PrintToScreen("Empty array", 3.f, FColor::Purple);
+		return nullptr;
+	}
+	if (ClosestInteractiveObjects.IsValidIndex(IndexToSearch))
+	{
+		if (ClosestInteractiveObjects[IndexToSearch] != nullptr)
+		{
+			Debug::PrintToScreen("Found object", 3.f, FColor::Purple);
+			return ClosestInteractiveObjects[IndexToSearch];
+		}
+		else
+		{
+			Debug::PrintToScreen("Found a nullptr", 3.f, FColor::Purple);
+			ClosestInteractiveObjects.RemoveAt(IndexToSearch);
+		}
+	}
+	Debug::PrintToScreen(FString::Printf(TEXT("%i is not a valid index"), IndexToSearch), 3.f, FColor::Purple);
 	return nullptr;
 }
 
@@ -267,25 +350,43 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 				
 				
 				
-				FVector f = CameraReference->ForwardVector();
-				FVector r = CameraReference->RightVector();
-				f = f * ActionValue.Y;
-				r = r * ActionValue.X;
+				FVector CameraForward = CameraReference->ForwardVector();
 				
-				FVector Dir = f + r;
+				FVector CameraRight = CameraReference->RightVector();
+				FRotator CurrentRotation = OurPawn->GetActorRotation();
+				
+
+				
+				CameraForward = CameraForward * ActionValue.Y;
+				CameraRight = CameraRight * ActionValue.X;
+
+				
+				
+				FVector DirForRotation = CameraForward + CameraRight;
+
+				
+				
+				
+
+				//Move
+				FVector Dir = CameraForward + CameraRight;
+				//Compensate so we don't slam into the ground
+				Dir = Dir * FVector(1, 1, 0);
 				
 				Dir.Normalize();
-				pos = pos + (Dir * PawnMovementSpeed * GetWorld()->GetDeltaSeconds());
-				OurPawn->SetActorLocation(pos);
+				FVector DeltaMove = pos + (Dir * PawnMovementSpeed * GetWorld()->GetDeltaSeconds());
+				PawnVelocity = Dir * PawnMovementSpeed;
+				OurPawn->SetActorLocation(DeltaMove);
 				
 				//Smoothly rotate to new direction
-				FRotator CurrentRotation = OurPawn->GetActorRotation();
-				FRotator TargetRotation = Dir.Rotation();
+				
+				FRotator TargetRotation = DirForRotation.Rotation();
 				
 				FRotator SmoothRot = FMath::RInterpTo(CurrentRotation, TargetRotation, GetWorld()->GetDeltaSeconds(), PawnRotationSpeed);
 				
 				
 				OurPawn->SetActorRotation(SmoothRot);
+				
 			}
 			
 		}
@@ -512,6 +613,10 @@ void APlayerControllerBase::SetupInputComponent()
 		if (CyclePossessionDownAction)
 		{
 			EnhancedInputComponent->BindAction(CyclePossessionDownAction, ETriggerEvent::Completed, this, &APlayerControllerBase::CyclePossessionDown);
+		}
+		if (InteractAction)
+		{
+			EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &APlayerControllerBase::InteractWithClosestObject);
 		}
 		
 	}
