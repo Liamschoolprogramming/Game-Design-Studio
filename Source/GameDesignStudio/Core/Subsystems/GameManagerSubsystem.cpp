@@ -172,6 +172,7 @@ void UGameManagerSubsystem::SnapshotActorValues(TSubclassOf<UGameManagerBase> Ma
 void UGameManagerSubsystem::SnapshotActorValues(APuzzle* Actor)
 {
 	// Add an assert for if an actor is missing an owning manager
+	
 	if (!Actor)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Actor is NULL"));
