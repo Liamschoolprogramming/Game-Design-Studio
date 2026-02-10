@@ -104,6 +104,12 @@ public:
 	// this is so knockback can be done by anything and the code doesnt need to be rewritten like a thousand times
 	UFUNCTION(BlueprintCallable)
 	void DoKnockback(float Power, AActor* origin);
+	
+	UFUNCTION(BlueprintCallable)
+	void SaveLastLocation();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Other")
+	FVector SafeLocation;
 
 
 };

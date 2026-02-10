@@ -128,8 +128,10 @@ void APlayerCharacter::BeginPlay()
 	FTimerDelegate TimerDelegate;
 	TimerDelegate.BindUFunction(this, FName("SetSphereToPossessionRange"));
 	GetWorld()->GetTimerManager().SetTimerForNextTick(TimerDelegate);
-	
 
+	FTimerDelegate SafeTimerDelegate;
+	SafeTimerDelegate.BindUFunction(this, FName("SaveLastLocation"));
+	GetWorld()->GetTimerManager().SetTimerForNextTick(SafeTimerDelegate);
 	
 }
 
@@ -230,3 +232,16 @@ void APlayerCharacter::DoKnockback(float _power, AActor* origin)
 	LaunchCharacter(locations * _power, false, false);
 }
 
+void APlayerCharacter::SaveLastLocation()
+{
+	if (this->GetVelocity().Z == 0.0f)
+	{
+		SafeLocation = this->GetActorLocation();
+		GEngine->AddOnScreenDebugMessage(
+			-1,            // Key: A unique key to prevent the same message from being added multiple times. Use -1 for a new message each time.
+			5.0f,          // Duration: How long the message is displayed, in seconds.
+			FColor::Red,   // Color: The color of the text.
+			TEXT("Got safe location!") // Message: The FString message to display.
+	);
+	}
+}

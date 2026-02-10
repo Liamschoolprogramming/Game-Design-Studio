@@ -38,17 +38,6 @@ void APuzzleInteractive_Pickupable::Interact(APlayerCharacter* PlayerCharacter)
 				CarryingCharacter = PlayerCharacter;
 				bBeingCarried = true;
 			}
-			
-			if (bPushable)
-			{
-				FVector ForwardDirection = CarryingCharacter->GetActorForwardVector();
-				FVector NormalizedPushDirection (
-					UKismetMathLibrary::Round(ForwardDirection.X), 
-					UKismetMathLibrary::Round(ForwardDirection.Y), 
-					UKismetMathLibrary::Round(ForwardDirection.Z));
-				
-				PushDirection = NormalizedPushDirection;
-			}
 		}
 	}
 }
