@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "PossessableEntity.h"
+#include "Core/Puzzles/PuzzleInteractive.h"
 #include "PlayerControllerBase.generated.h"
 
 
@@ -101,6 +102,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	UInputAction* CyclePossessionDownAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* InteractAction;
 	
 	UFUNCTION(BlueprintCallable, Category="Input")
 	void CheckControlDevice(FPlatformUserId PlatformUserId, FInputDeviceId InputDeviceId);
@@ -130,8 +134,15 @@ public:
 	FRotator PawnDesiredRotation;
 	bool bPawnHasMovementInput = false;
 	
+	
 	TArray<APossessableEntity*> ClosestPossessableEntities;
 	
+	
+	
+	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement")
+	FVector PawnVelocity;
 	
 	//-1 will be the index for the player character
 	int IndexForPossessables = -1;
@@ -141,9 +152,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category="Possession")
 	void RemovePossessableEntity(APossessableEntity* Entity);
+
 	
-	UFUNCTION(BlueprintCallable, Category="Possession")
-	APossessableEntity* FindPossessableEntityAtIndex(const int IndexToSearch);
+
 	
 	
 	//Essentially a toggle for if we want to be able to move the pawn without always point and click
@@ -161,6 +172,8 @@ public:
 	void StopClick(const FInputActionValue& Value);
 	
 	void StopMove(const FInputActionValue& Value);
+
+	void InteractWithClosestObject();
 	
 	void CyclePossessionUp();
 	void CyclePossessionDown();
@@ -186,3 +199,6 @@ public:
 	virtual void SetupInputComponent() override;
 	
 };
+
+
+

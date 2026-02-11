@@ -13,6 +13,8 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "PlayerControllerBase.h"
 
+#include "GameFramework/PawnMovementComponent.h"
+
 
 DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
 
@@ -90,25 +92,18 @@ void APlayerControllerBase::RemovePossessableEntity(APossessableEntity* Entity)
 	}
 }
 
-APossessableEntity* APlayerControllerBase::FindPossessableEntityAtIndex(const int IndexToSearch)
+
+
+void APlayerControllerBase::InteractWithClosestObject()
 {
-	if (!ClosestPossessableEntities.IsEmpty())
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+	
+	if (PlayerCharacter)
 	{
-		return nullptr;
+		PlayerCharacter->InteractWithClosestObject();
 	}
-	if (ClosestPossessableEntities.IsValidIndex(IndexToSearch))
-	{
-		if (ClosestPossessableEntities[IndexToSearch] != nullptr)
-		{
-			return ClosestPossessableEntities[IndexToSearch];
-		}
-		else
-		{
-			ClosestPossessableEntities.RemoveAt(IndexToSearch);
-		}
-	}
-	return nullptr;
 }
+
 
 void APlayerControllerBase::StartClick(const FInputActionValue& Value)
 {
@@ -281,25 +276,43 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 				
 				
 				
-				FVector f = CameraReference->ForwardVector();
-				FVector r = CameraReference->RightVector();
-				f = f * ActionValue.Y;
-				r = r * ActionValue.X;
+				FVector CameraForward = CameraReference->ForwardVector();
 				
-				FVector Dir = f + r;
+				FVector CameraRight = CameraReference->RightVector();
+				FRotator CurrentRotation = OurPawn->GetActorRotation();
+				
+
+				
+				CameraForward = CameraForward * ActionValue.Y;
+				CameraRight = CameraRight * ActionValue.X;
+
+				
+				
+				FVector DirForRotation = CameraForward + CameraRight;
+
+				
+				
+				
+
+				//Move
+				FVector Dir = CameraForward + CameraRight;
+				//Compensate so we don't slam into the ground
+				Dir = Dir * FVector(1, 1, 0);
 				
 				Dir.Normalize();
-				pos = pos + (Dir * PawnMovementSpeed * GetWorld()->GetDeltaSeconds());
-				OurPawn->SetActorLocation(pos);
+				FVector DeltaMove = pos + (Dir * PawnMovementSpeed * GetWorld()->GetDeltaSeconds());
+				PawnVelocity = Dir * PawnMovementSpeed;
+				OurPawn->SetActorLocation(DeltaMove);
 				
 				//Smoothly rotate to new direction
-				FRotator CurrentRotation = OurPawn->GetActorRotation();
-				FRotator TargetRotation = Dir.Rotation();
+				
+				FRotator TargetRotation = DirForRotation.Rotation();
 				
 				FRotator SmoothRot = FMath::RInterpTo(CurrentRotation, TargetRotation, GetWorld()->GetDeltaSeconds(), PawnRotationSpeed);
 				
 				
 				OurPawn->SetActorRotation(SmoothRot);
+				
 			}
 			
 		}
@@ -526,6 +539,10 @@ void APlayerControllerBase::SetupInputComponent()
 		if (CyclePossessionDownAction)
 		{
 			EnhancedInputComponent->BindAction(CyclePossessionDownAction, ETriggerEvent::Completed, this, &APlayerControllerBase::CyclePossessionDown);
+		}
+		if (InteractAction)
+		{
+			EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &APlayerControllerBase::InteractWithClosestObject);
 		}
 		
 	}

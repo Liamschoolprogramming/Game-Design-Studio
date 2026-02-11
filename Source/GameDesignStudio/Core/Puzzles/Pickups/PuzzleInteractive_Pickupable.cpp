@@ -11,7 +11,14 @@ void APuzzleInteractive_Pickupable::Tick(float DeltaTime)
 	if (!bPushable && bBeingCarried && CarryingCharacter != nullptr)
 	{
 		this->SetActorLocation(CarryingCharacter->GetActorLocation() + CarryingCharacter->GetActorForwardVector() * 200);
+		
 	}
+	
+}
+
+void APuzzleInteractive_Pickupable::ResetCollision()
+{
+	SetActorEnableCollision(true);
 }
 
 void APuzzleInteractive_Pickupable::Interact(APlayerCharacter* PlayerCharacter)
@@ -20,6 +27,7 @@ void APuzzleInteractive_Pickupable::Interact(APlayerCharacter* PlayerCharacter)
 	{
 		bBeingCarried = false;
 		CarryingCharacter = nullptr;
+		
 	}
 	else
 	{
@@ -37,17 +45,12 @@ void APuzzleInteractive_Pickupable::Interact(APlayerCharacter* PlayerCharacter)
 			{
 				CarryingCharacter = PlayerCharacter;
 				bBeingCarried = true;
-			}
-			
-			if (bPushable)
-			{
-				FVector ForwardDirection = CarryingCharacter->GetActorForwardVector();
-				FVector NormalizedPushDirection (
-					UKismetMathLibrary::Round(ForwardDirection.X), 
-					UKismetMathLibrary::Round(ForwardDirection.Y), 
-					UKismetMathLibrary::Round(ForwardDirection.Z));
+				SetActorEnableCollision(false);
 				
-				PushDirection = NormalizedPushDirection;
+				FTimerDelegate TimerDelegate;
+				TimerDelegate.BindUFunction(this, FName("ResetCollision"));
+				GetWorld()->GetTimerManager().SetTimerForNextTick(TimerDelegate);
+				
 			}
 		}
 	}
@@ -57,4 +60,6 @@ void APuzzleInteractive_Pickupable::Drop()
 {
 	bBeingCarried = false;
 	CarryingCharacter = nullptr;
+	SetActorEnableCollision(true);
+	
 }

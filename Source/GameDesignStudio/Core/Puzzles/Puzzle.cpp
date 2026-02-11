@@ -34,6 +34,10 @@ void APuzzle::BeginPlay()
 		GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>()->RegisterPuzzleActor(this);
 	}
 	
+	if (LinkedReceiver != nullptr)
+	{
+		LinkedReceiver->Signals.Add(ActorId, false);
+	}
 }
 
 // Getting the name of the current enum state to store

@@ -9,12 +9,14 @@
 #include "InputActionValue.h"
 
 #include "Components/SphereComponent.h"
+
 #include "Core/Subsystems/GameManagerSubsystem.h"
 #include "Engine/TriggerSphere.h"
 #include "Managers/PlayerStatManager.h"
 #include "PlayerCharacter.generated.h"
 
 
+class APuzzleInteractive;
 class APlayerControllerBase;
 
 UCLASS()
@@ -30,6 +32,17 @@ public:
 	EPlayerCharacterType PlayerCharacterType = EPlayerCharacterType::Default;
 
 	
+	TSet<TWeakObjectPtr<APuzzleInteractive>> ClosestInteractiveObjects;
+	
+	UFUNCTION(BlueprintCallable, Category="Interaction")
+	void AddInteractableObject( APuzzleInteractive* Object);
+	UFUNCTION(BlueprintCallable, Category="Interaction")
+	void RemoveInteractableObject(APuzzleInteractive* Object);
+
+	
+	
+	UFUNCTION(BlueprintCallable, Category="Interaction")
+	void InteractWithClosestObject();	
 	
 protected:
 	// Called when the game starts or when spawned
@@ -46,6 +59,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
 	float CameraSensitivity = .5;
 	
+	virtual void PossessedBy(AController* NewController) override;
 	
 	//IMC
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
@@ -91,6 +105,12 @@ public:
 	// this is so knockback can be done by anything and the code doesnt need to be rewritten like a thousand times
 	UFUNCTION(BlueprintCallable)
 	void DoKnockback(float Power, AActor* origin);
+	
+	UFUNCTION(BlueprintCallable)
+	void SaveLastLocation();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Other")
+	FVector SafeLocation;
 
 
 };
