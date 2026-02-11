@@ -36,7 +36,7 @@ public:
 	
 	APlayerCharacter* PlayerReference;
 	
-	void CyclePossesion();
+	void CyclePossession();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
 	float ControllerSensitivity = 0.2f;
@@ -135,7 +135,7 @@ public:
 	TArray<APossessableEntity*> ClosestPossessableEntities;
 	
 	
-	
+	void SortClosestPossessableEntitiesByDistance();
 	
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement")
@@ -150,7 +150,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Possession")
 	void RemovePossessableEntity(APossessableEntity* Entity);
 
-	
+	bool CanWeCyclePossessableEntity(int IndexToCheck);
 
 	
 	
@@ -172,6 +172,7 @@ public:
 
 	void InteractWithClosestObject();
 	
+	UFUNCTION()
 	void CyclePossessionUp();
 	void CyclePossessionDown();
 	
