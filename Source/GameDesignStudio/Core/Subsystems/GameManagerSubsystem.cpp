@@ -173,10 +173,15 @@ void UGameManagerSubsystem::SnapshotActorValues(APuzzle* Actor)
 {
 	// Add an assert for if an actor is missing an owning manager
 	
-	if (!Actor)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Actor is NULL"));
-	}
+	//if (ensureAlwaysMsgf(!Actor, TEXT("%s does not have an owning manager set"), *Actor->GetName()))
+	//{
+		//UKismetSystemLibrary::QuitGame(GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, false);
+	//}
+	
+	//if (!Actor)
+	//{
+		//UE_LOG(LogTemp, Warning, TEXT("Actor is NULL"));
+	//}
 	
 	
 	// Include a state keyword to the struct that every method when it enters a state sets its FName State
