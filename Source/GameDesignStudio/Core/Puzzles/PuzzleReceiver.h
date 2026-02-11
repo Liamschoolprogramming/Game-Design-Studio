@@ -3,7 +3,6 @@
 
 #include "CoreMinimal.h"
 #include "Puzzle.h"
-#include "SignalReceiver.h"
 #include "PuzzleReceiver.generated.h"
 
 /**
