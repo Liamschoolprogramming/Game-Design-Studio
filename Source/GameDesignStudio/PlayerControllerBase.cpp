@@ -394,6 +394,7 @@ void APlayerControllerBase::CyclePossession()
 		{
 			PossessableEntity->SetPossessed(false);
 			Possess(PlayerReference);
+			CameraReference->SetActorRotation(PlayerReference->GetActorRotation());
 		}
 		
 		
@@ -425,6 +426,7 @@ void APlayerControllerBase::CyclePossession()
 				
 				ClosestPossessableEntities[IndexForPossessables]->SetPossessed(true);
 				Possess(ClosestPossessableEntities[IndexForPossessables]);
+				CameraReference->SetActorRotation(ClosestPossessableEntities[IndexForPossessables]->GetActorRotation());
 			}
 		}
 		else
@@ -433,6 +435,7 @@ void APlayerControllerBase::CyclePossession()
 			{
 				ClosestPossessableEntities[IndexForPossessables]->SetPossessed(true);
 				Possess(ClosestPossessableEntities[IndexForPossessables]);
+				CameraReference->SetActorRotation(ClosestPossessableEntities[IndexForPossessables]->GetActorRotation());
 			}
 		}
 		
