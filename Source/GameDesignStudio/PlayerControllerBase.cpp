@@ -18,7 +18,17 @@
 
 DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
 
+//Get whether the player controller has been set to be able to move or not
+bool APlayerControllerBase::GetCanMove()
+{
+	return bCanMove;
+}
 
+//Set the controller's ability to move it's possessed pawn (controlled through possessable entity)
+void APlayerControllerBase::SetCanMove(bool CanMove)
+{
+	bCanMove = CanMove;
+}
 
 void APlayerControllerBase::Jump(const FInputActionValue& Value)
 {
@@ -234,6 +244,10 @@ void APlayerControllerBase::Look(const FInputActionValue& Value)
 
 void APlayerControllerBase::Move(const FInputActionValue& Value)
 {
+	if (!bCanMove)
+	{
+		return;
+	}
 	//move the camera if we have a reference to it
 	if (CameraReference)
 	{
