@@ -92,7 +92,7 @@ bool APlayerControllerBase::CanWeCyclePossessableEntity(int IndexToCheck)
 {
 	if (ClosestPossessableEntities.IsEmpty()) return false;
 	
-	Debug::PrintToScreen(IndexToCheck);
+	//Debug::PrintToScreen(IndexToCheck);
 	
 	if (IndexToCheck == -1)
 	{
@@ -397,7 +397,7 @@ void APlayerControllerBase::CyclePossession()
 {
 	if (ClosestPossessableEntities.IsEmpty()) return;
 	
-	Debug::PrintToScreen(IndexForPossessables);
+	//Debug::PrintToScreen(IndexForPossessables);
 	
 	if (IndexForPossessables == -1)
 	{
