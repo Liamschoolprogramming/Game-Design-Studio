@@ -93,17 +93,17 @@ bool ACustomCamera::CanSeeObject(AActor* Actor)
 	{
 		if (HitResult.GetActor())
 		{
-			Debug::PrintToScreen(HitResult.GetActor()->GetName(), 10.f, FColor::Purple);
+			//Debug::PrintToScreen(HitResult.GetActor()->GetName(), 10.f, FColor::Purple);
 		}else
 		{
-			Debug::PrintToScreen(HitResult.ImpactPoint, 10.f, FColor::Purple);
+			//Debug::PrintToScreen(HitResult.ImpactPoint, 10.f, FColor::Purple);
 			DrawDebugLine(GetWorld(), Start, HitResult.ImpactPoint, FColor::Yellow, true);
 			DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 100.f, FColor::Purple, true);
 		}
 		
 		return false;
 	}
-	Debug::PrintToScreen("CanSeeObject");
+	//Debug::PrintToScreen("CanSeeObject");
 	return true;
 }
 
@@ -206,7 +206,7 @@ float ACustomCamera::GetCameraSpeedFromDesiredDirection(FVector2D InputValue) co
 		return lerp;
 	}
 	
-	Debug::PrintToScreen("No pawn", 1, FColor::Red);
+	//Debug::PrintToScreen("No pawn", 1, FColor::Red);
 	return DefaultCameraMovementSpeed * GetWorld()->GetDeltaSeconds();
 	
 		

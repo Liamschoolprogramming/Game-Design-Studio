@@ -32,7 +32,7 @@ void UGameManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	
 	UE_LOG(LogTemp, Warning, TEXT("GameManagerSubsystem Initialize: %s"), *UGameplayStatics::GetGameInstance(GetWorld())->GetName());
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, FString::Printf(TEXT("Registered GameManagerSubsystem")));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, FString::Printf(TEXT("Registered GameManagerSubsystem")));
 	
 	RegisterManagers();
 	

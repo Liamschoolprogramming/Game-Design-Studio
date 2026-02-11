@@ -96,7 +96,7 @@ void APlayerCharacter::InteractWithClosestObject()
 	{
 		
 		
-		Debug::PrintToScreen(FString::Printf(TEXT("%s is interacting with %s"), *GetName(), *ClosestObject->GetName()), 10.0f, FColor::Cyan);
+		//Debug::PrintToScreen(FString::Printf(TEXT("%s is interacting with %s"), *GetName(), *ClosestObject->GetName()), 10.0f, FColor::Cyan);
 		//call BP first as some things need it first (big boulder)
 		ClosestObject->OnInteract(this);
 		//then try the Cpp file
@@ -153,7 +153,7 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 	if (bHit)
 	{
 		HalfHeight += HitResult.Location.Z;
-		Debug::PrintToScreen(HitResult.Location.Z);
+		//Debug::PrintToScreen(HitResult.Location.Z);
 	}
 	SetActorLocation(FVector(Start.X, Start.Y, HalfHeight));
 }
@@ -168,7 +168,7 @@ void APlayerCharacter::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComp,
 			APossessableEntity* PossessableEntity = Cast<APossessableEntity>(OtherActor);
 			if (PlayerController && PossessableEntity && OtherComp->ComponentHasTag("HitBox"))
 			{
-				Debug::PrintToScreen(PossessableEntity->GetName(), 10.0f);
+				//Debug::PrintToScreen(PossessableEntity->GetName(), 10.0f);
 				PlayerController->AddPossessableEntity(PossessableEntity);
 			}
 			
@@ -178,7 +178,7 @@ void APlayerCharacter::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComp,
 			APuzzleInteractive* Puzzle = Cast<APuzzleInteractive>(OtherActor);
 			if (PlayerController && Puzzle)
 			{
-				Debug::PrintToScreen(Puzzle->GetName(), 10.0f);
+				//Debug::PrintToScreen(Puzzle->GetName(), 10.0f);
 				AddInteractableObject(Puzzle);
 			}
 		}
@@ -196,7 +196,7 @@ void APlayerCharacter::OnSphereOverlapEnd(UPrimitiveComponent* OverlappedComp, A
 			APossessableEntity* PossessableEntity = Cast<APossessableEntity>(OtherActor);
 			if (PlayerController && PossessableEntity  && OtherComp->ComponentHasTag("HitBox"))
 			{
-				Debug::PrintToScreen(PossessableEntity->GetName(), 10.0f, FColor::Red);
+				//Debug::PrintToScreen(PossessableEntity->GetName(), 10.0f, FColor::Red);
 				PlayerController->RemovePossessableEntity(PossessableEntity);
 			}
 			
@@ -206,7 +206,7 @@ void APlayerCharacter::OnSphereOverlapEnd(UPrimitiveComponent* OverlappedComp, A
 			APuzzleInteractive* Puzzle = Cast<APuzzleInteractive>(OtherActor);
 			if (PlayerController && Puzzle)
 			{
-				Debug::PrintToScreen(Puzzle->GetName(), 10.0f, FColor::Red);
+				//Debug::PrintToScreen(Puzzle->GetName(), 10.0f, FColor::Red);
 				RemoveInteractableObject(Puzzle);
 			}
 		}
@@ -260,11 +260,5 @@ void APlayerCharacter::SaveLastLocation()
 	if (this->GetVelocity().Z == 0.0f)
 	{
 		SafeLocation = this->GetActorLocation();
-		GEngine->AddOnScreenDebugMessage(
-			-1,            // Key: A unique key to prevent the same message from being added multiple times. Use -1 for a new message each time.
-			5.0f,          // Duration: How long the message is displayed, in seconds.
-			FColor::Red,   // Color: The color of the text.
-			TEXT("Got safe location!") // Message: The FString message to display.
-	);
 	}
 }
