@@ -49,10 +49,7 @@ void APossessableEntity::OnTogglePossession()
 	{
 		PlayerController->Possess(PlayerCharacter);
 		bPossessed = false;
-		if (!bCanMove)
-		{
-			PlayerController->SetIgnoreMoveInput(true);
-		}
+		PlayerController->SetCanMove(true);
 	}
 	else
 	{
@@ -60,29 +57,18 @@ void APossessableEntity::OnTogglePossession()
 		bPossessed = true;
 		if (!bCanMove)
 		{
-			PlayerController->SetIgnoreMoveInput(false);
+			PlayerController->SetCanMove(false);
+		}
+		else
+		{
+			PlayerController->SetCanMove(true);
 		}
 	}
-	//If the possessable entity is set to be unable to move, tell the controller to block move inputs
-	if (!bCanMove)
-	{
-		PlayerController->SetCanMove(false);
-	}
-	else
-	{
-		PlayerController->SetCanMove(true);
-	}
-	if(GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("TogglePossess"));
 }
 
 void APossessableEntity::OnPossess()
 {
 	PlayerController->Possess(this);
-	
-	if(GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("OnPossess"));
-	
 	bPossessed = true;
 }
 
@@ -90,7 +76,4 @@ void APossessableEntity::OnCancelPossess()
 {
 	PlayerController->Possess(PlayerCharacter);
 	bPossessed = false;
-	
-	if(GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("CancelPossess"));
 }
