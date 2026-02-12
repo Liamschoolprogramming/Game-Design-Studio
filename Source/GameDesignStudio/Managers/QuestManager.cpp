@@ -12,12 +12,40 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 	Super::Initialize(InstanceOwner);
 	
 	Quests = {
-		{"TestItem", FQuest("Test Quest", "TestItem", 10)},
-		{"AnotherTestItem", FQuest("Test Quest", "TestItem", 10)},
+		//Day Quest - Sundew
+		{
+			"Sunstone",
+			FQuest(
+				"Flower Spirit Sundew",
+				"A cheery sunflower spirit wants to live closer to the goddess but it's too cold. Find a Sunstone to heat up its living space.",
+				"Sunstone",
+				1
+			)
+		},
+		//Night Quest - Stoneface
+		{
+			"Golem",
+			FQuest(
+				"Self-Aware Golem",
+				"The Golem wants someone to talk to.",
+				"Golem",
+				1
+			)
+		},
+		//Lehan Quest - Whistlebranch
+		{
+			"Owl Child",
+			FQuest(
+				"Whistlebranch's Missing Children",
+				"Whistlebranch can't seem to find her children. Help her find them.",
+				"Owl Child",
+				4
+			)
+		},
 	};
 	
 	// testing only
-	ActivateQuestForItem("TestItem");
+	ActivateQuestForItem("Golem");
 }
 
 void UQuestManager::ActivateQuestForItem(FName ItemName)
