@@ -173,6 +173,14 @@ void UGameManagerSubsystem::SnapshotActorValues(APuzzle* Actor)
 {
 	// Add an assert for if an actor is missing an owning manager
 	
+	//UGameManagerBase* Manager = GetManager(UPuzzleRiverManager::StaticClass());
+	
+	if (Actor->OwningManager == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Snapshot Actor is nullptr"));
+		Actor->OwningManager = UPuzzleRiverManager::StaticClass();
+	}
+	
 	//if (ensureAlwaysMsgf(!Actor, TEXT("%s does not have an owning manager set"), *Actor->GetName()))
 	//{
 		//UKismetSystemLibrary::QuitGame(GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, false);
