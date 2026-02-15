@@ -38,6 +38,8 @@ public:
 	const float ToTopDownThreshold = 0.8f;
 	const float ToPerspectiveThreshold = 0.2f;
 	
+	const float TopDownAngle = -70.0f;
+	
 	UFUNCTION(BlueprintCallable, Category = "Camera")
 	bool CanSeeObject(AActor* Actor);
 
