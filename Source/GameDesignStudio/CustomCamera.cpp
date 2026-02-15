@@ -71,6 +71,42 @@ void ACustomCamera::ZoomCamera(float Value)
 	
 }
 
+bool ACustomCamera::CanSeeObject(AActor* Actor)
+{
+	if (!Actor) return false;
+	const FVector Start = FollowCamera->GetComponentLocation();
+	const FVector End = Actor->GetActorLocation();
+	
+	
+	
+	FHitResult HitResult;
+		
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);            // Ignore self
+	Params.AddIgnoredActor(Actor); //ignore the one we are checking
+		
+	Params.bTraceComplex = true;             // Use complex collision if needed
+	Params.bReturnPhysicalMaterial = false
+	;
+	const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility,Params );
+	if (bHit)
+	{
+		if (HitResult.GetActor())
+		{
+			//Debug::PrintToScreen(HitResult.GetActor()->GetName(), 10.f, FColor::Purple);
+		}else
+		{
+			//Debug::PrintToScreen(HitResult.ImpactPoint, 10.f, FColor::Purple);
+			DrawDebugLine(GetWorld(), Start, HitResult.ImpactPoint, FColor::Yellow, true);
+			DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 100.f, FColor::Purple, true);
+		}
+		
+		return false;
+	}
+	//Debug::PrintToScreen("CanSeeObject");
+	return true;
+}
+
 void ACustomCamera::ToggleCameraMode()
 {
 	bInTopDownMode = !bInTopDownMode;
@@ -170,7 +206,7 @@ float ACustomCamera::GetCameraSpeedFromDesiredDirection(FVector2D InputValue) co
 		return lerp;
 	}
 	
-	Debug::PrintToScreen("No pawn", 1, FColor::Red);
+	//Debug::PrintToScreen("No pawn", 1, FColor::Red);
 	return DefaultCameraMovementSpeed * GetWorld()->GetDeltaSeconds();
 	
 		

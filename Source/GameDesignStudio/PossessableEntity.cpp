@@ -25,6 +25,8 @@ APossessableEntity::APossessableEntity()
 void APossessableEntity::SetPossessed(bool NewPossessed)
 {
 	bPossessed = NewPossessed;
+	if(GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("SetPossessed"));
 }
 
 // Called when the game starts or when spawned
@@ -47,19 +49,26 @@ void APossessableEntity::OnTogglePossession()
 	{
 		PlayerController->Possess(PlayerCharacter);
 		bPossessed = false;
+		PlayerController->SetCanMove(true);
 	}
 	else
 	{
 		PlayerController->Possess(this);
 		bPossessed = true;
+		if (!bCanMove)
+		{
+			PlayerController->SetCanMove(false);
+		}
+		else
+		{
+			PlayerController->SetCanMove(true);
+		}
 	}
 }
 
 void APossessableEntity::OnPossess()
 {
 	PlayerController->Possess(this);
-	
-	
 	bPossessed = true;
 }
 

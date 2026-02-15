@@ -25,6 +25,11 @@ class GAMEDESIGNSTUDIO_API APlayerControllerBase : public APlayerController
 
 public:
 
+	UFUNCTION(BlueprintCallable)
+	bool GetCanMove();
+	
+	UFUNCTION(BlueprintCallable)
+	void SetCanMove(bool CanMove);
 	
 	bool bSettingDestination = false;
 
@@ -36,7 +41,7 @@ public:
 	
 	APlayerCharacter* PlayerReference;
 	
-	void CyclePossesion();
+	void CyclePossession();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
 	float ControllerSensitivity = 0.2f;
@@ -44,8 +49,6 @@ public:
 	/** Handles move inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoMove(float Right, float Forward);
-
-	
 	
 	/** Handles look inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
@@ -135,7 +138,7 @@ public:
 	TArray<APossessableEntity*> ClosestPossessableEntities;
 	
 	
-	
+	void SortClosestPossessableEntitiesByDistance();
 	
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement")
@@ -150,7 +153,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Possession")
 	void RemovePossessableEntity(APossessableEntity* Entity);
 
-	
+	bool CanWeCyclePossessableEntity(int IndexToCheck);
 
 	
 	
@@ -172,6 +175,7 @@ public:
 
 	void InteractWithClosestObject();
 	
+	UFUNCTION()
 	void CyclePossessionUp();
 	void CyclePossessionDown();
 	
@@ -184,6 +188,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	
+	//Whether the player is able to move or not (controlled by possessable entity for possessables that can't move
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
+	bool bCanMove = true;
 
 private:
 	
