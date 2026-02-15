@@ -5,6 +5,7 @@
 
 #include "DelayAction.h"
 #include "Macros.h"
+#include "PlayerCharacterCameraInterface.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
@@ -111,6 +112,14 @@ void ACustomCamera::ToggleCameraMode()
 {
 	bInTopDownMode = !bInTopDownMode;
 	SetCameraTransformAlongSpline(ZoomPercent);
+}
+
+void ACustomCamera::ResetCameraRotation(const FRotator& NewRotation)
+{
+	if (CameraBoom)
+	{
+		PerspectiveZoomSpline->SetWorldRotation(NewRotation);
+	}
 }
 
 float ACustomCamera::SetCameraHeight()
@@ -298,7 +307,7 @@ void ACustomCamera::SetCameraTransformAlongSpline(float Percent)
 		{
 			//We don't want to angle the camera while in top down and we can't have a camera pointing straight down so near -90 looks nice
 			
-			CameraBoom->SetWorldRotation(FRotator(-89.181545f,BasePawnRotation.Yaw,0.0f));
+			CameraBoom->SetWorldRotation(FRotator(TopDownAngle,BasePawnRotation.Yaw,0.0f));
 		}
 		
 	
@@ -343,7 +352,7 @@ void ACustomCamera::BeginPlay()
 		
 		if (TopDownZoomSpline->GetNumberOfSplinePoints() == 2)
 		{
-			TopDownZoomSpline->SetLocationAtSplinePoint(1, FVector(-20, 0, 1400), ESplineCoordinateSpace::Local, true);
+			TopDownZoomSpline->SetLocationAtSplinePoint(1, FVector(-300, 0, 1400), ESplineCoordinateSpace::Local, true);
 			TopDownZoomSpline->SetLocationAtSplinePoint(0, FVector(0,0,300), ESplineCoordinateSpace::Local, true);
 		}
 	}
@@ -377,11 +386,25 @@ void ACustomCamera::Tick(float DeltaTime)
 	if (bLockCameraToCharacter == true)
 	{
 		ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-		if (PlayerCharacter)
+		
+		bool bIsImplemented = PlayerCharacter->Implements<UPlayerCharacterCameraInterface>();
+		IPlayerCharacterCameraInterface* ReactingObject = Cast<IPlayerCharacterCameraInterface>(PlayerCharacter);
+		if (bIsImplemented && ReactingObject)
+		{
+			if (ReactingObject->GetAttachPoint())
+			{
+				RootComponent->SetWorldLocation(ReactingObject->GetAttachPoint()->GetComponentLocation());
+				RootComponent->SetWorldScale3D(ReactingObject->GetAttachPoint()->GetComponentScale());
+				SetCameraTransformAlongSpline(ZoomPercent);
+			}
+			
+		}
+		
+		else if (PlayerCharacter)
 		{
 			
 			RootComponent->SetWorldLocation(PlayerCharacter->GetActorLocation());
-			
+			RootComponent->SetWorldScale3D(FVector(1,1,1));
 			SetCameraTransformAlongSpline(ZoomPercent);
 		}
 		
@@ -391,6 +414,7 @@ void ACustomCamera::Tick(float DeltaTime)
 		float h = SetCameraHeight();
 		
 		RootComponent->SetWorldLocation(FVector(GetActorLocation().X,GetActorLocation().Y, h));
+		RootComponent->SetWorldScale3D(FVector(1,1,1));
 	}
 
 }

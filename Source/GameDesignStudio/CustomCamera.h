@@ -49,6 +49,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
 	float DefaultCameraMovementSpeed = 800;
 
+	
+	void ResetCameraRotation(const FRotator& NewRotation = FRotator::ZeroRotator);
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
 	float CameraRotationSpeed = 200;
 	
