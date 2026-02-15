@@ -178,13 +178,13 @@ void ACustomCamera::RotateCamera(FVector2D ActionValue) const
 	if (bAllowRotation)
 	{
 		
-		FRotator rot = PerspectiveZoomSpline->GetComponentRotation();
+		FRotator rot = RootComponent->GetComponentRotation();
 		
 		float deltaYaw = ActionValue.X * CameraRotationSpeed * GetWorld()->GetDeltaSeconds();
 		deltaYaw = FMath::Clamp(deltaYaw, -MaxYawSpeed, MaxYawSpeed);
 		rot.Yaw = rot.Yaw + deltaYaw;
 		
-		PerspectiveZoomSpline->SetWorldRotation(rot);
+		RootComponent->SetWorldRotation(rot);
 	}
 }
 //basically some fancy math to figure out which direction we are moving and whether we are reaching the edge of the camera bounds and smoothly slows us down if we move away from the pawn
@@ -299,16 +299,9 @@ void ACustomCamera::SetCameraTransformAlongSpline(float Percent)
 	USplineComponent* SplineComponent = bInTopDownMode? TopDownZoomSpline : PerspectiveZoomSpline;
 	if (SplineComponent)
 	{
-		if (!bInTopDownMode)
-		{
-			CameraBoom->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(CameraBoom->GetComponentLocation(), RootComponent->GetComponentLocation()));
-		}
-		else
-		{
-			//We don't want to angle the camera while in top down and we can't have a camera pointing straight down so near -90 looks nice
-			
-			CameraBoom->SetWorldRotation(FRotator(TopDownAngle,BasePawnRotation.Yaw,0.0f));
-		}
+		
+		CameraBoom->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(CameraBoom->GetComponentLocation(), RootComponent->GetComponentLocation()));
+		
 		
 	
 		FVector pos = SplineComponent->GetLocationAtTime(Percent,ESplineCoordinateSpace::World);
@@ -352,7 +345,7 @@ void ACustomCamera::BeginPlay()
 		
 		if (TopDownZoomSpline->GetNumberOfSplinePoints() == 2)
 		{
-			TopDownZoomSpline->SetLocationAtSplinePoint(1, FVector(-300, 0, 1400), ESplineCoordinateSpace::Local, true);
+			TopDownZoomSpline->SetLocationAtSplinePoint(1, FVector(-1400, 0, 650), ESplineCoordinateSpace::Local, true);
 			TopDownZoomSpline->SetLocationAtSplinePoint(0, FVector(0,0,300), ESplineCoordinateSpace::Local, true);
 		}
 	}
