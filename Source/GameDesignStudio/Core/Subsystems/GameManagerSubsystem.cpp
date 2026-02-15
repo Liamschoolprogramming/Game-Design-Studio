@@ -1,15 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "GameManagerSubsystem.h"
-
 #include "PuzzleWorldSubsystem.h"
 #include "Core/Managers/GameManagerBase.h"
 #include "Managers/PuzzleRiverManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "Misc/MessageDialog.h"
 #include "Managers/InventoryManager.h"
 #include "Managers/PlayerStatManager.h"
 #include "Managers/QuestManager.h"
+
+#if WITH_EDITOR
+#include "Editor.h"
+#endif
+
 
 void UGameManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -149,9 +153,7 @@ void UGameManagerSubsystem::RegisterActorToManager(TSubclassOf<UGameManagerBase>
 	if (UGameManagerBase* Manager = GetManagerByClass(ManagerClass))
 	{
 		Manager->RegisterActor(Id, ActorValues);
-		
 		UE_LOG(LogTemp, Warning, TEXT("Registering Actor"));
-		
 	}
 	
 }
@@ -171,32 +173,22 @@ void UGameManagerSubsystem::SnapshotActorValues(TSubclassOf<UGameManagerBase> Ma
 
 void UGameManagerSubsystem::SnapshotActorValues(APuzzle* Actor)
 {
-	// Add an assert for if an actor is missing an owning manager
+	FString ActorName = FString::Printf(TEXT("%s needs to have their owning manager set"), *Actor->GetName());
 	
-	//UGameManagerBase* Manager = GetManager(UPuzzleRiverManager::StaticClass());
-	
+	// Called on every actor on it's beginplay
 	if (Actor->OwningManager == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Snapshot Actor is nullptr"));
-		Actor->OwningManager = UPuzzleRiverManager::StaticClass();
+		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(ActorName));
+		
+		// Editor calls really shouldn't be put in runtime code but for now it's fine
+		#if WITH_EDITOR
+		GEditor->RequestEndPlayMap();
+		#endif
 	}
 	
-	//if (ensureAlwaysMsgf(!Actor, TEXT("%s does not have an owning manager set"), *Actor->GetName()))
-	//{
-		//UKismetSystemLibrary::QuitGame(GetWorld(), UGameplayStatics::GetPlayerController(GetWorld(), 0), EQuitPreference::Quit, false);
-	//}
-	
-	//if (!Actor)
-	//{
-		//UE_LOG(LogTemp, Warning, TEXT("Actor is NULL"));
-	//}
-	
-	
-	// Include a state keyword to the struct that every method when it enters a state sets its FName State
-	// field to that state
-	
-	// Add enum state name to the struct
-	// Enum state name->ActorStats->State
-	
-	this->GetManager(Actor->OwningManager)->Snapshot(Actor->ActorId, Actor->ActorValues);
+	else if (Actor->OwningManager != nullptr)
+	{
+		this->GetManager(Actor->OwningManager)->Snapshot(Actor->ActorId, Actor->ActorValues);
+	}
 }
