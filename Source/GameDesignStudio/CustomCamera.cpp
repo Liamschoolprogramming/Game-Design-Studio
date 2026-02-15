@@ -3,8 +3,11 @@
 
 #include "CustomCamera.h"
 
+#include "DelayAction.h"
 #include "Macros.h"
+#include "PlayerCharacterCameraInterface.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -26,8 +29,7 @@ ACustomCamera::ACustomCamera()
 	RootComponent = ZoomOrigin;
 	
 	//Setup camera boom
-	CameraBoom->bEnableCameraLag = true;
-	CameraBoom->bEnableCameraRotationLag = true;
+	
 	CameraBoom->bDoCollisionTest = false;
 
 	
@@ -70,44 +72,89 @@ void ACustomCamera::ZoomCamera(float Value)
 	
 }
 
+bool ACustomCamera::CanSeeObject(AActor* Actor)
+{
+	if (!Actor) return false;
+	const FVector Start = FollowCamera->GetComponentLocation();
+	const FVector End = Actor->GetActorLocation();
+	
+	
+	
+	FHitResult HitResult;
+		
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);            // Ignore self
+	Params.AddIgnoredActor(Actor); //ignore the one we are checking
+		
+	Params.bTraceComplex = true;             // Use complex collision if needed
+	Params.bReturnPhysicalMaterial = false
+	;
+	const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility,Params );
+	if (bHit)
+	{
+		if (HitResult.GetActor())
+		{
+			//Debug::PrintToScreen(HitResult.GetActor()->GetName(), 10.f, FColor::Purple);
+		}else
+		{
+			//Debug::PrintToScreen(HitResult.ImpactPoint, 10.f, FColor::Purple);
+			DrawDebugLine(GetWorld(), Start, HitResult.ImpactPoint, FColor::Yellow, true);
+			DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 100.f, FColor::Purple, true);
+		}
+		
+		return false;
+	}
+	//Debug::PrintToScreen("CanSeeObject");
+	return true;
+}
+
 void ACustomCamera::ToggleCameraMode()
 {
 	bInTopDownMode = !bInTopDownMode;
 	SetCameraTransformAlongSpline(ZoomPercent);
 }
 
+void ACustomCamera::ResetCameraRotation(const FRotator& NewRotation)
+{
+	if (CameraBoom)
+	{
+		PerspectiveZoomSpline->SetWorldRotation(NewRotation);
+	}
+}
+
 float ACustomCamera::SetCameraHeight()
 {
-	APawn* Pawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	ACharacter* Character = GetWorld()->GetFirstPlayerController()->GetCharacter();
 	
-	if (Pawn)
+	if (Character)
 	{
-		float PawnDesiredHeight = Pawn->GetActorLocation().Z;
-		FVector Origin;
-		FVector BoxExtent;
-		Pawn->GetActorBounds(true,Origin, BoxExtent);
-		float HalfHeight = BoxExtent.Z;
+		float PawnDesiredHeight = Character->GetActorLocation().Z;
+		
+		float HalfHeight = Character->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 		FVector start = FVector(GetActorLocation().X, GetActorLocation().Y, PawnDesiredHeight + 2000);
 		FVector end = FVector(GetActorLocation().X, GetActorLocation().Y, PawnDesiredHeight - HalfHeight);
 		FHitResult HitResult;
 		
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(this);            // Ignore self
-		Params.AddIgnoredActor(Pawn);
+		Params.AddIgnoredActor(Character);
+		
 		Params.bTraceComplex = true;             // Use complex collision if needed
 		Params.bReturnPhysicalMaterial = false;
 		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, start, end, ECC_Camera,Params );
 		if (bHit)
 		{
 			CameraHeight = HalfHeight + HitResult.Location.Z;
+			Debug::PrintToScreen(HitResult.Location.Z);
 		}
 		else
 		{
 			CameraHeight = PawnDesiredHeight;
 		}
-		
+		return CameraHeight;
 	}
-	return CameraHeight;
+	return 0.0f;
+	
 	
 }
 
@@ -126,19 +173,22 @@ void ACustomCamera::MoveCamera(FVector2D ActionValue)
 	SetActorLocation(pos);
 }
 
-void ACustomCamera::RotateCamera(FVector2D ActionValue)
+void ACustomCamera::RotateCamera(FVector2D ActionValue) const
 {
 	if (bAllowRotation)
 	{
 		
-		FRotator rot = PerspectiveZoomSpline->GetComponentRotation();
-		rot.Yaw = rot.Yaw + (ActionValue.X * CameraRotationSpeed);
+		FRotator rot = RootComponent->GetComponentRotation();
 		
-		PerspectiveZoomSpline->SetWorldRotation(rot);
+		float deltaYaw = ActionValue.X * CameraRotationSpeed * GetWorld()->GetDeltaSeconds();
+		deltaYaw = FMath::Clamp(deltaYaw, -MaxYawSpeed, MaxYawSpeed);
+		rot.Yaw = rot.Yaw + deltaYaw;
+		
+		RootComponent->SetWorldRotation(rot);
 	}
 }
 //basically some fancy math to figure out which direction we are moving and whether we are reaching the edge of the camera bounds and smoothly slows us down if we move away from the pawn
-float ACustomCamera::GetCameraSpeedFromDesiredDirection(FVector2D InputValue)
+float ACustomCamera::GetCameraSpeedFromDesiredDirection(FVector2D InputValue) const
 {
 	
 	FVector f = bInTopDownMode ? RootComponent->GetForwardVector(): CameraBoom->GetForwardVector();
@@ -165,7 +215,7 @@ float ACustomCamera::GetCameraSpeedFromDesiredDirection(FVector2D InputValue)
 		return lerp;
 	}
 	
-	Debug::PrintToScreen("No pawn", 1, FColor::Red);
+	//Debug::PrintToScreen("No pawn", 1, FColor::Red);
 	return DefaultCameraMovementSpeed * GetWorld()->GetDeltaSeconds();
 	
 		
@@ -176,22 +226,43 @@ void ACustomCamera::AllowCameraRotation(bool bValue)
 	bAllowRotation = bValue;
 }
 
-FVector ACustomCamera::ForwardVector()
+FVector ACustomCamera::ForwardVector() const
 {
+	//if we are in top down the forward should be relative to north and south
+	if (bInTopDownMode)
+	{
+		return RootComponent->GetForwardVector();
+	}
+	
 	return FollowCamera->GetForwardVector();
 }
 
-FVector ACustomCamera::RightVector()
+FVector ACustomCamera::RightVector() const
 {
+	//if we are in top down the Right should be relative to east and west
+	if (bInTopDownMode)
+	{
+		return RootComponent->GetRightVector();
+	}
 	return FollowCamera->GetRightVector();
 }
 
-void ACustomCamera::SetCameraTransformAlongSpline(float percent)
+
+void ACustomCamera::SetupCameraLag() const
 {
-	ZoomPercent = percent;
+	//Wait to set position the first time before enabling the smoothing
+	CameraBoom->bEnableCameraLag = true;
+	CameraBoom->bEnableCameraRotationLag = true;
+	CameraBoom->CameraLagSpeed = 5.0f;
+	CameraBoom->CameraRotationLagSpeed = 5.0f;
+}
+
+void ACustomCamera::SetCameraTransformAlongSpline(float Percent)
+{
+	ZoomPercent = Percent;
 
 	bool bShouldToggle = false;
-
+	FTimerHandle TimerHandle;
 	if (!bInTopDownMode && ZoomPercent >= 1)
 	{
 		ZoomPercent = ToPerspectiveThreshold;     // start at beginning of new spline but give a bit so we dont switch back instantly
@@ -200,6 +271,7 @@ void ACustomCamera::SetCameraTransformAlongSpline(float percent)
 	else if (!bInTopDownMode && ZoomPercent <= ZoomMinPercent)
 	{
 		ZoomPercent = ZoomMinPercent;
+		
 	}
 	else if (bInTopDownMode && ZoomPercent <= 0)
 	{
@@ -210,6 +282,15 @@ void ACustomCamera::SetCameraTransformAlongSpline(float percent)
 	if (bShouldToggle)
 	{
 		bInTopDownMode = !bInTopDownMode;
+		CameraBoom->CameraRotationLagSpeed = 1.5f;
+		
+		if (TimerHandle.IsValid())
+		{
+			TimerHandle.Invalidate();
+		}
+		FTimerDelegate TimerDelegate;
+		TimerDelegate.BindUFunction(this, FName("SetupCameraLag"));
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, .7f, false);
 	}
 
 	
@@ -218,12 +299,17 @@ void ACustomCamera::SetCameraTransformAlongSpline(float percent)
 	USplineComponent* SplineComponent = bInTopDownMode? TopDownZoomSpline : PerspectiveZoomSpline;
 	if (SplineComponent)
 	{
-
-		CameraBoom->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(CameraBoom->GetComponentLocation(), SplineComponent->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World)));
+		
+		CameraBoom->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(CameraBoom->GetComponentLocation(), RootComponent->GetComponentLocation()));
+		
+		
 	
-		FVector pos = SplineComponent->GetLocationAtTime(percent,ESplineCoordinateSpace::World);
+		FVector pos = SplineComponent->GetLocationAtTime(Percent,ESplineCoordinateSpace::World);
 		CameraBoom->SetWorldLocation(pos);
 	}
+	
+	
+	
 	
 	
 	
@@ -246,9 +332,9 @@ void ACustomCamera::BeginPlay()
 			PerspectiveZoomSpline->SetLocationAtSplinePoint(1, FVector(-326, 0, 350), ESplineCoordinateSpace::Local, true);
 			PerspectiveZoomSpline->SetLocationAtSplinePoint(0, FVector(0,0,0), ESplineCoordinateSpace::Local, true);
 			
-			//These values are not what you would think they should be. For some reason FRotator(x,y,z) on the spline turns into (y,z,x) rotation.
-			PerspectiveZoomSpline->SetRotationAtSplinePoint(1,FRotator(89,0,0), ESplineCoordinateSpace::World, true);
-			PerspectiveZoomSpline->SetRotationAtSplinePoint(0,FRotator(0,180,0), ESplineCoordinateSpace::World, true);
+			//These values are not what you would think they should be. Rotators in c++ seem to be y, z , x for Pitch, yaw, roll
+			PerspectiveZoomSpline->SetRotationAtSplinePoint(1,FRotator(89,0,0), ESplineCoordinateSpace::Local, true);
+			PerspectiveZoomSpline->SetRotationAtSplinePoint(0,FRotator(0,180,0), ESplineCoordinateSpace::Local, true);
 			
 			SetCameraTransformAlongSpline(ZoomPercent);
 		}
@@ -259,10 +345,30 @@ void ACustomCamera::BeginPlay()
 		
 		if (TopDownZoomSpline->GetNumberOfSplinePoints() == 2)
 		{
-			TopDownZoomSpline->SetLocationAtSplinePoint(1, FVector(-20, 0, 1400), ESplineCoordinateSpace::Local, true);
+			TopDownZoomSpline->SetLocationAtSplinePoint(1, FVector(-1400, 0, 650), ESplineCoordinateSpace::Local, true);
 			TopDownZoomSpline->SetLocationAtSplinePoint(0, FVector(0,0,300), ESplineCoordinateSpace::Local, true);
 		}
 	}
+	
+	//Set position the first time
+	if (bLockCameraToCharacter == true)
+	{
+		ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+		if (PlayerCharacter)
+		{
+			
+			RootComponent->SetWorldLocation(PlayerCharacter->GetActorLocation());
+			RootComponent->SetWorldRotation(PlayerCharacter->GetActorRotation());
+			BasePawnRotation = PlayerCharacter->GetActorRotation();
+			
+			SetCameraTransformAlongSpline(ZoomPercent);
+		}
+		
+	}
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindUFunction(this, FName("SetupCameraLag"));
+	GetWorld()->GetTimerManager().SetTimerForNextTick(TimerDelegate);
+	
 }
 
 // Called every frame
@@ -273,10 +379,25 @@ void ACustomCamera::Tick(float DeltaTime)
 	if (bLockCameraToCharacter == true)
 	{
 		ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-		if (PlayerCharacter)
+		
+		bool bIsImplemented = PlayerCharacter->Implements<UPlayerCharacterCameraInterface>();
+		IPlayerCharacterCameraInterface* ReactingObject = Cast<IPlayerCharacterCameraInterface>(PlayerCharacter);
+		if (bIsImplemented && ReactingObject)
 		{
-			RootComponent->SetWorldLocation(PlayerCharacter->GetActorLocation());
+			if (ReactingObject->GetAttachPoint())
+			{
+				RootComponent->SetWorldLocation(ReactingObject->GetAttachPoint()->GetComponentLocation());
+				RootComponent->SetWorldScale3D(ReactingObject->GetAttachPoint()->GetComponentScale());
+				SetCameraTransformAlongSpline(ZoomPercent);
+			}
 			
+		}
+		
+		else if (PlayerCharacter)
+		{
+			
+			RootComponent->SetWorldLocation(PlayerCharacter->GetActorLocation());
+			RootComponent->SetWorldScale3D(FVector(1,1,1));
 			SetCameraTransformAlongSpline(ZoomPercent);
 		}
 		
@@ -284,7 +405,9 @@ void ACustomCamera::Tick(float DeltaTime)
 	{
 		SetCameraTransformAlongSpline(ZoomPercent);
 		float h = SetCameraHeight();
+		
 		RootComponent->SetWorldLocation(FVector(GetActorLocation().X,GetActorLocation().Y, h));
+		RootComponent->SetWorldScale3D(FVector(1,1,1));
 	}
 
 }

@@ -11,6 +11,8 @@
 
 // Add more structs for more features
 
+
+// Depreciated struct do not use
 USTRUCT(BlueprintType)
 struct FPuzzleId
 {
@@ -21,12 +23,4 @@ struct FPuzzleId
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName Name;
-};
-
-enum class EPuzzleStatus : uint8
-{
-	Inactive,
-	Active,
-	Solved,
-	Failed,
 };

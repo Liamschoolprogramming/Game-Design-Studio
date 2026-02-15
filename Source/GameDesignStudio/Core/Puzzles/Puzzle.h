@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Data/PersistantActorValues.h"
 #include "Core/Managers/GameManagerBase.h"
+#include "PuzzleActorInterface.h"
 #include "Puzzle.generated.h"
 
 UENUM(Blueprintable)
@@ -23,20 +24,27 @@ enum class EPuzzleActorType : uint8
 	Basic UMETA(DisplayName = "Basic"),
 };
 
+UENUM(Blueprintable)
+enum class EPuzzleElementState : uint8
+{
+	Default UMETA(DisplayName = "Default"),
+	Preserved UMETA(DisplayName = "Preserved"),
+	Inverted UMETA(DisplayName = "Inverted"),
+};
+
 UCLASS(Abstract)
-class GAMEDESIGNSTUDIO_API APuzzle : public AActor
+class GAMEDESIGNSTUDIO_API APuzzle : public AActor, public IPuzzleActorInterface
 {
 	GENERATED_BODY()
-	
-	UFUNCTION(BlueprintCallable, Category = "Managers", meta = (DeterminesOutputType = "ManagerClass"))
-	UGameManagerBase* GetOwningManagerClass(TSubclassOf<UGameManagerBase> ManagerClass);
-	
 	
 public:	
 	APuzzle();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite);
 	FName ActorId;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
+	EPuzzleState PuzzleStatus = EPuzzleState::Start;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite);
 	EPuzzleActorType PuzzleActorType;
@@ -48,17 +56,34 @@ public:
 	TWeakObjectPtr<AActor> WorldSubsytem;
 	FPersistantActorValues ActorValues;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"))
-	APuzzle* LinkedEmitter;
+	//UPROPERTY(EditAnywhere)
+	//FName StateId;
+	
+	UFUNCTION(BlueprintCallable, Category = "Puzzle Actors")
+	void SetState(EPuzzleState State);
+	
+	
+	virtual void ApplyPuzzleState_Implementation();
+	
+	// Set as blueprint overrideable
+	//virtual void DoActionBasedOnState(EPuzzleStatus State);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FName, bool> Signals;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"))
 	APuzzle* LinkedReceiver;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite);
+	EPuzzleElementState PuzzleElementState;
 	
 	//void SetActorID(FName Id) const;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	//void InitializeState();
 
 public:	
 	// Called every frame

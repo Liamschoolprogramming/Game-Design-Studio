@@ -15,6 +15,7 @@ public class GameDesignStudio : ModuleRules
 
 		if(Target.bBuildEditor){
 			PublicDependencyModuleNames.AddRange(new string[] { "CustomAssetEditor"});
+			PrivateDependencyModuleNames.Add("UnrealEd");
 		}
 		
 

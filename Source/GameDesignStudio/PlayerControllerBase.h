@@ -4,13 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "CustomCamera.h"
-#include "PlayerCharacter.h"
+
 #include "GameFramework/PlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "PossessableEntity.h"
+#include "Core/Puzzles/PuzzleInteractive.h"
 #include "PlayerControllerBase.generated.h"
 
+
+class APlayerCharacter;
 /**
  * 
  */
@@ -21,6 +25,11 @@ class GAMEDESIGNSTUDIO_API APlayerControllerBase : public APlayerController
 
 public:
 
+	UFUNCTION(BlueprintCallable)
+	bool GetCanMove();
+	
+	UFUNCTION(BlueprintCallable)
+	void SetCanMove(bool CanMove);
 	
 	bool bSettingDestination = false;
 
@@ -30,10 +39,17 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category="Camera")
 	ACustomCamera* CameraReference;
 	
+	APlayerCharacter* PlayerReference;
+	
+	void CyclePossession();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
+	float ControllerSensitivity = 0.2f;
+	
 	/** Handles move inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoMove(float Right, float Forward);
-
+	
 	/** Handles look inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoLook(float Yaw, float Pitch);
@@ -46,6 +62,8 @@ public:
 	//IMC
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
+	
+	bool bIsMoving = false;
 
 	//Zoom action
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
@@ -79,6 +97,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	UInputAction* SelectAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* CyclePossessionUpAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* CyclePossessionDownAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* InteractAction;
+	
 	UFUNCTION(BlueprintCallable, Category="Input")
 	void CheckControlDevice(FPlatformUserId PlatformUserId, FInputDeviceId InputDeviceId);
 
@@ -95,7 +122,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effects")
 	UNiagaraSystem* ParticleSystem;
 	
-	
+	UFUNCTION(BlueprintCallable, Category="Effects")
+	void UpdateMPC();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
 	float PawnMovementSpeed = 500;
@@ -106,6 +134,29 @@ public:
 	FRotator PawnDesiredRotation;
 	bool bPawnHasMovementInput = false;
 	
+	
+	TArray<APossessableEntity*> ClosestPossessableEntities;
+	
+	
+	void SortClosestPossessableEntitiesByDistance();
+	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement")
+	FVector PawnVelocity;
+	
+	//-1 will be the index for the player character
+	int IndexForPossessables = -1;
+	
+	UFUNCTION(BlueprintCallable, Category="Possession")
+	void AddPossessableEntity(APossessableEntity* Entity);
+	
+	UFUNCTION(BlueprintCallable, Category="Possession")
+	void RemovePossessableEntity(APossessableEntity* Entity);
+
+	bool CanWeCyclePossessableEntity(int IndexToCheck);
+
+	
+	
 	//Essentially a toggle for if we want to be able to move the pawn without always point and click
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
 	bool bCanUseWASDToMovePawn = true;
@@ -115,8 +166,18 @@ public:
 	UMaterialParameterCollection* CameraMPC;
 	
 	
+	
+	
 	void StartClick(const FInputActionValue& Value);
 	void StopClick(const FInputActionValue& Value);
+	
+	void StopMove(const FInputActionValue& Value);
+
+	void InteractWithClosestObject();
+	
+	UFUNCTION()
+	void CyclePossessionUp();
+	void CyclePossessionDown();
 	
 	void LookGate(const FInputActionValue& Value);
 	void LookGateStart();
@@ -127,6 +188,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	
+	//Whether the player is able to move or not (controlled by possessable entity for possessables that can't move
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
+	bool bCanMove = true;
 
 private:
 	
@@ -135,3 +200,6 @@ public:
 	virtual void SetupInputComponent() override;
 	
 };
+
+
+

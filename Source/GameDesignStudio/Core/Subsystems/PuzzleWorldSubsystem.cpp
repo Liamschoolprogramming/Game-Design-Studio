@@ -11,7 +11,7 @@ void UPuzzleWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	
 	Super::Initialize(Collection);
 	
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, FString::Printf(TEXT("Registered PuzzleWorldSubsystem")));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, FString::Printf(TEXT("Registered PuzzleWorldSubsystem")));
 }
 
 void UPuzzleWorldSubsystem::Deinitialize()
@@ -34,6 +34,27 @@ void UPuzzleWorldSubsystem::RegisterPuzzleActor(APuzzle* Actor)
 		UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Registered %d"), RuntimeActors.Num());
 	
 	}
+}
+
+
+TArray<APuzzle*> UPuzzleWorldSubsystem::GetActorsOfManagerType(TSubclassOf<UGameManagerBase> Manager)
+{
+	//TMap<TSubclassOf<UGameManagerBase>, APuzzle> Actors;
+	
+	// Should probably be weak ref array
+	TArray<APuzzle*> Actors;
+	
+	for (const TPair<FName, TWeakObjectPtr<APuzzle>>& Pair : RuntimeActors)
+	{
+		APuzzle* Actor = Pair.Value.Get();
+		
+		if (Actor->OwningManager == Manager)
+		{
+			Actors.Add(Actor);
+		}
+	}
+	
+	return Actors;
 }
 
 void UPuzzleWorldSubsystem::PostInitialize()

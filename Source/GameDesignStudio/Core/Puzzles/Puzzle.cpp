@@ -22,6 +22,10 @@ void APuzzle::BeginPlay()
 	
 	ActorValues.ActorLocation = GetActorTransform();
 	
+	// SetState should maybe be called after registration. Might need to change where the
+	// error handling happens from SnapshotActorValues if it does
+	SetState(PuzzleStatus);
+	
 	if (ActorId.IsNone())
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s: ActorId must be set"), *GetName());
@@ -33,24 +37,33 @@ void APuzzle::BeginPlay()
 		GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>()->RegisterPuzzleActor(this);
 	}
 	
+	if (LinkedReceiver != nullptr)
+	{
+		LinkedReceiver->Signals.Add(ActorId, false);
+	}
 }
 
-UGameManagerBase* APuzzle::GetOwningManagerClass(TSubclassOf<UGameManagerBase> ManagerClass)
+// Getting the name of the current enum state to store
+// on the manager to later be compared
+void APuzzle::SetState(EPuzzleState State)
 {
-	UGameManagerSubsystem* Subsystem = GetGameInstance()->GetSubsystem<UGameManagerSubsystem>();
-	UGameManagerBase* Manager = Subsystem->GetManagerByClass(ManagerClass);
+	//***************************************************//
+	// For debug display naming of states
+	//const UEnum* Enum = StaticEnum<EPuzzleState>();
 	
-	return Manager;
+	//FName StateName = Enum->GetNameByValue(static_cast<int64>(State));
+	//StateName = FName(*Enum->GetNameStringByValue(static_cast<int64>(PuzzleStatus)));
+	//****************************************************//
 	
+	PuzzleStatus = State;
 	
+	GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->SnapshotActorValues(this);
 	
-	// Key map of managers by type set in the editor
-	
-	//return Cast<OwningManager>(UGameManagerBase);
-	
-	//return Cast<UPuzzleRiverManager>(OwningManager);
-	
-	
+	//ActorValues.CurrentState = StateName;
+}
+
+void APuzzle::ApplyPuzzleState_Implementation()
+{
 	
 }
 
@@ -61,10 +74,5 @@ void APuzzle::Tick(float DeltaTime)
 
 }
 
-/*
-void APuzzle::SetActorID(FName Id) const
-{
-	ActorId = Id;
-}
-*/
+
 

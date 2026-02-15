@@ -3,16 +3,26 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CameraAttachPoint.h"
 #include "GameFramework/Character.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "PlayerCharacterCameraInterface.h"
+
+#include "Components/SphereComponent.h"
+
+#include "Core/Subsystems/GameManagerSubsystem.h"
+#include "Engine/TriggerSphere.h"
 #include "Managers/PlayerStatManager.h"
 #include "PlayerCharacter.generated.h"
 
 
+class APuzzleInteractive;
+class APlayerControllerBase;
+
 UCLASS()
-class GAMEDESIGNSTUDIO_API APlayerCharacter : public ACharacter
+class GAMEDESIGNSTUDIO_API APlayerCharacter : public ACharacter, public IPlayerCharacterCameraInterface
 {
 	GENERATED_BODY()
 
@@ -23,6 +33,19 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	EPlayerCharacterType PlayerCharacterType = EPlayerCharacterType::Default;
 
+	
+	TSet<TWeakObjectPtr<APuzzleInteractive>> ClosestInteractiveObjects;
+	
+	UFUNCTION(BlueprintCallable, Category="Interaction")
+	void AddInteractableObject( APuzzleInteractive* Object);
+	UFUNCTION(BlueprintCallable, Category="Interaction")
+	void RemoveInteractableObject(APuzzleInteractive* Object);
+
+	
+	
+	UFUNCTION(BlueprintCallable, Category="Interaction")
+	void InteractWithClosestObject();	
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -38,16 +61,40 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
 	float CameraSensitivity = .5;
 	
+	virtual void PossessedBy(AController* NewController) override;
 	
 	//IMC
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
 	
+	UFUNCTION()
+	void OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComp, 
+							  AActor* OtherActor, 
+							  UPrimitiveComponent* OtherComp, 
+							  int32 OtherBodyIndex, 
+							  bool bFromSweep, 
+							  const FHitResult& SweepResult);
+	
+	UFUNCTION()
+	void OnSphereOverlapEnd(UPrimitiveComponent* OverlappedComp, 
+							  AActor* OtherActor, 
+							  UPrimitiveComponent* OtherComp, 
+							  int32 OtherBodyIndex);
+	
+	USphereComponent* TriggerSphere;
 	
 	
-
+	
+	UFUNCTION()
+	void SetSphereToPossessionRange();
+	
+	
+	
+	APlayerControllerBase* PlayerController;
+	
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Prototype Variables")
-	bool hasItem = false;
+	bool bIsInItemGate = false;
 	
 	
 
@@ -55,14 +102,22 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UCameraAttachPoint* CameraAttachPoint;
 	
 
 	// i want this to be called in blueprints as well so im putting it here :)
 	// this is so knockback can be done by anything and the code doesnt need to be rewritten like a thousand times
 	UFUNCTION(BlueprintCallable)
 	void DoKnockback(float Power, AActor* origin);
+	
+	UFUNCTION(BlueprintCallable)
+	void SaveLastLocation();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Other")
+	FVector SafeLocation;
 
+	virtual UCameraAttachPoint* GetAttachPoint() override;
 
 };
 

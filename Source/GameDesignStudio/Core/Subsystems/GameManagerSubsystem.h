@@ -14,10 +14,6 @@
  * 
  */
 
-//**************************************************//
-//		RENAME THIS TO PuzzleProgressSubsystem		//
-//**************************************************//
-
 class UGameManagerBase;
 
 UCLASS()
@@ -31,17 +27,26 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 	
+	// These should be in the manager baseclass that return a boolean if the puzzle is complete
+	// or not. It should do a check on the managers data if it has all states needed to return true
 	void IsPuzzleSolved(FString Id);
 	void SetStepComplete(FString Id, FString Step);
+	
+	void SetPuzzleState(TSubclassOf<UGameManagerBase> ManagerClass, FName StateId);
 	
 	template<typename T>
 	T* GetManager();
 	
-	UFUNCTION(BlueprintCallable, Category = "Managers")
+	// For blueprints and when the type needs to be infered at runtime
+	UFUNCTION(BlueprintCallable, Category = "Managers", meta = (DeterminesOutputType = "ManagerClass"))
 	UGameManagerBase* GetManagerByClass(TSubclassOf<UGameManagerBase> ManagerClass);
 	
-	// Template is used for the UClass type
+	// Stricter type safety for C++ for getting a manager from the list of managers
 	UGameManagerBase* GetManager(TSubclassOf<UGameManagerBase> ManagerClass) const;
+	
+	// For calling in C++ just pass in the this keyword for the argument. Do not call on beginplay
+	UFUNCTION(BlueprintCallable, Category = "Managers", meta = (DefaultToSelf = "Actor"))
+	void SnapshotActorValues(APuzzle* Actor);
 	
 	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UPuzzleRiverManager* GetPuzzleRiverManager() const;
@@ -56,6 +61,9 @@ public:
 	UQuestManager* GetQuestManager() const;
 	
 	void RegisterActorToManager(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, const FPersistantActorValues& ActorValues);
+	
+	UPROPERTY()
+	FPlayerStats PlayerStats;
 	
 protected:
 	

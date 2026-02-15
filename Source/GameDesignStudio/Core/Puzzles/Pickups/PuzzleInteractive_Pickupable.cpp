@@ -1,6 +1,5 @@
 #include "PuzzleInteractive_Pickupable.h"
-#include "EditorCategoryUtils.h"
-#include "VectorTypes.h"
+#include "Kismet/KismetMathLibrary.h"
 
 APuzzleInteractive_Pickupable::APuzzleInteractive_Pickupable()
 {
@@ -9,11 +8,17 @@ APuzzleInteractive_Pickupable::APuzzleInteractive_Pickupable()
 
 void APuzzleInteractive_Pickupable::Tick(float DeltaTime)
 {
-	
-	if (bBeingCarried && CarryingCharacter != nullptr)
+	if (!bPushable && bBeingCarried && CarryingCharacter != nullptr)
 	{
 		this->SetActorLocation(CarryingCharacter->GetActorLocation() + CarryingCharacter->GetActorForwardVector() * 200);
+		
 	}
+	
+}
+
+void APuzzleInteractive_Pickupable::ResetCollision()
+{
+	SetActorEnableCollision(true);
 }
 
 void APuzzleInteractive_Pickupable::Interact(APlayerCharacter* PlayerCharacter)
@@ -22,6 +27,7 @@ void APuzzleInteractive_Pickupable::Interact(APlayerCharacter* PlayerCharacter)
 	{
 		bBeingCarried = false;
 		CarryingCharacter = nullptr;
+		
 	}
 	else
 	{
@@ -39,6 +45,12 @@ void APuzzleInteractive_Pickupable::Interact(APlayerCharacter* PlayerCharacter)
 			{
 				CarryingCharacter = PlayerCharacter;
 				bBeingCarried = true;
+				SetActorEnableCollision(false);
+				
+				FTimerDelegate TimerDelegate;
+				TimerDelegate.BindUFunction(this, FName("ResetCollision"));
+				GetWorld()->GetTimerManager().SetTimerForNextTick(TimerDelegate);
+				
 			}
 		}
 	}
@@ -48,4 +60,6 @@ void APuzzleInteractive_Pickupable::Drop()
 {
 	bBeingCarried = false;
 	CarryingCharacter = nullptr;
+	SetActorEnableCollision(true);
+	
 }
