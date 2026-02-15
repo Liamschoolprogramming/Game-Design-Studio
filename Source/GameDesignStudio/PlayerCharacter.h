@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CameraAttachPoint.h"
 #include "GameFramework/Character.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "PlayerCharacterCameraInterface.h"
 
 #include "Components/SphereComponent.h"
 
@@ -20,7 +22,7 @@ class APuzzleInteractive;
 class APlayerControllerBase;
 
 UCLASS()
-class GAMEDESIGNSTUDIO_API APlayerCharacter : public ACharacter
+class GAMEDESIGNSTUDIO_API APlayerCharacter : public ACharacter, public IPlayerCharacterCameraInterface
 {
 	GENERATED_BODY()
 
@@ -81,6 +83,8 @@ protected:
 	
 	USphereComponent* TriggerSphere;
 	
+	
+	
 	UFUNCTION()
 	void SetSphereToPossessionRange();
 	
@@ -98,7 +102,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UCameraAttachPoint* CameraAttachPoint;
 	
 
 	// i want this to be called in blueprints as well so im putting it here :)
@@ -112,6 +117,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Other")
 	FVector SafeLocation;
 
+	virtual UCameraAttachPoint* GetAttachPoint() override;
 
 };
 

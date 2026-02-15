@@ -38,6 +38,8 @@ public:
 	const float ToTopDownThreshold = 0.8f;
 	const float ToPerspectiveThreshold = 0.2f;
 	
+	const float TopDownAngle = -20.0f;
+	
 	UFUNCTION(BlueprintCallable, Category = "Camera")
 	bool CanSeeObject(AActor* Actor);
 
@@ -47,6 +49,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
 	float DefaultCameraMovementSpeed = 800;
 
+	
+	void ResetCameraRotation(const FRotator& NewRotation = FRotator::ZeroRotator);
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
 	float CameraRotationSpeed = 200;
 	
