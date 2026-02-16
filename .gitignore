@@ -55,3 +55,5 @@ Saved/*
 *.sln.DotSettings
 *.sln.DotSettings.user
 Plugins/CustomAssetEditor/Intermediate/Build
+Plugins/DialogueAssetEditor/Intermediate/Build
+Plugins/DialogueAssetEditor/Intermediate
