@@ -6,6 +6,9 @@
 #include "CustomAsset.h"
 #include "IDetailsView.h"
 #include "PropertyEditorModule.h"
+#include "GraphEditor.h"
+#include "Editor/UnrealEd/Public/Kismet2/BlueprintEditorUtils.h"
+#include "Kismet2/KismetEditorUtilities.h"
 
 
 FCustomAssetPrimaryTabFactory::FCustomAssetPrimaryTabFactory(TSharedPtr<class FCustomAssetEditorApp> InApp) : FWorkflowTabFactory(FName("CustomAssetPrimaryTab"), InApp)
@@ -18,31 +21,20 @@ FCustomAssetPrimaryTabFactory::FCustomAssetPrimaryTabFactory(TSharedPtr<class FC
 
 TSharedRef<SWidget> FCustomAssetPrimaryTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
+	
 	TSharedPtr<FCustomAssetEditorApp> LocalApp = App.Pin();
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(FName("PropertyEditor"));
 	
-	FDetailsViewArgs DetailsViewArgs;
-	{
-		DetailsViewArgs.bAllowSearch = false; 
-		DetailsViewArgs.bHideSelectionTip = true;
-		DetailsViewArgs.bLockable = false;
-		DetailsViewArgs.bSearchInitialKeyFocus = true;
-		DetailsViewArgs.bUpdatesFromSelection = false;
-		DetailsViewArgs.NotifyHook = nullptr;
-		DetailsViewArgs.bShowOptions = true;
-		DetailsViewArgs.bShowModifiedPropertiesOption = false;
-		DetailsViewArgs.bShowScrollBar = false;
-	}
-	
-	TSharedPtr<IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
-	DetailsView->SetObject(LocalApp->GetWorkingAsset());
 	return SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
 		.FillHeight(1.0f)
 		.HAlign(HAlign_Fill)
 		[
-			DetailsView.ToSharedRef()
+			SNew(SGraphEditor)
+			.IsEditable(true)
+			.GraphToEdit(LocalApp->GetWorkingGraph())
 		];
+	
 }
 
 FText FCustomAssetPrimaryTabFactory::GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const

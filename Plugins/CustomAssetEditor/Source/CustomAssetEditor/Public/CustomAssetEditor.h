@@ -16,4 +16,5 @@ public:
 	
 private:
 	TSharedPtr<FSlateStyleSet> StyleSet = nullptr;
+	TSharedPtr<struct FCustomPinFactory> CustomPinFactory = nullptr;
 };

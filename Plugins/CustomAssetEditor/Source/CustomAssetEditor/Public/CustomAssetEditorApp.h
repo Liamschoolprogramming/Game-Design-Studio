@@ -13,6 +13,11 @@ public:
 	{
 		return WorkingAsset;
 	}
+	
+	class UEdGraph* GetWorkingGraph()
+	{
+		return WorkingGraph;
+	}
 
 public: //FAssetEditorToolkit interface
 	virtual FText GetToolkitName() const override
@@ -42,7 +47,19 @@ public: //FAssetEditorToolkit interface
 	virtual void OnToolkitHostingStarted(const TSharedRef<IToolkit>& Toolkit) override {}
 	virtual void OnToolkitHostingFinished(const TSharedRef<IToolkit>& Toolkit) override {}
 	
+	virtual void OnClose() override;
+	void OnGraphChanged(const FEdGraphEditAction& EditAction);
+	
+protected:
+	void UpdateWorkingAssetFromGraph();
+	void UpdateEditorGraphFromWorkingAsset();
+	
 private:
 	UPROPERTY()
 	UCustomAsset* WorkingAsset = nullptr;
+	
+	UPROPERTY()
+	class UEdGraph* WorkingGraph = nullptr;
+	
+	FDelegateHandle GraphChangedListenerHandle;
 };
