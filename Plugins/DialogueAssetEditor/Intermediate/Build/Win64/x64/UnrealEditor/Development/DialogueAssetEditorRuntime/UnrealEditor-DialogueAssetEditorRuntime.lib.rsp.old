@@ -1,0 +1,12 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-DialogueAssetEditorRuntime.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:/Users/syste/Documents/Unreal Projects/Game-Design-Studio/Intermediate/Build/Win64/x64/GameDesignStudioEditor/Development/UnrealEd/SharedPCH.UnrealEd.Project.ValApi.ValExpApi.Cpp20.h.obj"
+"C:/Users/syste/Documents/Unreal Projects/Game-Design-Studio/Plugins/DialogueAssetEditor/Intermediate/Build/Win64/x64/UnrealEditor/Development/DialogueAssetEditorRuntime/Module.DialogueAssetEditorRuntime.cpp.obj"
+"C:/Users/syste/Documents/Unreal Projects/Game-Design-Studio/Plugins/DialogueAssetEditor/Intermediate/Build/Win64/x64/UnrealEditor/Development/DialogueAssetEditorRuntime/Default.rc2.res"
+/OUT:"C:/Users/syste/Documents/Unreal Projects/Game-Design-Studio/Plugins/DialogueAssetEditor/Intermediate/Build/Win64/x64/UnrealEditor/Development/DialogueAssetEditorRuntime/UnrealEditor-DialogueAssetEditorRuntime.lib"

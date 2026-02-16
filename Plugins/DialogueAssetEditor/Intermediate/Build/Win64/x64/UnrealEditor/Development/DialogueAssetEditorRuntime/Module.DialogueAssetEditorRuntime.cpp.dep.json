@@ -1,0 +1,24 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\syste\\documents\\unreal projects\\game-design-studio\\plugins\\dialogueasseteditor\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\dialogueasseteditorruntime\\module.dialogueasseteditorruntime.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\syste\\documents\\unreal projects\\game-design-studio\\intermediate\\build\\win64\\x64\\gamedesignstudioeditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.valexpapi.cpp20.h.pch",
+        "Includes": [
+            "c:\\users\\syste\\documents\\unreal projects\\game-design-studio\\plugins\\dialogueasseteditor\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\dialogueasseteditorruntime\\definitions.dialogueasseteditorruntime.h",
+            "c:\\users\\syste\\documents\\unreal projects\\game-design-studio\\plugins\\dialogueasseteditor\\intermediate\\build\\win64\\unrealeditor\\inc\\dialogueasseteditorruntime\\uht\\dialogueasset.gen.cpp",
+            "c:\\users\\syste\\documents\\unreal projects\\game-design-studio\\plugins\\dialogueasseteditor\\source\\dialogueasseteditorruntime\\public\\dialogueasset.h",
+            "c:\\users\\syste\\documents\\unreal projects\\game-design-studio\\plugins\\dialogueasseteditor\\source\\dialogueasseteditorruntime\\public\\dialogueruntimegraph.h",
+            "c:\\users\\syste\\documents\\unreal projects\\game-design-studio\\plugins\\dialogueasseteditor\\intermediate\\build\\win64\\unrealeditor\\inc\\dialogueasseteditorruntime\\uht\\dialogueruntimegraph.generated.h",
+            "c:\\users\\syste\\documents\\unreal projects\\game-design-studio\\plugins\\dialogueasseteditor\\intermediate\\build\\win64\\unrealeditor\\inc\\dialogueasseteditorruntime\\uht\\dialogueasset.generated.h",
+            "c:\\users\\syste\\documents\\unreal projects\\game-design-studio\\plugins\\dialogueasseteditor\\intermediate\\build\\win64\\unrealeditor\\inc\\dialogueasseteditorruntime\\uht\\dialogueasseteditorruntime.init.gen.cpp",
+            "c:\\users\\syste\\documents\\unreal projects\\game-design-studio\\plugins\\dialogueasseteditor\\intermediate\\build\\win64\\unrealeditor\\inc\\dialogueasseteditorruntime\\uht\\dialogueruntimegraph.gen.cpp",
+            "c:\\users\\syste\\documents\\unreal projects\\game-design-studio\\plugins\\dialogueasseteditor\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\dialogueasseteditorruntime\\permoduleinline.gen.cpp",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\core\\public\\hal\\permoduleinline.inl",
+            "c:\\users\\syste\\documents\\unreal projects\\game-design-studio\\plugins\\dialogueasseteditor\\source\\dialogueasseteditorruntime\\private\\dialogueasseteditorruntime.cpp",
+            "c:\\users\\syste\\documents\\unreal projects\\game-design-studio\\plugins\\dialogueasseteditor\\source\\dialogueasseteditorruntime\\public\\dialogueasseteditorruntime.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

@@ -1,0 +1,12 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.DialogueAssetEditorRuntime.cpp.obj": [
+			"DialogueAsset.gen.cpp.obj",
+			"DialogueAssetEditorRuntime.init.gen.cpp.obj",
+			"PerModuleInline.gen.cpp.obj",
+			"DialogueAsset.cpp.obj",
+			"DialogueAssetEditorRuntime.cpp.obj"
+		]
+	}
+}
