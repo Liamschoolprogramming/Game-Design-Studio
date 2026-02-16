@@ -4,6 +4,7 @@
 #include "Framework/Commands/UIAction.h"
 #include "ToolMenu.h"
 
+//this defines the actual node
 
 FText UDialogueGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {

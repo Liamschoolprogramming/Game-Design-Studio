@@ -8,6 +8,7 @@
 #include "PropertyEditorModule.h"
 #include "DialogueNodeInfo.h"
 
+//this is the properties panel tab
 
 FDialogueAssetPropertiesTabFactory::FDialogueAssetPropertiesTabFactory(TSharedPtr<class FDialogueAssetEditorApp> InApp) : FWorkflowTabFactory(FName("DialogueAssetPropertiesTab"), InApp)
 {

@@ -7,6 +7,11 @@
 #include "DialogueAssetPrimaryTabFactory.h"
 #include "DialogueAssetPropertiesTabFactory.h"
 
+/**
+ * Create and register the TabFactories and set the layout
+ * 
+ * @param InApp the editor app
+ */
 FDialogueAssetAppMode::FDialogueAssetAppMode(TSharedPtr<class FDialogueAssetEditorApp> InApp): FApplicationMode(TEXT("DialogueAssetAppMode"))
 {
 	App = InApp;
@@ -41,6 +46,7 @@ FDialogueAssetAppMode::FDialogueAssetAppMode(TSharedPtr<class FDialogueAssetEdit
 	
 	
 }
+
 
 void FDialogueAssetAppMode::RegisterTabFactories(TSharedPtr<FTabManager> InTabManager)
 {

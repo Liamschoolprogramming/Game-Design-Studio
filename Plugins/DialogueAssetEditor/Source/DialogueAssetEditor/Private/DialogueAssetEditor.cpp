@@ -12,6 +12,9 @@
 
 #define LOCTEXT_NAMESPACE "FDialogueAssetEditorModule"
 
+/**
+ * Defines the custom pin type used for the dialogue nodes
+ */
 class SDialogueGraphPin :public SGraphPin
 {
 	public:
@@ -31,6 +34,9 @@ class SDialogueGraphPin :public SGraphPin
 	}
 };
 
+/**
+ * Defines the pin factory for the custom pins
+ */
 struct FDialoguePinFactory : public FGraphPanelPinFactory
 {
 	public:
@@ -45,6 +51,10 @@ struct FDialoguePinFactory : public FGraphPanelPinFactory
 	}
 };
 
+/**
+ * Register and load everything in the editor module
+ * 
+ */
 void FDialogueAssetEditorModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
@@ -74,6 +84,9 @@ void FDialogueAssetEditorModule::StartupModule()
 	FEdGraphUtilities::RegisterVisualPinFactory(DialoguePinFactory);
 }
 
+/**
+ * Deconstructor
+ */
 void FDialogueAssetEditorModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,

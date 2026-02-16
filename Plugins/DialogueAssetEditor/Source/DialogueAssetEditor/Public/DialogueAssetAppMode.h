@@ -6,7 +6,7 @@
 #include "WorkflowOrientedApp/ApplicationMode.h"
 #include "WorkflowOrientedApp/WorkflowTabManager.h"
 /**
- * 
+ * Handles registering tab factories and layout for the asset editor
  */
 class FDialogueAssetAppMode : public FApplicationMode
 {

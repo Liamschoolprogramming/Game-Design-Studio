@@ -3,6 +3,8 @@
 #include "DialogueGraphNode.h"
 #include "DialogueNodeInfo.h"
 
+//this defines actions on nodes
+
 void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
 	TSharedPtr<FNewNodeAction> NewNodeAction(

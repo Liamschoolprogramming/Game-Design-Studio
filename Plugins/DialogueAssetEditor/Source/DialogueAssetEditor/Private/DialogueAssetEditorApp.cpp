@@ -13,8 +13,13 @@ void FDialogueAssetEditorApp::RegisterTabSpawners(const TSharedRef<FTabManager>&
 	FWorkflowCentricApplication::RegisterTabSpawners(InTabManager);
 }
 
+/**
+ * Setup the editor for the asset
+ * 
+ * @param InObject object we are editing
+ */
 void FDialogueAssetEditorApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<class IToolkitHost>& InToolkitHost,
-	UObject* InObject)
+                                         UObject* InObject)
 {
 	TArray<UObject*> ObjectsToEdit;
 	ObjectsToEdit.Add(InObject);
@@ -109,6 +114,11 @@ void FDialogueAssetEditorApp::OnWorkingAssetPreSave()
 	UpdateWorkingAssetFromGraph();
 }
 
+/**
+ * To actually use the asset data in game as well as save it, 
+ * we need to convert the WorkingGraph data to the WorkingAsset data
+ * WorkingAsset is the actual file on disk; the WorkingGraph really only exists in RAM.
+ */
 void FDialogueAssetEditorApp::UpdateWorkingAssetFromGraph()
 {
 	if (WorkingAsset == nullptr || WorkingGraph == nullptr)
@@ -165,7 +175,11 @@ void FDialogueAssetEditorApp::UpdateWorkingAssetFromGraph()
 		Pin1->Connection = Pin2;
 	}
 }
-
+/**
+ * When we open the asset editor or load the WorkingGraph,
+ * we need to make sure to try and load the data saved on disk
+ * in the WorkingAsset
+ */
 void FDialogueAssetEditorApp::UpdateEditorGraphFromWorkingAsset()
 {
 	if (WorkingAsset->Graph == nullptr)

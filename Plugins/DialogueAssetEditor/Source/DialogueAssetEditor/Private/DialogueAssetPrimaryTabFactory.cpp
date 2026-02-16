@@ -10,6 +10,7 @@
 #include "Editor/UnrealEd/Public/Kismet2/BlueprintEditorUtils.h"
 #include "Kismet2/KismetEditorUtilities.h"
 
+//This is our graph editor tab
 
 FDialogueAssetPrimaryTabFactory::FDialogueAssetPrimaryTabFactory(TSharedPtr<class FDialogueAssetEditorApp> InApp) : FWorkflowTabFactory(FName("DialogueAssetPrimaryTab"), InApp)
 {

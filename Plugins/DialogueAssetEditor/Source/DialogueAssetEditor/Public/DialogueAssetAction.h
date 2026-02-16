@@ -2,6 +2,10 @@
 #include "CoreMinimal.h"
 #include "AssetTypeActions_Base.h"
 
+/**
+ * Tells unreal how to handle the asset file creation
+ * 
+ */
 class FDialogueAssetAction : public FAssetTypeActions_Base
 {
 	//register asset
