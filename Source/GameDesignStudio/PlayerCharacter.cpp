@@ -46,6 +46,9 @@ APlayerCharacter::APlayerCharacter()
 	TriggerSphere->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnSphereOverlapBegin);
 	TriggerSphere->OnComponentEndOverlap.AddDynamic(this, &APlayerCharacter::OnSphereOverlapEnd);
 	
+	CameraAttachPoint = CreateDefaultSubobject<UCameraAttachPoint>(FName("CameraAttachPoint"));
+	CameraAttachPoint->SetupAttachment(RootComponent);
+	
 }
 
 void APlayerCharacter::AddInteractableObject(APuzzleInteractive* Object)
@@ -261,4 +264,9 @@ void APlayerCharacter::SaveLastLocation()
 	{
 		SafeLocation = this->GetActorLocation();
 	}
+}
+
+UCameraAttachPoint* APlayerCharacter::GetAttachPoint()
+{
+	return CameraAttachPoint;
 }
