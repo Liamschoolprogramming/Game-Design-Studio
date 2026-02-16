@@ -1,6 +1,7 @@
 ﻿#include "DialogueGraphSchema.h"
 
 #include "DialogueGraphNode.h"
+#include "DialogueNodeInfo.h"
 
 void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
@@ -38,10 +39,12 @@ UEdGraphNode* FNewNodeAction::PerformAction(UEdGraph* ParentGraph, UEdGraphPin* 
 	Result->NodePosX = Location.X;
 	Result->NodePosY = Location.Y;
 	
-	UEdGraphPin* InputPin = Result->CreateDialoguePin(EGPD_Input,TEXT("SomeInput"));
+	Result->SetNodeInfo(NewObject<UDialogueNodeInfo>(Result));
 	
-	Result->CreateDialoguePin(EGPD_Output,TEXT("SomeOutput1"));
-	Result->CreateDialoguePin(EGPD_Output,TEXT("SomeOutput2"));
+	UEdGraphPin* InputPin = Result->CreateDialoguePin(EGPD_Input,TEXT("Display"));
+	FString defaultResponse = TEXT("Continue");
+	Result->CreateDialoguePin(EGPD_Output, FName(defaultResponse));
+	Result->GetNodeInfo()->DialogueResponses.Add(FText::FromString(defaultResponse));
 	
 	if (FromPin != nullptr)
 	{

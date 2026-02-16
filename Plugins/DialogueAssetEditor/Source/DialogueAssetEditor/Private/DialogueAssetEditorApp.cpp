@@ -5,6 +5,7 @@
 #include "DialogueAsset.h"
 #include "DialogueGraphNode.h"
 #include "DialogueGraphSchema.h"
+#include "DialogueNodeInfo.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 
 void FDialogueAssetEditorApp::RegisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
@@ -27,7 +28,7 @@ void FDialogueAssetEditorApp::InitEditor(const EToolkitMode::Type Mode, const TS
 		UDialogueGraphSchema::StaticClass()
 		);
 
-	
+	WorkingAsset->SetPreSaveListener([this] () {OnWorkingAssetPreSave();});
 	
 	InitAssetEditor(
 		Mode,
@@ -45,21 +46,66 @@ void FDialogueAssetEditorApp::InitEditor(const EToolkitMode::Type Mode, const TS
 	
 	UpdateEditorGraphFromWorkingAsset();
 	
-	GraphChangedListenerHandle = WorkingGraph->AddOnGraphChangedHandler(
-		FOnGraphChanged::FDelegate::CreateSP(this, &FDialogueAssetEditorApp::OnGraphChanged));
 	
+}
+/**
+ * @returns the first UDialogueGraphNode in the given selection or nullptr if there are none.
+ */
+class UDialogueGraphNode* FDialogueAssetEditorApp::GetSelectedNode(const FGraphPanelSelectionSet& Selection)
+{
+	//find first UDialogueGraphNode
+	for (UObject* Obj: Selection)
+	{
+		UDialogueGraphNode* Node = Cast<UDialogueGraphNode>(Obj);
+		if (Node != nullptr)
+		{
+			
+			return Node;
+		}
+	}
+	return nullptr;
+}
+
+void FDialogueAssetEditorApp::SetSelectedNodeDetailView(TSharedPtr<class IDetailsView> DetailsView)
+{
+	SelectedNodeDetailView = DetailsView;
+	SelectedNodeDetailView->OnFinishedChangingProperties().AddRaw(this, &FDialogueAssetEditorApp::OnNodeDetailViewPropertiesUpdated);
+}
+
+void FDialogueAssetEditorApp::OnGraphSelectionChanged(const FGraphPanelSelectionSet& Selections)
+{
+	UDialogueGraphNode* SelectedNode = GetSelectedNode(Selections);
+	if (SelectedNode != nullptr)
+	{
+		SelectedNodeDetailView->SetObject(SelectedNode->GetNodeInfo());
+	}
+}
+
+void FDialogueAssetEditorApp::OnNodeDetailViewPropertiesUpdated(const FPropertyChangedEvent& ChangedEvent)
+{
+	if (WorkingGraphUI != nullptr)
+	{
+		//Get node being modified 
+		UDialogueGraphNode* DialogueNode = GetSelectedNode(WorkingGraphUI->GetSelectedNodes());
+		if (DialogueNode != nullptr)
+		{
+			DialogueNode->SyncPinsWithResponses();
+		}
+		WorkingGraphUI->NotifyGraphChanged();
+	}
 }
 
 void FDialogueAssetEditorApp::OnClose()
 {
 	UpdateWorkingAssetFromGraph();
-	WorkingGraph->RemoveOnGraphChangedHandler(GraphChangedListenerHandle);
 	
+	WorkingAsset->SetPreSaveListener(nullptr);
 	FAssetEditorToolkit::OnClose();
 }
 
-void FDialogueAssetEditorApp::OnGraphChanged(const FEdGraphEditAction& EditAction)
+void FDialogueAssetEditorApp::OnWorkingAssetPreSave()
 {
+	//Update our asset file from the graph before saving
 	UpdateWorkingAssetFromGraph();
 }
 
@@ -78,8 +124,14 @@ void FDialogueAssetEditorApp::UpdateWorkingAssetFromGraph()
 	
 	for (UEdGraphNode* UiNode : WorkingGraph->Nodes)
 	{
+		UDialogueGraphNode* UiGraphNode = Cast<UDialogueGraphNode>(UiNode);
+		if (UiGraphNode == nullptr) continue;
+		
+		
+		
 		UDialogueRuntimeNode* RuntimeNode = NewObject<UDialogueRuntimeNode>(RuntimeGraph);
 		RuntimeNode->Position = FVector2D(UiNode->NodePosX, UiNode->NodePosY);
+		RuntimeNode->NodeInfo = UiGraphNode->GetNodeInfo();
 		
 		for (UEdGraphPin* UiPin : UiNode->Pins)
 		{
@@ -130,6 +182,14 @@ void FDialogueAssetEditorApp::UpdateEditorGraphFromWorkingAsset()
 		NewNode->CreateNewGuid();
 		NewNode->NodePosX = RuntimeNode->Position.X;
 		NewNode->NodePosY = RuntimeNode->Position.Y;
+		
+		if (RuntimeNode->NodeInfo != nullptr)
+		{
+			NewNode->SetNodeInfo(DuplicateObject(RuntimeNode->NodeInfo, RuntimeNode));
+		} else
+		{
+			NewNode->SetNodeInfo(NewObject<UDialogueNodeInfo>(RuntimeNode));
+		}
 		
 		if (RuntimeNode->InputPin != nullptr)
 		{

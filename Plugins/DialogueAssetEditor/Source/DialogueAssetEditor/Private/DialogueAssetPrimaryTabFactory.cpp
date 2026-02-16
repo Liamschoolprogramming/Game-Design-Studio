@@ -25,14 +25,23 @@ TSharedRef<SWidget> FDialogueAssetPrimaryTabFactory::CreateTabBody(const FWorkfl
 	TSharedPtr<FDialogueAssetEditorApp> LocalApp = App.Pin();
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(FName("PropertyEditor"));
 	
+	SGraphEditor::FGraphEditorEvents GraphEvents;
+	GraphEvents.OnSelectionChanged.BindRaw(LocalApp.Get(), &FDialogueAssetEditorApp::OnGraphSelectionChanged);
+	
+	TSharedPtr<SGraphEditor> GraphEditor =
+		SNew(SGraphEditor)
+		.IsEditable(true)
+		.GraphEvents(GraphEvents)
+		.GraphToEdit(LocalApp->GetWorkingGraph());
+	
+	LocalApp->SetWorkingGraphUI(GraphEditor);
+	
 	return SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
 		.FillHeight(1.0f)
 		.HAlign(HAlign_Fill)
 		[
-			SNew(SGraphEditor)
-			.IsEditable(true)
-			.GraphToEdit(LocalApp->GetWorkingGraph())
+			GraphEditor.ToSharedRef()
 		];
 	
 }

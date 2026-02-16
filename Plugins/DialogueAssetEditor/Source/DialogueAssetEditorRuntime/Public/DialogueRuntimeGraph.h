@@ -2,6 +2,7 @@
 
 
 #include "CoreMinimal.h"
+#include "DialogueNodeInfo.h"
 #include "UObject/NameTypes.h"
 #include "DialogueRuntimeGraph.generated.h"
 
@@ -36,6 +37,9 @@ public:
 	
 	UPROPERTY()
 	FVector2D Position;
+	
+	UPROPERTY()
+	UDialogueNodeInfo* NodeInfo = nullptr;
 };
 
 UCLASS()

@@ -1,19 +1,33 @@
 ﻿#include "DialogueGraphNode.h"
 
+#include "DialogueNodeInfo.h"
 #include "Framework/Commands/UIAction.h"
 #include "ToolMenu.h"
 
 
+FText UDialogueGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
+{
+	if (NodeInfo->Title.IsEmpty())
+	{
+		FString DialogueTextString = NodeInfo->DialogueText.ToString();
+		if (DialogueTextString.Len() > 15)
+		{
+			DialogueTextString = DialogueTextString.Left(15) + TEXT("...");
+		}
+		return FText::FromString(DialogueTextString);
+	}
+	return NodeInfo->Title;
+}
 
 void UDialogueGraphNode::GetNodeContextMenuActions(class UToolMenu* Menu,
-                                                 class UGraphNodeContextMenuContext* Context) const
+                                                   class UGraphNodeContextMenuContext* Context) const
 {
 	FToolMenuSection& section = Menu->AddSection(TEXT("SectionName"), FText::FromString(TEXT("Dialogue Node Actions")));
 	
 	section.AddMenuEntry(
 		TEXT("AddPinEntry"),
-		FText::FromString(TEXT("Add Pin")),
-		FText::FromString(TEXT("Creates a pin")),
+		FText::FromString(TEXT("Add Response")),
+		FText::FromString(TEXT("Creates a new response")),
 		FSlateIcon(TEXT("DialogueAssetEditorStyle"),TEXT("DialogueAssetEditor.NodeAddPinIcon")),
 		FUIAction(FExecuteAction::CreateUObject(
 			const_cast<UDialogueGraphNode*>(this),
@@ -26,8 +40,8 @@ void UDialogueGraphNode::GetNodeContextMenuActions(class UToolMenu* Menu,
 	
 	section.AddMenuEntry(
 		TEXT("DeletePinEntry"),
-		FText::FromString(TEXT("Delete Pin")),
-		FText::FromString(TEXT("Deletes the last pin")),
+		FText::FromString(TEXT("Delete Response")),
+		FText::FromString(TEXT("Deletes the last response")),
 		FSlateIcon(TEXT("DialogueAssetEditorStyle"),TEXT("DialogueAssetEditor.NodeDeletePinIcon")),
 		FUIAction(FExecuteAction::CreateUObject(
 			const_cast<UDialogueGraphNode*>(this),
@@ -67,10 +81,13 @@ UEdGraphPin* UDialogueGraphNode::CreateDialoguePin(EEdGraphPinDirection Directio
 	return Pin;
 }
 
+
+
 void UDialogueGraphNode::HandleAddPin()
 {
-	CreateDialoguePin(EGPD_Output,TEXT("AnotherOutput"));
-				
+	GetNodeInfo()->DialogueResponses.Add(FText::FromString(TEXT("Response")));
+	SyncPinsWithResponses();
+	
 	GetGraph()->NotifyGraphChanged();
 	GetGraph()->Modify();
 }
@@ -80,7 +97,9 @@ void UDialogueGraphNode::HandleDeletePin()
 	UEdGraphPin* Pin = GetPinAt(Pins.Num() - 1);
 	if (Pin->Direction != EGPD_Input)
 	{
-		RemovePin(Pin);
+		UDialogueNodeInfo* DialogueNodeInfo = GetNodeInfo();
+		DialogueNodeInfo->DialogueResponses.RemoveAt(DialogueNodeInfo->DialogueResponses.Num() - 1);
+		SyncPinsWithResponses();
 		
 		GetGraph()->NotifyGraphChanged();
 		GetGraph()->Modify();
@@ -92,4 +111,37 @@ void UDialogueGraphNode::HandleDeletePin()
 void UDialogueGraphNode::HandleDeleteNode()
 {
 	GetGraph()->RemoveNode(this);
+}
+
+
+void UDialogueGraphNode::SyncPinsWithResponses()
+{
+	//Sync pins with data
+	//first pin is the input
+	UDialogueNodeInfo* DialogueNodeInfo = GetNodeInfo();
+	int NumGraphNodePins = Pins.Num() - 1;
+	int NumInfoPins = DialogueNodeInfo->DialogueResponses.Num();
+
+	//match pin counts
+	while (NumGraphNodePins > NumInfoPins){}
+	{
+		RemovePinAt(NumGraphNodePins - 1, EGPD_Output);
+		NumGraphNodePins--;
+	}
+	while (NumInfoPins > NumGraphNodePins)
+	{
+		CreateDialoguePin(
+			EGPD_Output,
+			FName(DialogueNodeInfo->DialogueResponses[NumGraphNodePins].ToString())
+			);
+		NumGraphNodePins++;
+	}
+	
+	//sync text
+	int index = 1;
+	for (const FText& option : DialogueNodeInfo->DialogueResponses)
+	{
+		GetPinAt(index)->PinName = FName(option.ToString());
+		index++;
+	}
 }

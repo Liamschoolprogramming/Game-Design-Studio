@@ -18,6 +18,10 @@ public:
 	{
 		return WorkingGraph;
 	}
+	
+	void SetWorkingGraphUI(TSharedPtr<SGraphEditor> InWorkingGraphUI) {WorkingGraphUI = InWorkingGraphUI;}
+	void SetSelectedNodeDetailView(TSharedPtr<class IDetailsView> DetailsView);
+	void OnGraphSelectionChanged(const FGraphPanelSelectionSet& Selections);
 
 public: //FAssetEditorToolkit interface
 	virtual FText GetToolkitName() const override
@@ -48,11 +52,13 @@ public: //FAssetEditorToolkit interface
 	virtual void OnToolkitHostingFinished(const TSharedRef<IToolkit>& Toolkit) override {}
 	
 	virtual void OnClose() override;
-	void OnGraphChanged(const FEdGraphEditAction& EditAction);
+	void OnNodeDetailViewPropertiesUpdated(const FPropertyChangedEvent& ChangedEvent);
+	void OnWorkingAssetPreSave();
 	
 protected:
 	void UpdateWorkingAssetFromGraph();
 	void UpdateEditorGraphFromWorkingAsset();
+	class UDialogueGraphNode* GetSelectedNode(const FGraphPanelSelectionSet& Selection);
 	
 private:
 	UPROPERTY()
@@ -61,5 +67,9 @@ private:
 	UPROPERTY()
 	class UEdGraph* WorkingGraph = nullptr;
 	
-	FDelegateHandle GraphChangedListenerHandle;
+	
+	// working graph UI (slate widget)
+	TSharedPtr<SGraphEditor> WorkingGraphUI = nullptr;
+	
+	TSharedPtr<class IDetailsView> SelectedNodeDetailView = nullptr;
 };

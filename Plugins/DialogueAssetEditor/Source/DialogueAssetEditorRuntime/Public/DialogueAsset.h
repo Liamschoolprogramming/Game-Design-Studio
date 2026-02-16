@@ -1,6 +1,9 @@
 #pragma once
+#include <functional>
+
 #include "CoreMinimal.h"
 #include "DialogueRuntimeGraph.h"
+#include <functional>
 #include "DialogueAsset.generated.h"
 
 
@@ -10,18 +13,22 @@ class DIALOGUEASSETEDITORRUNTIME_API UDialogueAsset : public UObject
 	
 	GENERATED_BODY()
 	
-public:
+public: //properties
 	UPROPERTY(EditAnywhere)
-	FString SomeData = TEXT("DefaultData");
+	FString DialogueName = TEXT("Enter dialogue name here");
 	
-	UPROPERTY(EditAnywhere)
-	int32 SomeNumber = 0;
 	
-	UPROPERTY(EditAnywhere)
-	bool SomeBool = false;
 	
 	UPROPERTY()
 	UDialogueRuntimeGraph* Graph = nullptr;
 	
+public: //dialogue interface
+	void SetPreSaveListener(std::function<void()> OnPreSaveListenerIn) {OnPreSaveListener = OnPreSaveListenerIn;}
 	
+public: //UObject interface
+	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
+	
+	
+private: //members
+	std::function<void()> OnPreSaveListener = nullptr;
 };

@@ -8,21 +8,33 @@ class UDialogueGraphNode : public UEdGraphNode
 {
 	GENERATED_BODY()
 
-public:
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
-	{
-		return FText::FromString(TEXT("MyNodeTitle"));
-	}
+public: //UEdGraph interface
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual FLinearColor GetNodeTitleColor() const override
 	{
 		return FLinearColor(FLinearColor::Green);
 	}
 	virtual bool CanUserDeleteNode() const override{ return true; }
 
-	UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Direction, FName Name);
-
-	
 	virtual void GetNodeContextMenuActions(class UToolMenu* Menu, class UGraphNodeContextMenuContext* Context) const override;
+	
+	
+public: //Dialogue interface
+	UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Direction, FName Name);
+	void SyncPinsWithResponses();
+	
+	void SetNodeInfo(class UDialogueNodeInfo* InNodeInfo)
+	{
+		NodeInfo = InNodeInfo;
+	}
+	class UDialogueNodeInfo* GetNodeInfo()
+	{
+		return NodeInfo;
+	}
+	
+protected:
+	UPROPERTY()
+	class UDialogueNodeInfo* NodeInfo = nullptr;
 	
 private:
 	void HandleAddPin();

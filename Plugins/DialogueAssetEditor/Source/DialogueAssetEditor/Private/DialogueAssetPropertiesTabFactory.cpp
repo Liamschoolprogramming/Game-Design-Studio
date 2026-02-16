@@ -6,6 +6,7 @@
 #include "DialogueAsset.h"
 #include "IDetailsView.h"
 #include "PropertyEditorModule.h"
+#include "DialogueNodeInfo.h"
 
 
 FDialogueAssetPropertiesTabFactory::FDialogueAssetPropertiesTabFactory(TSharedPtr<class FDialogueAssetEditorApp> InApp) : FWorkflowTabFactory(FName("DialogueAssetPropertiesTab"), InApp)
@@ -22,6 +23,8 @@ TSharedRef<SWidget> FDialogueAssetPropertiesTabFactory::CreateTabBody(const FWor
 	TSharedPtr<FDialogueAssetEditorApp> LocalApp = App.Pin();
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(FName("PropertyEditor"));
 	
+	
+	
 	FDetailsViewArgs DetailsViewArgs;
 	{
 		DetailsViewArgs.bAllowSearch = false; 
@@ -37,12 +40,23 @@ TSharedRef<SWidget> FDialogueAssetPropertiesTabFactory::CreateTabBody(const FWor
 	
 	TSharedPtr<IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
 	DetailsView->SetObject(LocalApp->GetWorkingAsset());
+	
+	TSharedPtr<IDetailsView> SelectedNodeDetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
+	SelectedNodeDetailsView->SetObject(nullptr);
+	LocalApp->SetSelectedNodeDetailView(SelectedNodeDetailsView);
+	
 	return SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
 		.FillHeight(1.0f)
 		.HAlign(HAlign_Fill)
 		[
 			DetailsView.ToSharedRef()
+		]
+		+ SVerticalBox::Slot()
+		.FillHeight(1.0f)
+		.HAlign(HAlign_Fill)
+		[
+			SelectedNodeDetailsView.ToSharedRef()
 		];
 }
 
