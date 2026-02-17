@@ -9,8 +9,11 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 	PlayerInventory = {};
 	
 	AllItems = {
-		{"TestItem", FPlayerInventoryItem("Test Item", 0, 10, EInventoryItemType::Quest)},
-		{"AnotherTestItem", FPlayerInventoryItem("Another Test Item", 0, 15, EInventoryItemType::Quest)},
+		{"TestItem", FPlayerInventoryItem("Test Item", 0, 10, EInventoryItemType::Quest, false)},
+		{"AnotherTestItem", FPlayerInventoryItem("Another Test Item", 0, 15, EInventoryItemType::Quest, false)},
+		{"Sunstone", FPlayerInventoryItem("Sunstone", 0, 10, EInventoryItemType::Quest, false)},
+		{"Golem", FPlayerInventoryItem("Golem", 0, 1, EInventoryItemType::Quest, true)},
+		{"Owl Child", FPlayerInventoryItem("Owl Child", 0, 1, EInventoryItemType::Quest, false)},
 	};
 }
 
@@ -23,11 +26,12 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 	}
 	
 	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);
-
+	
 	if (FoundItem == nullptr)
 	{
 		FPlayerInventoryItem* NewItem = AllItems.Find(ItemName);
-		FPlayerInventoryItem ItemToAdd = FPlayerInventoryItem(NewItem->ItemDisplayName, Amount, NewItem->MaxAmount, EInventoryItemType::Quest);
+		
+		FPlayerInventoryItem ItemToAdd = FPlayerInventoryItem(NewItem->ItemDisplayName, Amount, NewItem->MaxAmount, EInventoryItemType::Quest, NewItem->Hidden);
 		
 		if (NewItem == nullptr)
 		{
@@ -96,5 +100,10 @@ int UInventoryManager::GetCurrentAmountForItem(FName ItemName)
 		return 0;
 	}
 	return FoundItem->CurrentAmount;
+}
+
+TMap<FName, FPlayerInventoryItem> UInventoryManager::GetAllItems()
+{
+	return AllItems;
 }
 

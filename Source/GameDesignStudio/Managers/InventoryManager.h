@@ -28,19 +28,24 @@ struct FPlayerInventoryItem
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EInventoryItemType ItemType;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Hidden;
+	
 	FPlayerInventoryItem()
 	{
 		MaxAmount = 1000;
 		CurrentAmount = 0;
 		ItemType = EInventoryItemType::Quest;
+		Hidden = false;
 	}
 	
-	FPlayerInventoryItem(FName ItemName, int Amount, int Max, EInventoryItemType InvItemType)
+	FPlayerInventoryItem(FName ItemName, int Amount, int Max, EInventoryItemType InvItemType, bool InvHidden)
 	{
 		CurrentAmount = Amount;
 		MaxAmount = Max;
 		ItemDisplayName = ItemName;
 		ItemType = InvItemType;
+		Hidden = InvHidden;
 	}
 };
 
@@ -72,4 +77,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int GetCurrentAmountForItem(FName ItemName);
+	
+	UFUNCTION(BlueprintCallable)
+	TMap<FName, FPlayerInventoryItem> GetAllItems();
 };

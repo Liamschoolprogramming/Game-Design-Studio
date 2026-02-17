@@ -26,15 +26,11 @@ struct FQuest
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool Active;
 	
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	static FString QuestDescription;
-	
 	FQuest()
 	{
 		Completed = false;
 		Active = false;
 		ItemAmountRequired = 0;
-		QuestDescription = "Test";
 	}
 	
 	FQuest(FName QuestName, FName Summary, FName ItemName, int RequiredAmount)

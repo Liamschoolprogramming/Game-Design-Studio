@@ -18,6 +18,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, FQuest> Quests;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UUserWidget* QuestMenu;
+	
 	UFUNCTION(BlueprintCallable)
 	bool IsQuestForItemActive(FName ItemName); 
 	

@@ -55,6 +55,8 @@ void UQuestManager::ActivateQuestForItem(FName ItemName)
 	{
 		FoundQuest->Active = true;
 	}
+	
+	
 }
 
 void UQuestManager::UpdateCompletionStatusForQuestItem(FName ItemName)
