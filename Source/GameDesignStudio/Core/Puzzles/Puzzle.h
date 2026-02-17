@@ -40,9 +40,6 @@ class GAMEDESIGNSTUDIO_API APuzzle : public AActor, public IPuzzleActorInterface
 public:	
 	APuzzle();
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite);
-	FName ActorId;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
 	EPuzzleState PuzzleStatus = EPuzzleState::Start;
 	
@@ -69,7 +66,7 @@ public:
 	//virtual void DoActionBasedOnState(EPuzzleStatus State);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<FName, bool> Signals;
+	TMap<FGuid, bool> Signals;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"))
 	APuzzle* LinkedReceiver;

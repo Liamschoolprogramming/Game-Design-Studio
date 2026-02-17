@@ -42,6 +42,6 @@ public:
 private:
 	
 	// Key will be the unique actor key
-	TMap<FName, TWeakObjectPtr<APuzzle>> RuntimeActors;
+	TMap<FGuid, TWeakObjectPtr<APuzzle>> RuntimeActors;
 	
 };
