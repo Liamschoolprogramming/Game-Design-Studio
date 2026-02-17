@@ -21,6 +21,9 @@ void APuzzle::BeginPlay()
 	Super::BeginPlay();
 	
 	ActorValues.ActorLocation = GetActorTransform();
+	
+	// SetState should maybe be called after registration. Might need to change where the
+	// error handling happens from SnapshotActorValues if it does
 	SetState(PuzzleStatus);
 	
 	if (ActorId.IsNone())
