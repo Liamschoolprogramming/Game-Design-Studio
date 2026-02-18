@@ -2,9 +2,12 @@
 
 
 #include "CoreMinimal.h"
-#include "DialogueNodeInfo.h"
+#include "DialogueNodeInfoBase.h"
 #include "UObject/NameTypes.h"
+#include "DialogueNodeType.h"
 #include "DialogueRuntimeGraph.generated.h"
+
+
 
 UCLASS()
 class DIALOGUEASSETEDITORRUNTIME_API  UDialogueeRuntimePin: public UObject
@@ -28,6 +31,8 @@ class DIALOGUEASSETEDITORRUNTIME_API  UDialogueRuntimeNode: public UObject
 	GENERATED_BODY()
 
 public:
+	UPROPERTY()
+	EDialogueNodeType NodeType = EDialogueNodeType::DialogueNode;
 	
 	UPROPERTY()
 	UDialogueeRuntimePin* InputPin;
@@ -39,7 +44,7 @@ public:
 	FVector2D Position;
 	
 	UPROPERTY()
-	UDialogueNodeInfo* NodeInfo = nullptr;
+	UDialogueNodeInfoBase* NodeInfo = nullptr;
 };
 
 UCLASS()

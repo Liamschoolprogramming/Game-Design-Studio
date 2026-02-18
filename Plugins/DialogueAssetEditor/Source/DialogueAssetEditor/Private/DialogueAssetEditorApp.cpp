@@ -4,9 +4,13 @@
 #include "DialogueAssetAppMode.h"
 #include "DialogueAsset.h"
 #include "DialogueGraphNode.h"
+#include "DialogueStartGraphNode.h"
+#include "DialogueEndGraphNode.h"
 #include "DialogueGraphSchema.h"
 #include "DialogueNodeInfo.h"
 #include "Kismet2/BlueprintEditorUtils.h"
+
+DEFINE_LOG_CATEGORY_STATIC(FDialogueAssetEditorAppSub, Log, All)
 
 void FDialogueAssetEditorApp::RegisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
 {
@@ -56,12 +60,12 @@ void FDialogueAssetEditorApp::InitEditor(const EToolkitMode::Type Mode, const TS
 /**
  * @returns the first UDialogueGraphNode in the given selection or nullptr if there are none.
  */
-class UDialogueGraphNode* FDialogueAssetEditorApp::GetSelectedNode(const FGraphPanelSelectionSet& Selection)
+class UDialogueGraphNodeBase* FDialogueAssetEditorApp::GetSelectedNode(const FGraphPanelSelectionSet& Selection)
 {
 	//find first UDialogueGraphNode
 	for (UObject* Obj: Selection)
 	{
-		UDialogueGraphNode* Node = Cast<UDialogueGraphNode>(Obj);
+		UDialogueGraphNodeBase* Node = Cast<UDialogueGraphNodeBase>(Obj);
 		if (Node != nullptr)
 		{
 			
@@ -79,7 +83,7 @@ void FDialogueAssetEditorApp::SetSelectedNodeDetailView(TSharedPtr<class IDetail
 
 void FDialogueAssetEditorApp::OnGraphSelectionChanged(const FGraphPanelSelectionSet& Selections)
 {
-	UDialogueGraphNode* SelectedNode = GetSelectedNode(Selections);
+	UDialogueGraphNodeBase* SelectedNode = GetSelectedNode(Selections);
 	if (SelectedNode != nullptr)
 	{
 		SelectedNodeDetailView->SetObject(SelectedNode->GetNodeInfo());
@@ -91,10 +95,10 @@ void FDialogueAssetEditorApp::OnNodeDetailViewPropertiesUpdated(const FPropertyC
 	if (WorkingGraphUI != nullptr)
 	{
 		//Get node being modified 
-		UDialogueGraphNode* DialogueNode = GetSelectedNode(WorkingGraphUI->GetSelectedNodes());
+		UDialogueGraphNodeBase* DialogueNode = GetSelectedNode(WorkingGraphUI->GetSelectedNodes());
 		if (DialogueNode != nullptr)
 		{
-			DialogueNode->SyncPinsWithResponses();
+			DialogueNode->OnPropertiesChanged();
 		}
 		WorkingGraphUI->NotifyGraphChanged();
 	}
@@ -134,14 +138,13 @@ void FDialogueAssetEditorApp::UpdateWorkingAssetFromGraph()
 	
 	for (UEdGraphNode* UiNode : WorkingGraph->Nodes)
 	{
-		UDialogueGraphNode* UiGraphNode = Cast<UDialogueGraphNode>(UiNode);
-		if (UiGraphNode == nullptr) continue;
+		
 		
 		
 		
 		UDialogueRuntimeNode* RuntimeNode = NewObject<UDialogueRuntimeNode>(RuntimeGraph);
 		RuntimeNode->Position = FVector2D(UiNode->NodePosX, UiNode->NodePosY);
-		RuntimeNode->NodeInfo = UiGraphNode->GetNodeInfo();
+		
 		
 		for (UEdGraphPin* UiPin : UiNode->Pins)
 		{
@@ -165,6 +168,13 @@ void FDialogueAssetEditorApp::UpdateWorkingAssetFromGraph()
 			}
 		}
 		
+	
+		UDialogueGraphNode* UiDialogueNode = Cast<UDialogueGraphNode>(UiNode);
+		RuntimeNode->NodeInfo = DuplicateObject(UiDialogueNode->GetNodeInfo(), RuntimeNode);
+		RuntimeNode->NodeType = UiDialogueNode->GetDialogueNodeType();
+			
+		
+		
 		RuntimeGraph->Nodes.Add(RuntimeNode);
 	}
 	
@@ -184,6 +194,7 @@ void FDialogueAssetEditorApp::UpdateEditorGraphFromWorkingAsset()
 {
 	if (WorkingAsset->Graph == nullptr)
 	{
+		WorkingGraph->GetSchema()->CreateDefaultNodesForGraph(*WorkingGraph);
 		return;
 	}
 	
@@ -192,17 +203,31 @@ void FDialogueAssetEditorApp::UpdateEditorGraphFromWorkingAsset()
 	
 	for (UDialogueRuntimeNode* RuntimeNode : WorkingAsset->Graph->Nodes)
 	{
-		UDialogueGraphNode* NewNode = NewObject<UDialogueGraphNode>(WorkingGraph);
+		UDialogueGraphNodeBase* NewNode = nullptr;
+		if (RuntimeNode->NodeType == EDialogueNodeType::StartNode)
+		{
+			NewNode = NewObject<UDialogueStartGraphNode>(WorkingGraph);
+		} else if (RuntimeNode->NodeType == EDialogueNodeType::DialogueNode)
+		{
+			NewNode = NewObject<UDialogueGraphNode>(WorkingGraph);
+		}else if (RuntimeNode->NodeType == EDialogueNodeType::EndNode)
+		{
+			NewNode = NewObject<UDialogueEndGraphNode>(WorkingGraph);
+		} else
+		{
+			UE_LOG(FDialogueAssetEditorAppSub, Error, TEXT("FDialogueAssetEditorApp::UpdateEditorGraphFromWorkingAsset: Unknown type"));
+			continue;
+		}
 		NewNode->CreateNewGuid();
 		NewNode->NodePosX = RuntimeNode->Position.X;
 		NewNode->NodePosY = RuntimeNode->Position.Y;
 		
 		if (RuntimeNode->NodeInfo != nullptr)
 		{
-			NewNode->SetNodeInfo(DuplicateObject(RuntimeNode->NodeInfo, RuntimeNode));
+			NewNode->SetNodeInfo(DuplicateObject(RuntimeNode->NodeInfo, NewNode));
 		} else
 		{
-			NewNode->SetNodeInfo(NewObject<UDialogueNodeInfo>(RuntimeNode));
+			NewNode->InitNodeInfo(NewNode);
 		}
 		
 		if (RuntimeNode->InputPin != nullptr)

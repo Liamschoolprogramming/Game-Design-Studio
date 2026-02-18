@@ -13,6 +13,8 @@ public:
 	virtual void GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const override;
 	
 	virtual const FPinConnectionResponse CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const override;
+	
+	virtual void CreateDefaultNodesForGraph(UEdGraph& Graph) const override;
 };
 
 USTRUCT()
@@ -22,8 +24,10 @@ GENERATED_BODY()
 	
 	public:
 	FNewNodeAction(){}
-	FNewNodeAction(FText InNodeCategory, FText InMenuDesc, FText InToolTip, uint32 InGroupingIndex)
-		: FEdGraphSchemaAction(InNodeCategory, InMenuDesc, InToolTip, InGroupingIndex) {}
+	FNewNodeAction(UClass* InClassTemplate, FText InNodeCategory, FText InMenuDesc, FText InToolTip, uint32 InGroupingIndex)
+		: FEdGraphSchemaAction(InNodeCategory, InMenuDesc, InToolTip, InGroupingIndex), ClassTemplate(InClassTemplate) {}
 	
 	virtual UEdGraphNode* PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin,const FVector2f& Location, bool bSelectNewNode = true) override;
+protected:
+	UClass* ClassTemplate = nullptr;
 };

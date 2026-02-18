@@ -1,10 +1,11 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "DialogueNodeInfoBase.h"
 #include "DialogueNodeInfo.generated.h"
 
-UCLASS()
-class DIALOGUEASSETEDITORRUNTIME_API UDialogueNodeInfo : public UObject
+UCLASS(BlueprintType)
+class DIALOGUEASSETEDITORRUNTIME_API UDialogueNodeInfo : public UDialogueNodeInfoBase
 {
 	GENERATED_BODY()
 

@@ -12,6 +12,10 @@
 
 #define LOCTEXT_NAMESPACE "FDialogueAssetEditorModule"
 
+
+
+
+
 /**
  * Defines the custom pin type used for the dialogue nodes
  */
@@ -33,6 +37,43 @@ class SDialogueGraphPin :public SGraphPin
 		return FSlateColor(FLinearColor(.2f,1.0f,0.2f));
 	}
 };
+class SDialogueStartGraphPin :public SGraphPin
+{
+public:
+	SLATE_BEGIN_ARGS(SDialogueGraphPin){}
+		
+	SLATE_END_ARGS()
+	
+	void Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
+	{
+		SGraphPin::Construct(SGraphPin::FArguments(), InGraphPinObj);
+	}
+	
+protected:
+	virtual FSlateColor GetPinColor() const override
+	{
+		return FSlateColor(FLinearColor(1.f,0.2f,0.2f));
+	}
+};
+
+class SDialogueEndGraphPin :public SGraphPin
+{
+public:
+	SLATE_BEGIN_ARGS(SDialogueGraphPin){}
+		
+	SLATE_END_ARGS()
+	
+	void Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
+	{
+		SGraphPin::Construct(SGraphPin::FArguments(), InGraphPinObj);
+	}
+	
+protected:
+	virtual FSlateColor GetPinColor() const override
+	{
+		return FSlateColor(FLinearColor(0.2f,0.2f,1.f));
+	}
+};
 
 /**
  * Defines the pin factory for the custom pins
@@ -46,6 +87,12 @@ struct FDialoguePinFactory : public FGraphPanelPinFactory
 		if (FName(TEXT("DialoguePin")) == Pin->PinType.PinSubCategory)
 		{
 			return SNew(SDialogueGraphPin, Pin);
+		} else if(FName(TEXT("StartPin")) == Pin->PinType.PinSubCategory)
+		{
+			return SNew(SDialogueStartGraphPin, Pin);
+		} else if(FName(TEXT("EndPin")) == Pin->PinType.PinSubCategory)
+		{
+			return SNew(SDialogueStartGraphPin, Pin);
 		}
 		return nullptr;
 	}

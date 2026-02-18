@@ -8,16 +8,17 @@
 
 FText UDialogueGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	if (NodeInfo->Title.IsEmpty())
+	UDialogueNodeInfo* DialogueNodeInfo = Cast<UDialogueNodeInfo>(NodeInfo);
+	if (DialogueNodeInfo->Title.IsEmpty())
 	{
-		FString DialogueTextString = NodeInfo->DialogueText.ToString();
+		FString DialogueTextString = DialogueNodeInfo->DialogueText.ToString();
 		if (DialogueTextString.Len() > 15)
 		{
 			DialogueTextString = DialogueTextString.Left(15) + TEXT("...");
 		}
 		return FText::FromString(DialogueTextString);
 	}
-	return NodeInfo->Title;
+	return DialogueNodeInfo->Title;
 }
 
 void UDialogueGraphNode::GetNodeContextMenuActions(class UToolMenu* Menu,
@@ -68,6 +69,8 @@ void UDialogueGraphNode::GetNodeContextMenuActions(class UToolMenu* Menu,
 	
 }
 
+
+
 UEdGraphPin* UDialogueGraphNode::CreateDialoguePin(EEdGraphPinDirection Direction, FName Name)
 {
 	FName Category = (Direction == EGPD_Input) ? TEXT("Input") : TEXT("Output");
@@ -82,11 +85,22 @@ UEdGraphPin* UDialogueGraphNode::CreateDialoguePin(EEdGraphPinDirection Directio
 	return Pin;
 }
 
+UEdGraphPin* UDialogueGraphNode::CreateDefaultInputPin()
+{
+	return CreateDialoguePin(EGPD_Input, TEXT("Display"));
+}
+
+void UDialogueGraphNode::CreateDefaultOutputPins()
+{
+	FString defaultResponse = TEXT("Continue");
+	CreateDialoguePin(EGPD_Output, FName(defaultResponse));
+	GetDialogueNodeInfo()->DialogueResponses.Add(FText::FromString(defaultResponse));
+}
 
 
 void UDialogueGraphNode::HandleAddPin()
 {
-	GetNodeInfo()->DialogueResponses.Add(FText::FromString(TEXT("Response")));
+	GetDialogueNodeInfo()->DialogueResponses.Add(FText::FromString(TEXT("Response")));
 	SyncPinsWithResponses();
 	
 	GetGraph()->NotifyGraphChanged();
@@ -98,7 +112,7 @@ void UDialogueGraphNode::HandleDeletePin()
 	UEdGraphPin* Pin = GetPinAt(Pins.Num() - 1);
 	if (Pin->Direction != EGPD_Input)
 	{
-		UDialogueNodeInfo* DialogueNodeInfo = GetNodeInfo();
+		UDialogueNodeInfo* DialogueNodeInfo = GetDialogueNodeInfo();
 		DialogueNodeInfo->DialogueResponses.RemoveAt(DialogueNodeInfo->DialogueResponses.Num() - 1);
 		SyncPinsWithResponses();
 		
@@ -119,7 +133,7 @@ void UDialogueGraphNode::SyncPinsWithResponses()
 {
 	//Sync pins with data
 	//first pin is the input
-	UDialogueNodeInfo* DialogueNodeInfo = GetNodeInfo();
+	UDialogueNodeInfo* DialogueNodeInfo = GetDialogueNodeInfo();
 	int NumGraphNodePins = Pins.Num() - 1;
 	int NumInfoPins = DialogueNodeInfo->DialogueResponses.Num();
 
