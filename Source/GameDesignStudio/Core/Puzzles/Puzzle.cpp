@@ -22,8 +22,10 @@ void APuzzle::BeginPlay()
 	
 	ActorValues.ActorLocation = GetActorTransform();
 	
+	//************************************************************************************//
 	// SetState should maybe be called after registration. Might need to change where the
 	// error handling happens from SnapshotActorValues if it does
+	//************************************************************************************//
 	SetState(PuzzleStatus);
 	
 	GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>()->RegisterPuzzleActor(this);
@@ -38,19 +40,10 @@ void APuzzle::BeginPlay()
 // on the manager to later be compared
 void APuzzle::SetState(EPuzzleState State)
 {
-	//***************************************************//
-	// For debug display naming of states
-	//const UEnum* Enum = StaticEnum<EPuzzleState>();
-	
-	//FName StateName = Enum->GetNameByValue(static_cast<int64>(State));
-	//StateName = FName(*Enum->GetNameStringByValue(static_cast<int64>(PuzzleStatus)));
-	//****************************************************//
 	
 	PuzzleStatus = State;
 	
 	GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->SnapshotActorValues(this);
-	
-	//ActorValues.CurrentState = StateName;
 }
 
 void APuzzle::ApplyPuzzleState_Implementation()

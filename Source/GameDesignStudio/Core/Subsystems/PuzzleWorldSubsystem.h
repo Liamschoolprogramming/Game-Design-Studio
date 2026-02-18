@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "data/PersistentActorId.h"
-
+#include "Core/Debug/DebugUtils.h"
 #include "core/Puzzles/Puzzle.h"
 #include "PuzzleWorldSubsystem.generated.h"
 

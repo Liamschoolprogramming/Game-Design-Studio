@@ -53,18 +53,6 @@ public:
 	TWeakObjectPtr<AActor> WorldSubsytem;
 	FPersistantActorValues ActorValues;
 	
-	//UPROPERTY(EditAnywhere)
-	//FName StateId;
-	
-	UFUNCTION(BlueprintCallable, Category = "Puzzle Actors")
-	void SetState(EPuzzleState State);
-	
-	
-	virtual void ApplyPuzzleState_Implementation();
-	
-	// Set as blueprint overrideable
-	//virtual void DoActionBasedOnState(EPuzzleStatus State);
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FGuid, bool> Signals;
 	
@@ -74,13 +62,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite);
 	EPuzzleElementState PuzzleElementState;
 	
-	//void SetActorID(FName Id) const;
+	UFUNCTION(BlueprintCallable, Category = "Puzzle Actors")
+	void SetState(EPuzzleState State);
+	
+	virtual void ApplyPuzzleState_Implementation();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
-	//void InitializeState();
 
 public:	
 	// Called every frame
