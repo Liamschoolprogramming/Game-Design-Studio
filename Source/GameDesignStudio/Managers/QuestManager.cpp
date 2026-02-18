@@ -6,6 +6,8 @@
 #include "InventoryManager.h"
 #include "Macros.h"
 #include "Core/Subsystems/GameManagerSubsystem.h"
+#include "Managers/QuestInterface.h"
+#include "Blueprint/UserWidget.h"
 
 void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 {
@@ -45,7 +47,7 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 	};
 	
 	// testing only
-	ActivateQuestForItem("Golem");
+	//ActivateQuestForItem("Golem");
 }
 
 void UQuestManager::ActivateQuestForItem(FName ItemName)
@@ -54,6 +56,11 @@ void UQuestManager::ActivateQuestForItem(FName ItemName)
 	if (FoundQuest != nullptr)
 	{
 		FoundQuest->Active = true;
+		
+		if (QuestMenu != nullptr)
+		{
+			IQuestInterface::Execute_QuestStarted(QuestMenu, ItemName);
+		}
 	}
 	
 	
