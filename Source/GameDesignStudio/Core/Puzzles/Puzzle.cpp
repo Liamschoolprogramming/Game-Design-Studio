@@ -49,9 +49,11 @@ void APuzzle::BeginPlay()
 // on the manager to later be compared
 void APuzzle::SetState(EPuzzleState State)
 {
-	
 	PuzzleStatus = State;
 	
+	// GetSubsystem<UGameManagerSubsystem>()
+	
+	// Passes the instance object for the arguement
 	GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->SnapshotActorValues(this);
 }
 
@@ -65,6 +67,12 @@ void APuzzle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void APuzzle::ApplyState(const FPersistantActorValues& State)
+{
+	SetActorTransform(State.ActorLocation);
+	
 }
 
 

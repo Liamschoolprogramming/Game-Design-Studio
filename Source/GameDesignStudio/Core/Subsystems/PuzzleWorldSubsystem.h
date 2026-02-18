@@ -30,6 +30,8 @@ public:
 	// Actor needs to call this method
 	void RegisterPuzzleActor(APuzzle* Actor);
 	
+	TMap<FName, TWeakObjectPtr<APuzzle>>& GetRuntimeActors();
+	
 	// A helper method to search through the list of actors in the WorldSubsystem
 	// and return a map of them that is a local variable
 	

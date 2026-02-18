@@ -62,6 +62,8 @@ public:
 	
 	void RegisterActorToManager(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, const FPersistantActorValues& ActorValues);
 	
+	void LoadActor(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, const FPersistantActorValues& ActorValues);
+	
 	UPROPERTY()
 	FPlayerStats PlayerStats;
 	

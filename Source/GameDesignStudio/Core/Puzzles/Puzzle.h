@@ -68,6 +68,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Puzzle Actors")
 	void SetState(EPuzzleState State);
 	
+	virtual void ApplyState(const FPersistantActorValues& State);
+	
 	virtual void ApplyPuzzleState_Implementation();
 
 protected:

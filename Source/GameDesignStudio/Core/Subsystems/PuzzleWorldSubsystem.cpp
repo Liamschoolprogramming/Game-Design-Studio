@@ -50,6 +50,11 @@ TArray<APuzzle*> UPuzzleWorldSubsystem::GetActorsOfManagerType(TSubclassOf<UGame
 	return Actors;
 }
 
+TMap<FName, TWeakObjectPtr<APuzzle>>& UPuzzleWorldSubsystem::GetRuntimeActors()
+{
+	return RuntimeActors;
+}
+
 void UPuzzleWorldSubsystem::PostInitialize()
 {
 	Super::PostInitialize();

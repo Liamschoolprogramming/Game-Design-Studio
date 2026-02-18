@@ -164,3 +164,18 @@ void UGameManagerSubsystem::SnapshotActorValues(APuzzle* Actor)
 		this->GetManager(Actor->OwningManager)->Snapshot(Actor->ActorId, Actor->ActorValues);
 	}
 }
+
+void UGameManagerSubsystem::LoadActor(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, const FPersistantActorValues& ActorValues)
+{	
+	// This should be a call to the manager. The manager should have a method called LoadActorsFromSnapshot that calls
+	// this from the level manager. It should then loop through it and matches the keys and then take that reference
+	// dereference it and call a method called ApplySnapshot that is a private method. The method ApplySnapshot should
+	// have a list of calls like applytransform or set actors state
+	
+	// This should happen on the manager, if the actor takes that data it breaks the one source of truth design pattern
+	// where it is aware of why it needs to be applying all these stats to itself. The actor shouldn't manually apply these
+	// states to itself. It will also be helpful so that if there is an actor that needs to also apply state but isn't a puzzle
+	// actor, the system can just add another map of that type and either make a runtime cast or template method to handle
+	// varrying types
+	TMap<FName, TWeakObjectPtr<APuzzle>>& Actors = GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>()->GetRuntimeActors();
+}

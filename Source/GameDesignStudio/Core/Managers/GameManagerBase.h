@@ -28,12 +28,14 @@ public:
 	UPROPERTY()
 	TObjectPtr<UGameManagerSubsystem> Owner;
 	
-	//TMap<FPuzzleId, FPersistantPuzzleState> PuzzleStates;
-	
 	// Registers actor
 	void RegisterActor(const FName Id, const FPersistantActorValues& ActorValues);
 	
 	void Snapshot(const FName Id, const FPersistantActorValues& ActorValues);
+	
+	// Call into the actors and reapply struct
+	// Take struct from this manager, loop through world subsystem
+	void LoadActorState(const FName Id, const FPersistantActorValues& ActorValues);
 	
 	// Sets the owning subsystem
 	virtual void Initialize(UGameManagerSubsystem* InstanceOwner);
