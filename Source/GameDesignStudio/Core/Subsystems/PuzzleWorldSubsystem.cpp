@@ -7,10 +7,8 @@
 
 void UPuzzleWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
-	
 	Super::Initialize(Collection);
-	
-	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, FString::Printf(TEXT("Registered PuzzleWorldSubsystem")));
+	DEBUG_TO_SCREEN(FColor::Emerald, "Registered PuzzleWorldSubsystem");
 }
 
 void UPuzzleWorldSubsystem::Deinitialize()
