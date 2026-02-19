@@ -166,7 +166,8 @@ public:
 	UMaterialParameterCollection* CameraMPC;
 	
 	
-	
+	UFUNCTION(BlueprintCallable, Category="Possession")
+	bool CanPossessEntity(APossessableEntity* entity);
 	
 	void StartClick(const FInputActionValue& Value);
 	void StopClick(const FInputActionValue& Value);
