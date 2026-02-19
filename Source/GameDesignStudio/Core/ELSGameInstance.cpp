@@ -21,22 +21,38 @@ void UELSGameInstance::PlayMusic(USoundBase* Music, float InFadeOutTimeOld, floa
 			StopMusic(FadeOutTimeOld);
 
 			//fade in new
-			ActiveMusicPlayer = UGameplayStatics::CreateSound2D(GetWorld(),CurrentMusic);
-			ActiveMusicPlayer->FadeIn(FadeInTimeNew);
+			ActiveMusicPlayer = UGameplayStatics::SpawnSound2D(this,CurrentMusic, 1.0f, 1.0f,0.0f,nullptr,true);
+			if (ActiveMusicPlayer)
+			{
+				DEBUG_TO_SCREEN(FColor::Purple, "The audio was crossfaded");
+				ActiveMusicPlayer->bAutoDestroy = false; // Prevent auto-delete
+				ActiveMusicPlayer->FadeIn(FadeInTimeNew);
+			}
+			
 		}
 	}
 	else
 	{
 		//fade in new
-		ActiveMusicPlayer = UGameplayStatics::CreateSound2D(GetWorld(),CurrentMusic);
-		ActiveMusicPlayer->FadeIn(FadeInTimeNew);
+		ActiveMusicPlayer = UGameplayStatics::SpawnSound2D(this,CurrentMusic, 1.0f, 1.0f,0.0f,nullptr,true);
+		
+		if (ActiveMusicPlayer)
+		{
+			DEBUG_TO_SCREEN(FColor::Purple, "The audio was created");
+			ActiveMusicPlayer->bAutoDestroy = false; // Prevent auto-delete
+			ActiveMusicPlayer->FadeIn(FadeInTimeNew);
+		}
 	}
 }
 
 void UELSGameInstance::StopMusic(float FadeOutTime)
 {
-	FadeOutMusicPlayer = ActiveMusicPlayer;
-	FadeOutMusicPlayer->FadeOut(FadeOutTime, 0.f);
+	if (ActiveMusicPlayer)
+	{
+		FadeOutMusicPlayer = ActiveMusicPlayer;
+		FadeOutMusicPlayer->FadeOut(FadeOutTime, 0.f);
+	}
+	
 }
 
 void UELSGameInstance::SaveAudioSettings(float MusicVolumeIn, float SFXVolumeIn, float MasterVolumeIn)
