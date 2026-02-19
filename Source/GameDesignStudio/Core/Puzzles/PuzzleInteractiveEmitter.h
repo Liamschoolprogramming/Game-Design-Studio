@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -19,6 +18,7 @@ class GAMEDESIGNSTUDIO_API APuzzleInteractiveEmitter : public APuzzleInteractive
 	UFUNCTION(BlueprintCallable) 
 	void EmitRedSignal();
 
+
 public:
 	APuzzleInteractiveEmitter();
 	
@@ -26,7 +26,10 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (
 		InstanceEditable = "true", ExposeOnSpawn = "true"))
-	double EmitSignalTimerDuration;
+	float EmitSignalTimerDuration;
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable) 
+	void SetActivatedState(bool ActiveState);
 
 protected:
 	FTimerHandle EmitSignalTimer;
