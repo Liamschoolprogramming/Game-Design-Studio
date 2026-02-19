@@ -25,6 +25,12 @@ void UELSGameInstance::PlayMusic(USoundBase* Music, float InFadeOutTimeOld, floa
 			ActiveMusicPlayer->FadeIn(FadeInTimeNew);
 		}
 	}
+	else
+	{
+		//fade in new
+		ActiveMusicPlayer = UGameplayStatics::CreateSound2D(GetWorld(),CurrentMusic);
+		ActiveMusicPlayer->FadeIn(FadeInTimeNew);
+	}
 }
 
 void UELSGameInstance::StopMusic(float FadeOutTime)
@@ -46,7 +52,7 @@ void UELSGameInstance::SaveAudioSettings(float MusicVolumeIn, float SFXVolumeIn,
 			UGameplayStatics::SetSoundMixClassOverride(GetWorld(),MasterSoundMix,MasterSoundClass, MasterVolumeIn, 1,0,true);
 			UGameplayStatics::SetSoundMixClassOverride(GetWorld(),MasterSoundMix,MusicSoundClass,MusicVolumeIn, 1,0,true);
 			UGameplayStatics::SetSoundMixClassOverride(GetWorld(),MasterSoundMix,SFXSoundClass,SFXVolumeIn, 1,0,true);
-
+			
 			UGameplayStatics::SaveGameToSlot(SettingsSaveGame,FString(TEXT("settings")), 0);
 			UGameplayStatics::PushSoundMixModifier(GetWorld(),MasterSoundMix);
 		}
