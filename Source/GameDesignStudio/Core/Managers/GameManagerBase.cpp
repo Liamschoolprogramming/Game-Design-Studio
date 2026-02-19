@@ -23,7 +23,7 @@ void UGameManagerBase::Shutdown()
 	
 }
 
-void UGameManagerBase::RegisterActor(const FName Id, const FPersistantActorValues& ActorValues)
+void UGameManagerBase::RegisterActor(const FGuid Id, const FPersistantActorValues& ActorValues)
 {
 	PersistantActorValues.Add(Id, ActorValues);
 	
@@ -33,7 +33,7 @@ void UGameManagerBase::RegisterActor(const FName Id, const FPersistantActorValue
 	}
 }
 
-void UGameManagerBase::Snapshot(const FName Id, const FPersistantActorValues& ActorValues)
+void UGameManagerBase::Snapshot(const FGuid Id, const FPersistantActorValues& ActorValues)
 {
 	//FPersistantActorValues* Current = PersistantActorValues.Find(Id);
 	

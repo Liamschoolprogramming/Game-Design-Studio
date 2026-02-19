@@ -28,20 +28,11 @@ void APuzzle::BeginPlay()
 	//************************************************************************************//
 	SetState(PuzzleStatus);
 	
-	if (ActorId.IsNone())
-	{
-		UE_LOG(LogTemp, Error, TEXT("%s: ActorId must be set"), *GetName());
-		
-	}
-	
-	else
-	{
-		GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>()->RegisterPuzzleActor(this);
-	}
+	GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>()->RegisterPuzzleActor(this);
 	
 	if (LinkedReceiver != nullptr)
 	{
-		LinkedReceiver->Signals.Add(ActorId, false);
+		LinkedReceiver->Signals.Add(this->GetActorGuid(), false);
 	}
 }
 
