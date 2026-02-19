@@ -21,7 +21,9 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 				"Flower Spirit Sundew",
 				"A cheery sunflower spirit wants to live closer to the goddess but it's too cold. Find a Sunstone to heat up its living space.",
 				"Sunstone",
-				1
+				1,
+				EPlayerBoostableStat::Health,
+				0
 			)
 		},
 		//Night Quest - Stoneface
@@ -31,7 +33,9 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 				"Self-Aware Golem",
 				"The Golem wants someone to talk to.",
 				"Golem",
-				1
+				1,
+				EPlayerBoostableStat::Health,
+				0
 			)
 		},
 		//Lehan Quest - Whistlebranch
@@ -41,7 +45,9 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 				"Whistlebranch's Missing Children",
 				"Whistlebranch can't seem to find her children. Help her find them.",
 				"Owl Child",
-				4
+				4,
+				EPlayerBoostableStat::Health,
+				0
 			)
 		},
 	};
