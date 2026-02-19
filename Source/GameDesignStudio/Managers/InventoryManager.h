@@ -77,7 +77,4 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int GetCurrentAmountForItem(FName ItemName);
-	
-	UFUNCTION(BlueprintCallable)
-	TMap<FName, FPlayerInventoryItem> GetAllItems();
 };

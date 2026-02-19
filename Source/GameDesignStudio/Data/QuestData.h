@@ -1,7 +1,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Managers/PlayerStatManager.h"
 #include "QuestData.generated.h"
+
+UENUM(Blueprintable)
+enum class EQuestState : uint8
+{
+	INACTIVE UMETA(DisplayName = "Inactive"),
+	ACTIVE UMETA(DisplayName = "Active"),
+	COMPLETED UMETA(DisplayName = "Completed"),
+};
 
 USTRUCT(BlueprintType)
 struct FQuest
@@ -21,25 +30,30 @@ struct FQuest
 	int ItemAmountRequired;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool Completed;
+	EQuestState QuestState;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool Active;
+	EPlayerBoostableStat StatReward;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	double StatRewardAmount;
 	
 	FQuest()
 	{
-		Completed = false;
-		Active = false;
+		QuestState = EQuestState::INACTIVE;
 		ItemAmountRequired = 0;
+		StatReward = EPlayerBoostableStat::Health;
+		StatRewardAmount = 0;
 	}
 	
-	FQuest(FName QuestName, FName Summary, FName ItemName, int RequiredAmount)
+	FQuest(FName QuestName, FName Summary, FName ItemName, int RequiredAmount, EPlayerBoostableStat StatReward, double StatAmount)
 	{
-		Completed = false;
-		Active = false;
+		QuestState = EQuestState::INACTIVE;
 		ItemAmountRequired = RequiredAmount;
 		QuestDisplayName = QuestName;
 		QuestSummary = Summary;
 		QuestItem = ItemName;
+		this->StatReward = StatReward;
+		StatRewardAmount = StatAmount;
 	}
 };

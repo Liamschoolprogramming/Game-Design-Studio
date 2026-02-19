@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "InventoryManager.h"
+#include "QuestManager.h"
 
 void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 {
@@ -13,7 +14,7 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 		{"AnotherTestItem", FPlayerInventoryItem("Another Test Item", 0, 15, EInventoryItemType::Quest, false)},
 		{"Sunstone", FPlayerInventoryItem("Sunstone", 0, 10, EInventoryItemType::Quest, false)},
 		{"Golem", FPlayerInventoryItem("Golem", 0, 1, EInventoryItemType::Quest, true)},
-		{"Owl Child", FPlayerInventoryItem("Owl Child", 0, 1, EInventoryItemType::Quest, false)},
+		{"Owl Child", FPlayerInventoryItem("Owl Child", 0, 4, EInventoryItemType::Quest, false)},
 	};
 }
 
@@ -100,10 +101,5 @@ int UInventoryManager::GetCurrentAmountForItem(FName ItemName)
 		return 0;
 	}
 	return FoundItem->CurrentAmount;
-}
-
-TMap<FName, FPlayerInventoryItem> UInventoryManager::GetAllItems()
-{
-	return AllItems;
 }
 

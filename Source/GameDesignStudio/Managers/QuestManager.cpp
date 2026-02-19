@@ -16,7 +16,7 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 	Quests = {
 		//Day Quest - Sundew
 		{
-			"Sunstone",
+			"Sundew",
 			FQuest(
 				"Flower Spirit Sundew",
 				"A cheery sunflower spirit wants to live closer to the goddess but it's too cold. Find a Sunstone to heat up its living space.",
@@ -26,7 +26,7 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 		},
 		//Night Quest - Stoneface
 		{
-			"Golem",
+			"Stoneface",
 			FQuest(
 				"Self-Aware Golem",
 				"The Golem wants someone to talk to.",
@@ -36,7 +36,7 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 		},
 		//Lehan Quest - Whistlebranch
 		{
-			"Owl Child",
+			"Whistlebranch",
 			FQuest(
 				"Whistlebranch's Missing Children",
 				"Whistlebranch can't seem to find her children. Help her find them.",
@@ -55,8 +55,7 @@ void UQuestManager::ActivateQuestForItem(FName ItemName)
 	FQuest* FoundQuest = Quests.Find(ItemName);
 	if (FoundQuest != nullptr)
 	{
-		FoundQuest->Active = true;
-		
+		FoundQuest->QuestState = EQuestState::ACTIVE;
 		if (QuestMenu != nullptr)
 		{
 			IQuestInterface::Execute_QuestStarted(QuestMenu, ItemName);
@@ -79,7 +78,7 @@ void UQuestManager::UpdateCompletionStatusForQuestItem(FName ItemName)
 	
 	if (InventoryManager->GetCurrentAmountForItem(ItemName) >= RequiredAmount)
 	{
-		Quest->Completed = true;
+		Quest->QuestState = EQuestState::COMPLETED;
 	}
 }
 
@@ -91,5 +90,5 @@ bool UQuestManager::IsQuestForItemActive(FName ItemName)
 		return false;
 	}
 
-	return (Quest->Active);
+	return (Quest->QuestState == EQuestState::ACTIVE);
 }
