@@ -140,6 +140,32 @@ void APlayerControllerBase::InteractWithClosestObject()
 	}
 }
 
+//check if we can possess an entity
+bool APlayerControllerBase::CanPossessEntity(APossessableEntity* entity)
+{
+	if (!ClosestPossessableEntities.Contains(entity)) return false;
+	
+	if (!CameraReference->CanSeeObject(entity)) return false;
+	if (GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()) &&
+GetPawn()->GetClass()->GetSuperClass() == APossessableEntity::StaticClass())
+	{
+		APossessableEntity* OurPawn = Cast<APossessableEntity>(GetPawn());
+		if (entity != OurPawn)
+		{
+				
+			return true;
+		}
+	}
+	else
+	{
+		if (entity != nullptr)
+		{
+			return true;
+		}
+	
+	}
+	return false;
+}
 
 void APlayerControllerBase::StartClick(const FInputActionValue& Value)
 {
