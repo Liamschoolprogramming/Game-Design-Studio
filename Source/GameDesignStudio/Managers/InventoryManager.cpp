@@ -2,6 +2,7 @@
 
 #include "InventoryManager.h"
 #include "QuestManager.h"
+#include "Core/Subsystems/GameManagerSubsystem.h"
 
 void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 {
@@ -28,6 +29,7 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 	
 	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);
 	
+	//Add Item
 	if (FoundItem == nullptr)
 	{
 		FPlayerInventoryItem* NewItem = AllItems.Find(ItemName);
@@ -40,6 +42,11 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 		}
 		
 		PlayerInventory.Add(ItemName, ItemToAdd);
+		
+		//Update quest completion progress
+		UQuestManager* QManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager();
+		QManager->UpdateCompletionStatusForQuestItem(ItemName);
+		
 		return Amount;
 	}
 	
@@ -47,10 +54,20 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 	if ((FoundItem->CurrentAmount + Amount) > Maximum)
 	{
 		FoundItem-> CurrentAmount = Maximum;
+		
+		//Update quest completion progress
+		UQuestManager* QManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager();
+		QManager->UpdateCompletionStatusForQuestItem(ItemName);
+		
 		return Maximum;
 	}
 	
 	FoundItem-> CurrentAmount += Amount;
+	
+	//Update quest completion progress
+	UQuestManager* QManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager();
+	QManager->UpdateCompletionStatusForQuestItem(ItemName);
+	
 	return FoundItem-> CurrentAmount;
 }
 
@@ -85,7 +102,7 @@ void UInventoryManager::SetMaxAmountForItem(FName ItemName, int MaxAmount)
 
 FPlayerInventoryItem UInventoryManager::GetItemDetails(FName ItemName)
 {
-	FPlayerInventoryItem* FoundItem = AllItems.Find(ItemName);
+	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);
 	if (FoundItem == nullptr)
 	{
 		return FPlayerInventoryItem();
@@ -95,10 +112,10 @@ FPlayerInventoryItem UInventoryManager::GetItemDetails(FName ItemName)
 
 int UInventoryManager::GetCurrentAmountForItem(FName ItemName)
 {
-	FPlayerInventoryItem* FoundItem = AllItems.Find(ItemName);
+	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);
 	if (FoundItem == nullptr)
 	{
-		return 0;
+		return -1;
 	}
 	return FoundItem->CurrentAmount;
 }

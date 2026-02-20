@@ -24,5 +24,8 @@ class GAMEDESIGNSTUDIO_API IQuestInterface
 	
 public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void QuestStarted(FName QuestKey); 
+	void QuestStarted(FName QuestKey);
+	
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void QuestCompleted(FName QuestKey);
 };

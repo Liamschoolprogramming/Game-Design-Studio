@@ -29,4 +29,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void UpdateCompletionStatusForQuestItem(FName ItemName);
+	
+	UFUNCTION(BlueprintCallable)
+	EQuestState GetQuestState(FName ItemName);
 };
