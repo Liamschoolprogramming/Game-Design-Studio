@@ -169,19 +169,7 @@ GetPawn()->GetClass()->GetSuperClass() == APossessableEntity::StaticClass())
 
 void APlayerControllerBase::StartClick(const FInputActionValue& Value)
 {
-	//Do the move to here instead of blueprints
-	FHitResult Hit;
-	GetHitResultUnderCursor(ECC_Visibility,true, Hit);
 	
-	if (Hit.bBlockingHit && CameraReference->bLockCameraToCharacter == true && !bIsMoving)
-	{
-		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Hit.Location);
-		if (ParticleSystem)
-		{
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),ParticleSystem, Hit.Location);
-		}
-		
-	}
 }
 
 void APlayerControllerBase::StopClick(const FInputActionValue& Value)
