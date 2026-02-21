@@ -104,7 +104,8 @@ bool APlayerControllerBase::CanWeCyclePossessableEntity(int IndexToCheck)
 	else if (IndexToCheck >= 0)
 	{
 		if (!ClosestPossessableEntities.IsValidIndex(IndexToCheck)) return false;
-		if (!CameraReference->CanSeeObject(ClosestPossessableEntities[IndexToCheck])) return false;
+		//if (!CameraReference->CanSeeObject(ClosestPossessableEntities[IndexToCheck])) return false;
+		if (!Macros::CanActorSeeActor(PlayerReference, ClosestPossessableEntities[IndexToCheck])) return false;
 		if (GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()) &&
 	GetPawn()->GetClass()->GetSuperClass() == APossessableEntity::StaticClass())
 		{
@@ -146,8 +147,9 @@ void APlayerControllerBase::InteractWithClosestObject()
 bool APlayerControllerBase::CanPossessEntity(APossessableEntity* entity)
 {
 	if (!ClosestPossessableEntities.Contains(entity)) return false;
-	
-	if (!CameraReference->CanSeeObject(entity)) return false;
+	if (!PlayerReference) return false;
+	//if (!CameraReference->CanSeeObject(entity)) return false;
+	if (!Macros::CanActorSeeActor(PlayerReference, entity)) return false;
 	if (GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()) &&
 GetPawn()->GetClass()->GetSuperClass() == APossessableEntity::StaticClass())
 	{
@@ -469,7 +471,7 @@ void APlayerControllerBase::CyclePossession()
 		
 		PlayerStats.MindPoints >= 5 ? CastTime = 3.f : 6.f;
 		
-		if (!CameraReference->CanSeeObject(ClosestPossessableEntities[IndexForPossessables]))
+		if (!Macros::CanActorSeeActor(PlayerReference, ClosestPossessableEntities[IndexForPossessables])) 
 		{
 			FTimerDelegate CycleTimerDelegate;
 			CycleTimerDelegate.BindUFunction(this, FName("CyclePossessionUp"));
