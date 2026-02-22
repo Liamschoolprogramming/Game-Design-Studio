@@ -27,5 +27,8 @@ public:
 	void QuestStarted(FName QuestKey);
 	
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void QuestProgressChanged(FName QuestKey);
+	
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void QuestCompleted(FName QuestKey);
 };

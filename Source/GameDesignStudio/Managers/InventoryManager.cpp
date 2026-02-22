@@ -1,7 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "InventoryManager.h"
+
+#include "QuestInterface.h"
 #include "QuestManager.h"
+#include "Blueprint/UserWidget.h"
 #include "Core/Subsystems/GameManagerSubsystem.h"
 
 void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
@@ -28,6 +31,7 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 	}
 	
 	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);
+	UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager();
 	
 	//Add Item
 	if (FoundItem == nullptr)
@@ -42,10 +46,7 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 		}
 		
 		PlayerInventory.Add(ItemName, ItemToAdd);
-		
-		//Update quest completion progress
-		UQuestManager* QManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager();
-		QManager->UpdateCompletionStatusForQuestItem(ItemName);
+		QuestManager->UpdateCompletionStatusForQuestItem(ItemName);
 		
 		return Amount;
 	}
@@ -54,19 +55,13 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 	if ((FoundItem->CurrentAmount + Amount) > Maximum)
 	{
 		FoundItem-> CurrentAmount = Maximum;
-		
-		//Update quest completion progress
-		UQuestManager* QManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager();
-		QManager->UpdateCompletionStatusForQuestItem(ItemName);
+		QuestManager->UpdateCompletionStatusForQuestItem(ItemName);
 		
 		return Maximum;
 	}
 	
 	FoundItem-> CurrentAmount += Amount;
-	
-	//Update quest completion progress
-	UQuestManager* QManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager();
-	QManager->UpdateCompletionStatusForQuestItem(ItemName);
+	QuestManager->UpdateCompletionStatusForQuestItem(ItemName);
 	
 	return FoundItem-> CurrentAmount;
 }

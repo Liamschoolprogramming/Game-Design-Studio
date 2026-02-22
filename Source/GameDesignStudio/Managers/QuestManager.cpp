@@ -69,16 +69,13 @@ void UQuestManager::ActivateQuestForItem(FName ItemName)
 		{
 			IQuestInterface::Execute_QuestStarted(QuestMenu, ItemName);
 		}
+		
+		UpdateCompletionStatusForQuestItem(ItemName);
 	}
-	
-	
 }
 
 void UQuestManager::UpdateCompletionStatusForQuestItem(FName ItemName)
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, ItemName.ToString());
-	
 	FQuest* Quest = Quests.Find(ItemName);
 	if (Quest == nullptr)
 	{
@@ -93,20 +90,17 @@ void UQuestManager::UpdateCompletionStatusForQuestItem(FName ItemName)
 	int RequiredAmount = Quest->ItemAmountRequired;
 	UInventoryManager* InventoryManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetInventoryManager();
 	
-	//This is always returning 0 for some reason??
-	if (GEngine) {
-		int InvAmount =  InventoryManager->GetCurrentAmountForItem(ItemName);
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::FromInt(InvAmount));
-	}
-	
 	if (InventoryManager->GetCurrentAmountForItem(ItemName) >= RequiredAmount)
 	{
 		Quest->QuestState = EQuestState::COMPLETED;
 		InventoryManager->RemoveFromInventory(ItemName, RequiredAmount);
+		
 		IQuestInterface::Execute_QuestCompleted(QuestMenu, ItemName);
 		if (GEngine)
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "Completed");
 	}
+	
+	IQuestInterface::Execute_QuestProgressChanged(QuestMenu, ItemName);
 }
 
 bool UQuestManager::IsQuestForItemActive(FName ItemName)
