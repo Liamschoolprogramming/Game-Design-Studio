@@ -2,6 +2,8 @@
 
 
 #include "PossessableEntity.h"
+
+#include "NiagaraComponent.h"
 #include "PlayerCharacter.h"
 #include "PlayerControllerBase.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -19,7 +21,8 @@ APossessableEntity::APossessableEntity()
 	
 	GetCapsuleComponent()->ComponentTags.Empty();
 	GetCapsuleComponent()->ComponentTags.Add("HitBox");
-	
+	PossessableIndicatorNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NS_PossessableIndicator"));
+	PossessableIndicatorNiagaraComponent->SetupAttachment(RootComponent);
 }
 
 void APossessableEntity::SetPossessed(bool NewPossessed)
