@@ -41,6 +41,25 @@ public:
 	
 	APlayerCharacter* PlayerReference;
 	
+	UFUNCTION(BlueprintCallable, Category="Possession")
+	void PossessTargetPawn();
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Possession")
+	FTimerHandle PossessionTimerHandle;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Possession")
+	float CastTime = 6.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Possession")
+	bool CanSwitchToOthersWhilePossessed = false;
+	
+	UPROPERTY(BlueprintReadOnly, Category="Possession")
+	APawn* TargetPawn;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Possession")
+	TSubclassOf<UUserWidget> PossessionWidget;
+	
+	
 	void CyclePossession();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
@@ -166,7 +185,8 @@ public:
 	UMaterialParameterCollection* CameraMPC;
 	
 	
-	
+	UFUNCTION(BlueprintCallable, Category="Possession")
+	bool CanPossessEntity(APossessableEntity* entity);
 	
 	void StartClick(const FInputActionValue& Value);
 	void StopClick(const FInputActionValue& Value);
