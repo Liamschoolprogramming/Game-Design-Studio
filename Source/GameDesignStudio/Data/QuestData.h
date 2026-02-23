@@ -38,6 +38,9 @@ struct FQuest
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	double StatRewardAmount;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName GearReward;
+	
 	FQuest()
 	{
 		QuestState = EQuestState::INACTIVE;
@@ -46,7 +49,7 @@ struct FQuest
 		StatRewardAmount = 0;
 	}
 	
-	FQuest(FName QuestName, FName Summary, FName ItemName, int RequiredAmount, EPlayerBoostableStat StatReward, double StatAmount)
+	FQuest(FName QuestName, FName Summary, FName ItemName, int RequiredAmount, EPlayerBoostableStat StatReward, double StatAmount, FName GearReward)
 	{
 		QuestState = EQuestState::INACTIVE;
 		ItemAmountRequired = RequiredAmount;
@@ -55,5 +58,6 @@ struct FQuest
 		QuestItem = ItemName;
 		this->StatReward = StatReward;
 		StatRewardAmount = StatAmount;
+		this->GearReward = GearReward;
 	}
 };

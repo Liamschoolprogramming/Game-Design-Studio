@@ -6,6 +6,7 @@
 #include <string>
 
 #include "InventoryManager.h"
+#include "PlayerStatManager.h"
 #include "Macros.h"
 #include "Core/Subsystems/GameManagerSubsystem.h"
 #include "Managers/QuestInterface.h"
@@ -25,8 +26,9 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 				"A cheery sunflower spirit wants to live closer to the goddess but it's too cold. Find a Sunstone to heat up its living space.",
 				"Sunstone",
 				1,
-				EPlayerBoostableStat::Health,
-				0
+				EPlayerBoostableStat::Mind,
+				5,
+				"None"
 			)
 		},
 		//Night Quest - Stoneface
@@ -38,7 +40,8 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 				"Golem",
 				1,
 				EPlayerBoostableStat::Health,
-				0
+				10,
+				"None"
 			)
 		},
 		//Lehan Quest - Whistlebranch
@@ -49,8 +52,9 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 				"Whistlebranch can't seem to find her children. Help her find them.",
 				"Owl Child",
 				4,
-				EPlayerBoostableStat::Health,
-				0
+				EPlayerBoostableStat::Stamina,
+				3,
+				"None"
 			)
 		},
 	};
@@ -59,6 +63,7 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 	//ActivateQuestForItem("Golem");
 }
 
+//Starts the given quest
 void UQuestManager::ActivateQuestForItem(FName ItemName)
 {
 	FQuest* FoundQuest = Quests.Find(ItemName);
@@ -67,7 +72,7 @@ void UQuestManager::ActivateQuestForItem(FName ItemName)
 		FoundQuest->QuestState = EQuestState::ACTIVE;
 		if (QuestMenu != nullptr)
 		{
-			IQuestInterface::Execute_QuestStarted(QuestMenu, ItemName);
+			IQuestInterface::Execute_OnQuestStarted(QuestMenu, ItemName);
 		}
 		
 		UpdateCompletionStatusForQuestItem(ItemName);
@@ -94,15 +99,45 @@ void UQuestManager::UpdateCompletionStatusForQuestItem(FName ItemName)
 	{
 		Quest->QuestState = EQuestState::COMPLETED;
 		InventoryManager->RemoveFromInventory(ItemName, RequiredAmount);
+		ProvideReward(ItemName);
 		
-		IQuestInterface::Execute_QuestCompleted(QuestMenu, ItemName);
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "Completed");
+		IQuestInterface::Execute_OnQuestCompleted(QuestMenu, ItemName);
 	}
 	
-	IQuestInterface::Execute_QuestProgressChanged(QuestMenu, ItemName);
+	IQuestInterface::Execute_OnQuestProgressChanged(QuestMenu, ItemName);
 }
 
+//Provides player with rewards for given quest
+void UQuestManager::ProvideReward(FName ItemName)
+{
+	FQuest* Quest = Quests.Find(ItemName);
+	if (Quest == nullptr)
+	{
+		return;
+	}
+	
+	if (Quest->QuestState != EQuestState::COMPLETED)
+	{
+		return;
+	}
+	
+	if (Quest->StatRewardAmount != 0)
+	{
+		UPlayerStatManager* PlayerStatManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPlayerStatManager();
+		
+		PlayerStatManager->BoostPlayerStat(Quest->StatReward, Quest->StatRewardAmount);
+	}
+	
+	if (Quest->GearReward != "None")
+	{
+		UInventoryManager* InventoryManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetInventoryManager();
+		
+		//add gear here
+	}
+}
+
+//Returns whether the given quest's state is active.
+//Will not return true if quest is Completed.
 bool UQuestManager::IsQuestForItemActive(FName ItemName)
 {
 	FQuest* Quest = Quests.Find(ItemName);
@@ -114,6 +149,8 @@ bool UQuestManager::IsQuestForItemActive(FName ItemName)
 	return (Quest->QuestState == EQuestState::ACTIVE);
 }
 
+//Returns state of the given quest
+//Returns Inactive if the quest is invalid.
 EQuestState UQuestManager::GetQuestState(FName ItemName)
 {
 	FQuest* Quest = Quests.Find(ItemName);

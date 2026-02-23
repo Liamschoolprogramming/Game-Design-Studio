@@ -28,6 +28,9 @@ public:
 	void ActivateQuestForItem(FName ItemName);
 	
 	UFUNCTION(BlueprintCallable)
+	void ProvideReward(FName ItemName);
+	
+	UFUNCTION(BlueprintCallable)
 	void UpdateCompletionStatusForQuestItem(FName ItemName);
 	
 	UFUNCTION(BlueprintCallable)
