@@ -18,6 +18,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, FQuest> Quests;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UUserWidget* QuestMenu;
+	
 	UFUNCTION(BlueprintCallable)
 	bool IsQuestForItemActive(FName ItemName); 
 	
@@ -25,5 +28,11 @@ public:
 	void ActivateQuestForItem(FName ItemName);
 	
 	UFUNCTION(BlueprintCallable)
+	void ProvideReward(FName ItemName);
+	
+	UFUNCTION(BlueprintCallable)
 	void UpdateCompletionStatusForQuestItem(FName ItemName);
+	
+	UFUNCTION(BlueprintCallable)
+	EQuestState GetQuestState(FName ItemName);
 };
