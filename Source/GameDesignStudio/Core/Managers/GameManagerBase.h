@@ -20,7 +20,7 @@ class GAMEDESIGNSTUDIO_API UGameManagerBase : public UObject
 	GENERATED_BODY()
 	
 	UPROPERTY()
-	TMap<FName, FPersistantActorValues> PersistantActorValues;
+	TMap<FGuid, FPersistantActorValues> PersistantActorValues;
 
 public:
 	
@@ -31,9 +31,9 @@ public:
 	//TMap<FPuzzleId, FPersistantPuzzleState> PuzzleStates;
 	
 	// Registers actor
-	void RegisterActor(const FName Id, const FPersistantActorValues& ActorValues);
+	void RegisterActor(const FGuid Id, const FPersistantActorValues& ActorValues);
 	
-	void Snapshot(const FName Id, const FPersistantActorValues& ActorValues);
+	void Snapshot(const FGuid Id, const FPersistantActorValues& ActorValues);
 	
 	// Sets the owning subsystem
 	virtual void Initialize(UGameManagerSubsystem* InstanceOwner);

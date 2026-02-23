@@ -51,6 +51,8 @@ enum class EPlayerCharacterType : uint8
 {
 	Default UMETA(DisplayName = "Default"),
 	Golem UMETA(DisplayName = "Golem"),
+	Beetle UMETA(DisplayName = "Beetle"),
+	Turret UMETA(DisplayName = "Turret")
 };
 
 UCLASS()

@@ -16,10 +16,10 @@ class GAMEDESIGNSTUDIO_API APuzzleReceiver : public APuzzle
 public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category=SignalReceiver)
-	void ReceiveGreenSignal(FName EmitterId);
+	void ReceiveGreenSignal(FGuid EmitterId);
 	
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category=SignalReceiver)
-	void ReceiveRedSignal(FName EmitterId);
+	void ReceiveRedSignal(FGuid EmitterId);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"), Category=SignalReceiver)
 	bool bANDSignalReceiver;

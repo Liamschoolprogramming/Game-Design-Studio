@@ -2,6 +2,11 @@
 
 #include "InventoryManager.h"
 
+#include "QuestInterface.h"
+#include "QuestManager.h"
+#include "Blueprint/UserWidget.h"
+#include "Core/Subsystems/GameManagerSubsystem.h"
+
 void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 {
 	Super::Initialize(InstanceOwner);
@@ -9,8 +14,11 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 	PlayerInventory = {};
 	
 	AllItems = {
-		{"TestItem", FPlayerInventoryItem("Test Item", 0, 10, EInventoryItemType::Quest)},
-		{"AnotherTestItem", FPlayerInventoryItem("Another Test Item", 0, 15, EInventoryItemType::Quest)},
+		{"TestItem", FPlayerInventoryItem("Test Item", 0, 10, EInventoryItemType::Quest, false)},
+		{"AnotherTestItem", FPlayerInventoryItem("Another Test Item", 0, 15, EInventoryItemType::Quest, false)},
+		{"Sunstone", FPlayerInventoryItem("Sunstone", 0, 10, EInventoryItemType::Quest, false)},
+		{"Golem", FPlayerInventoryItem("Golem", 0, 1, EInventoryItemType::Quest, true)},
+		{"Owl Child", FPlayerInventoryItem("Owl Child", 0, 4, EInventoryItemType::Quest, false)},
 	};
 }
 
@@ -23,11 +31,14 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 	}
 	
 	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);
-
+	UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager();
+	
+	//Add Item
 	if (FoundItem == nullptr)
 	{
 		FPlayerInventoryItem* NewItem = AllItems.Find(ItemName);
-		FPlayerInventoryItem ItemToAdd = FPlayerInventoryItem(NewItem->ItemDisplayName, Amount, NewItem->MaxAmount, EInventoryItemType::Quest);
+		
+		FPlayerInventoryItem ItemToAdd = FPlayerInventoryItem(NewItem->ItemDisplayName, Amount, NewItem->MaxAmount, EInventoryItemType::Quest, NewItem->Hidden);
 		
 		if (NewItem == nullptr)
 		{
@@ -35,6 +46,8 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 		}
 		
 		PlayerInventory.Add(ItemName, ItemToAdd);
+		QuestManager->UpdateCompletionStatusForQuestItem(ItemName);
+		
 		return Amount;
 	}
 	
@@ -42,10 +55,14 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 	if ((FoundItem->CurrentAmount + Amount) > Maximum)
 	{
 		FoundItem-> CurrentAmount = Maximum;
+		QuestManager->UpdateCompletionStatusForQuestItem(ItemName);
+		
 		return Maximum;
 	}
 	
 	FoundItem-> CurrentAmount += Amount;
+	QuestManager->UpdateCompletionStatusForQuestItem(ItemName);
+	
 	return FoundItem-> CurrentAmount;
 }
 
@@ -80,7 +97,7 @@ void UInventoryManager::SetMaxAmountForItem(FName ItemName, int MaxAmount)
 
 FPlayerInventoryItem UInventoryManager::GetItemDetails(FName ItemName)
 {
-	FPlayerInventoryItem* FoundItem = AllItems.Find(ItemName);
+	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);
 	if (FoundItem == nullptr)
 	{
 		return FPlayerInventoryItem();
@@ -90,10 +107,10 @@ FPlayerInventoryItem UInventoryManager::GetItemDetails(FName ItemName)
 
 int UInventoryManager::GetCurrentAmountForItem(FName ItemName)
 {
-	FPlayerInventoryItem* FoundItem = AllItems.Find(ItemName);
+	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);
 	if (FoundItem == nullptr)
 	{
-		return 0;
+		return -1;
 	}
 	return FoundItem->CurrentAmount;
 }
