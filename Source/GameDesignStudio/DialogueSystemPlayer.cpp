@@ -110,7 +110,7 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 			{
 				DialogueWidget->CharacterPortrait->SetBrushFromTexture(Speaker->SpeakerImage);
 			}
-			
+			CurrentSpeakerComponent = Speaker;
 		}
 		
 	} 

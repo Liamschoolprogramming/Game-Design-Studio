@@ -33,6 +33,8 @@ public:
 	void ChooseOptionAtIndex(int Index);
 
 	UDialogueSpeakerComponent* FindSpeakerComponent(UWorld* World, FName SpeakerName);
+	
+	UDialogueSpeakerComponent* CurrentSpeakerComponent = nullptr;
 
 private:
 	UPROPERTY()
@@ -44,5 +46,7 @@ private:
 	UPROPERTY()
 	UQuestDialogueUIController* DialogueWidget = nullptr;
 
+	
+	
 	FOnDialogueEnded OnDialogueEnded;
 };

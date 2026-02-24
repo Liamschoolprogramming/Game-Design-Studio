@@ -37,7 +37,7 @@ void UDialogueSpeakerComponent::ActivateSpeakerCamera()
 	if (PC)
 	{
 		OnSpeakerCameraEnabled(PC->GetViewTarget());
-		PC->SetViewTargetWithBlend(this->GetOwner(), 0.5f);
+		PC->SetViewTargetWithBlend(this->GetOwner(), CameraTransitionTime);
 		PC->StopMovement();
 		
 	}

@@ -184,14 +184,6 @@ void APlayerControllerBase::StopClick(const FInputActionValue& Value)
 {
 }
 
-void APlayerControllerBase::ResetCameraFromDialogue()
-{
-	if (CameraReference)
-	{
-		SetViewTargetWithBlend(CameraReference, .5f);
-		SetCanMove(true);
-	}
-}
 
 void APlayerControllerBase::StopMove(const FInputActionValue& Value)
 {
@@ -733,6 +725,15 @@ void APlayerControllerBase::SetupInputComponent()
 		
 	}
 }
+void APlayerControllerBase::ResetCameraFromDialogue(float TransitionTime)
+{
+	if (CameraReference)
+	{
+		SetViewTargetWithBlend(CameraReference, TransitionTime);
+		SetCanMove(true);
+	}
+}
+
 
 void APlayerControllerBase::StartDialogue(UDialogueAsset* InDialogueAsset)
 {
@@ -757,7 +758,15 @@ void APlayerControllerBase::StartDialogue(UDialogueAsset* InDialogueAsset)
 				QuestManager->ActivateQuestForItem(FName(ActionData));
 			} else if (Action == EDialogueNodeAction::None)
 			{
-				ResetCameraFromDialogue();
+				if (DialoguePlayer->CurrentSpeakerComponent)
+				{
+					ResetCameraFromDialogue(DialoguePlayer->CurrentSpeakerComponent->CameraTransitionTime);
+				}
+				else
+				{
+					ResetCameraFromDialogue(0.5f);
+				}
+				
 			}
 		}
 		)

@@ -29,6 +29,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
 	UTexture2D* SpeakerImage = nullptr;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+	float CameraTransitionTime = 0.5f;
 	
 	UFUNCTION(BlueprintCallable, Category = "Dialogue")
 	void ActivateSpeakerCamera();

@@ -193,7 +193,7 @@ public:
 	void StopClick(const FInputActionValue& Value);
 	
 	UFUNCTION(BlueprintCallable, Category="Camera")
-	void ResetCameraFromDialogue();
+	void ResetCameraFromDialogue(float TransitionTime);
 	
 	
 	void StopMove(const FInputActionValue& Value);
