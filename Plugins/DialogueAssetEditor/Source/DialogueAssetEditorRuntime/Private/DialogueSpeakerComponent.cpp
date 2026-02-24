@@ -3,7 +3,7 @@
 
 #include "DialogueSpeakerComponent.h"
 
-#include "../../../../../Source/GameDesignStudio/DialoguePlayer.h"
+
 #include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY_STATIC(DialogueSpeakerComponentSub, Log, All);

@@ -4,7 +4,7 @@
 #include "PlayerControllerBase.h"
 
 #include "DialogueEndNodeInfo.h"
-#include "DialoguePlayer.h"
+
 #include "GameFramework/InputDeviceSubsystem.h"
 #include "EnhancedInputSubsystems.h"
 #include "Macros.h"
@@ -16,7 +16,7 @@
 #include "Core/Debug/DebugUtils.h"
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
-
+#include "DialogueSystemPlayer.h"
 
 DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
 
@@ -734,15 +734,20 @@ void APlayerControllerBase::SetupInputComponent()
 	}
 }
 
-void APlayerControllerBase::StartDialogue()
+void APlayerControllerBase::StartDialogue(UDialogueAsset* InDialogueAsset)
 {
 	
-	if (!DialogueAsset)
+	if (!DialogueAsset && !InDialogueAsset)
 	{
 		DEBUG_TO_SCREEN(FColor::Red, "No dialogue asset selected");
+		return;
+	}
+	if (InDialogueAsset)
+	{
+		DialogueAsset = InDialogueAsset;
 	}
 
-	DialoguePlayer = NewObject<UDialoguePlayer>(this);
+	DialoguePlayer = NewObject<UDialogueSystemPlayer>(this);
 	DialoguePlayer->PlayDialogue(DialogueAsset, this, FOnDialogueEnded::CreateLambda(
 		[this](EDialogueNodeAction Action, FString ActionData)
 		{
@@ -750,6 +755,9 @@ void APlayerControllerBase::StartDialogue()
 			{
 				UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager();
 				QuestManager->ActivateQuestForItem(FName(ActionData));
+			} else if (Action == EDialogueNodeAction::None)
+			{
+				ResetCameraFromDialogue();
 			}
 		}
 		)

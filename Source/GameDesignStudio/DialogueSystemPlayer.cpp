@@ -1,23 +1,23 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "DialoguePlayer.h"
+#include "DialogueSystemPlayer.h"
 
 #include "DialogueAsset.h"
 #include "DialogueNodeInfo.h"
 #include "DialogueRuntimeGraph.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
-#include "Runtime/CookOnTheFly/Internal/CookOnTheFly.h"
+
 #include "DialogueResponseButtonController.h"
 #include "QuestDialogueUIController.h"
-#include "ToolBuilderUtil.h"
-#include "Components/HorizontalBoxSlot.h"
+#include "Components/Image.h"
+
 #include "Components/VerticalBoxSlot.h"
 
 DEFINE_LOG_CATEGORY_STATIC(DialoguePlayer, Log, All);
 
-void UDialoguePlayer::PlayDialogue(class UDialogueAsset* InDialogueAsset, APlayerController* InPlayerController,
+void UDialogueSystemPlayer::PlayDialogue(class UDialogueAsset* InDialogueAsset, APlayerController* InPlayerController,
                                     FOnDialogueEnded InOnDialogueEnded)
 {
 	OnDialogueEnded = InOnDialogueEnded;
@@ -43,7 +43,7 @@ void UDialoguePlayer::PlayDialogue(class UDialogueAsset* InDialogueAsset, APlaye
 	
 	ChooseOptionAtIndex(0);
 }
-UDialogueSpeakerComponent* UDialoguePlayer::FindSpeakerComponent(UWorld* World, FName SpeakerName)
+UDialogueSpeakerComponent* UDialogueSystemPlayer::FindSpeakerComponent(UWorld* World, FName SpeakerName)
 {
 	if (!World) return nullptr;
 	if (SpeakerName == NAME_None) return nullptr;
@@ -63,7 +63,7 @@ UDialogueSpeakerComponent* UDialoguePlayer::FindSpeakerComponent(UWorld* World, 
 	return nullptr;
 }
 
-void UDialoguePlayer::ChooseOptionAtIndex(int Index)
+void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 {
 	if (Index >= CurrentNode->OutputPins.Num() || Index < 0)
 	{
@@ -105,6 +105,12 @@ void UDialoguePlayer::ChooseOptionAtIndex(int Index)
 		if (UDialogueSpeakerComponent* Speaker = FindSpeakerComponent(GetWorld(), NodeInfo->SpeakerName))
 		{
 			Speaker->ActivateSpeakerCamera();
+			DialogueWidget->CharacterName->SetText(FText::FromString(Speaker->SpeakerName.ToString()));
+			if (Speaker->SpeakerImage)
+			{
+				DialogueWidget->CharacterPortrait->SetBrushFromTexture(Speaker->SpeakerImage);
+			}
+			
 		}
 		
 	} 

@@ -2,7 +2,7 @@
 
 #include "DialogueAssetEditorRuntime.h"
 
-#define LOCTEXT_NAMESPACE "FDialogueAssetEditorModule"
+#define LOCTEXT_NAMESPACE "FDialogAssetEditorRuntimeModule"
 
 void FDialogueAssetEditorRuntimeModule::StartupModule()
 {
@@ -17,4 +17,4 @@ void FDialogueAssetEditorRuntimeModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FDialogueAssetEditorRuntimeModule, DialogueAssetEditor)
+IMPLEMENT_MODULE(FDialogueAssetEditorRuntimeModule, DialogueAssetEditorRuntime)

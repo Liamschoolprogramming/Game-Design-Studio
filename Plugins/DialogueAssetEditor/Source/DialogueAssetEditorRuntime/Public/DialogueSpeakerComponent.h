@@ -26,7 +26,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
 	USpringArmComponent* SpeakerCameraBoom = nullptr;
 	
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+	UTexture2D* SpeakerImage = nullptr;
 	
 	
 	UFUNCTION(BlueprintCallable, Category = "Dialogue")

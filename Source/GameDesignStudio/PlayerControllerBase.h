@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "CustomCamera.h"
 
+
 #include "GameFramework/PlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
@@ -227,14 +228,14 @@ public:
 public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Dialogue")
-	void StartDialogue();
+	void StartDialogue(class UDialogueAsset* InDialogueAsset = nullptr);
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
 	class UDialogueAsset* DialogueAsset = nullptr;
 	
 	UPROPERTY()
-	class UDialoguePlayer* DialoguePlayer = nullptr;
+	class UDialogueSystemPlayer* DialoguePlayer = nullptr;
 };
 
 
