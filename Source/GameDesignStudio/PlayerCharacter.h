@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "CameraAttachPoint.h"
+#include "DialogueInterface.h"
+#include "DialogueSpeakerComponent.h"
 #include "GameFramework/Character.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -21,8 +23,11 @@
 class APuzzleInteractive;
 class APlayerControllerBase;
 
+
+
+
 UCLASS()
-class GAMEDESIGNSTUDIO_API APlayerCharacter : public ACharacter, public IPlayerCharacterCameraInterface
+class GAMEDESIGNSTUDIO_API APlayerCharacter : public ACharacter, public IPlayerCharacterCameraInterface, public IDialogueInterface
 {
 	GENERATED_BODY()
 
@@ -41,7 +46,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Interaction")
 	void RemoveInteractableObject(APuzzleInteractive* Object);
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dialogue")
+	UDialogueSpeakerComponent* DialogueSpeakerComponent;
 	
 	UFUNCTION(BlueprintCallable, Category="Interaction")
 	void InteractWithClosestObject();	
@@ -118,6 +124,10 @@ public:
 	FVector SafeLocation;
 
 	virtual UCameraAttachPoint* GetAttachPoint() override;
+	
+public: 
+	virtual UDialogueSpeakerComponent* GetSpeakerComponent_Implementation() const override;
+	
 
 };
 

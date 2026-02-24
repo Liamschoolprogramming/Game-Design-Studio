@@ -2,6 +2,9 @@
 
 
 #include "PlayerControllerBase.h"
+
+#include "DialogueEndNodeInfo.h"
+#include "DialoguePlayer.h"
 #include "GameFramework/InputDeviceSubsystem.h"
 #include "EnhancedInputSubsystems.h"
 #include "Macros.h"
@@ -10,6 +13,7 @@
 #include "Components/SplineComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraComponent.h"
+#include "Core/Debug/DebugUtils.h"
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 
@@ -178,6 +182,15 @@ void APlayerControllerBase::StartClick(const FInputActionValue& Value)
 
 void APlayerControllerBase::StopClick(const FInputActionValue& Value)
 {
+}
+
+void APlayerControllerBase::ResetCameraFromDialogue()
+{
+	if (CameraReference)
+	{
+		SetViewTargetWithBlend(CameraReference, .5f);
+		SetCanMove(true);
+	}
 }
 
 void APlayerControllerBase::StopMove(const FInputActionValue& Value)
@@ -719,4 +732,28 @@ void APlayerControllerBase::SetupInputComponent()
 		}
 		
 	}
+}
+
+void APlayerControllerBase::StartDialogue()
+{
+	
+	if (!DialogueAsset)
+	{
+		DEBUG_TO_SCREEN(FColor::Red, "No dialogue asset selected");
+	}
+
+	DialoguePlayer = NewObject<UDialoguePlayer>(this);
+	DialoguePlayer->PlayDialogue(DialogueAsset, this, FOnDialogueEnded::CreateLambda(
+		[this](EDialogueNodeAction Action, FString ActionData)
+		{
+			if (Action == EDialogueNodeAction::StartQuest && ActionData != FString(""))
+			{
+				UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager();
+				QuestManager->ActivateQuestForItem(FName(ActionData));
+			}
+		}
+		)
+		);
+
+
 }

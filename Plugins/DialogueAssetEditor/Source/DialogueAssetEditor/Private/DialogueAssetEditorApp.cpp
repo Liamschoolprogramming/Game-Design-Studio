@@ -151,6 +151,7 @@ void FDialogueAssetEditorApp::UpdateWorkingAssetFromGraph()
 			UDialogueeRuntimePin* RuntimePin = NewObject<UDialogueeRuntimePin>(RuntimeNode);
 			RuntimePin->PinName = UiPin->PinName;
 			RuntimePin->PinId = UiPin->PinId;
+			RuntimePin->Parent = RuntimeNode;
 			
 			if (UiPin->HasAnyConnections() && UiPin->Direction == EGPD_Output)
 			{

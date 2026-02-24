@@ -49,6 +49,12 @@ APlayerCharacter::APlayerCharacter()
 	CameraAttachPoint = CreateDefaultSubobject<UCameraAttachPoint>(FName("CameraAttachPoint"));
 	CameraAttachPoint->SetupAttachment(RootComponent);
 	
+	DialogueSpeakerComponent = CreateDefaultSubobject<UDialogueSpeakerComponent>(FName("DialogueSpeakerComponent"));
+	DialogueSpeakerComponent->SetupAttachment(CameraAttachPoint);
+	DialogueSpeakerComponent->SetWorldTransform(CameraAttachPoint->GetComponentTransform());
+	DialogueSpeakerComponent->SetRelativeLocation(FVector(0,0,20));
+	DialogueSpeakerComponent->SetRelativeRotation(FRotator(-10,- 180,0));
+	
 }
 
 void APlayerCharacter::AddInteractableObject(APuzzleInteractive* Object)
@@ -269,4 +275,9 @@ void APlayerCharacter::SaveLastLocation()
 UCameraAttachPoint* APlayerCharacter::GetAttachPoint()
 {
 	return CameraAttachPoint;
+}
+
+UDialogueSpeakerComponent* APlayerCharacter::GetSpeakerComponent_Implementation() const
+{
+	return DialogueSpeakerComponent;
 }

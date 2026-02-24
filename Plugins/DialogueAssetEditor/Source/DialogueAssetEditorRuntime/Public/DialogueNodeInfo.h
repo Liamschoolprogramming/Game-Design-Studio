@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "DialogueNodeInfoBase.h"
+#include "DialogueSpeakerComponent.h"
 #include "DialogueNodeInfo.generated.h"
 
 UCLASS(BlueprintType)
@@ -18,4 +19,7 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 	TArray<FText> DialogueResponses;
+	
+	UPROPERTY(EditAnywhere)
+	FName SpeakerName;
 };

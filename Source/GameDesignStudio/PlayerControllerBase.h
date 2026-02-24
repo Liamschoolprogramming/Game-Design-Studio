@@ -191,6 +191,10 @@ public:
 	void StartClick(const FInputActionValue& Value);
 	void StopClick(const FInputActionValue& Value);
 	
+	UFUNCTION(BlueprintCallable, Category="Camera")
+	void ResetCameraFromDialogue();
+	
+	
 	void StopMove(const FInputActionValue& Value);
 
 	void InteractWithClosestObject();
@@ -219,6 +223,18 @@ private:
 public:
 	virtual void SetupInputComponent() override;
 	
+	//Dialogue System
+public:
+	
+	UFUNCTION(BlueprintCallable, Category = "Dialogue")
+	void StartDialogue();
+	
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+	class UDialogueAsset* DialogueAsset = nullptr;
+	
+	UPROPERTY()
+	class UDialoguePlayer* DialoguePlayer = nullptr;
 };
 
 
