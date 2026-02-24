@@ -60,7 +60,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UQuestManager* GetQuestManager() const;
 	
-	void RegisterActorToManager(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, const FPersistantActorValues& ActorValues);
+	void RegisterActorToManager(TSubclassOf<UGameManagerBase> ManagerClass, FGuid Id, const FPersistantActorValues& ActorValues);
 	
 	void LoadActor(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, const FPersistantActorValues& ActorValues);
 	

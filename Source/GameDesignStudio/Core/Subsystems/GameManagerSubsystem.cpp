@@ -132,7 +132,7 @@ UGameManagerBase* UGameManagerSubsystem::GetManager(TSubclassOf<UGameManagerBase
 }
 
 // Defining type at runtime for registering actors to managers
-void UGameManagerSubsystem::RegisterActorToManager(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, const FPersistantActorValues& ActorValues)
+void UGameManagerSubsystem::RegisterActorToManager(TSubclassOf<UGameManagerBase> ManagerClass, FGuid Id, const FPersistantActorValues& ActorValues)
 {
 	
 	if (UGameManagerBase* Manager = GetManagerByClass(ManagerClass))
@@ -161,7 +161,7 @@ void UGameManagerSubsystem::SnapshotActorValues(APuzzle* Actor)
 	
 	else if (Actor->OwningManager != nullptr)
 	{
-		this->GetManager(Actor->OwningManager)->Snapshot(Actor->ActorId, Actor->ActorValues);
+		this->GetManager(Actor->OwningManager)->Snapshot(Actor->GetActorGuid(), Actor->ActorValues);
 	}
 }
 

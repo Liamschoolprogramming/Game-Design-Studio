@@ -20,7 +20,7 @@ class GAMEDESIGNSTUDIO_API UGameManagerBase : public UObject
 	GENERATED_BODY()
 	
 	UPROPERTY()
-	TMap<FName, FPersistantActorValues> PersistantActorValues;
+	TMap<FGuid, FPersistantActorValues> PersistantActorValues;
 
 public:
 	
@@ -29,9 +29,9 @@ public:
 	TObjectPtr<UGameManagerSubsystem> Owner;
 	
 	// Registers actor
-	void RegisterActor(const FName Id, const FPersistantActorValues& ActorValues);
+	void RegisterActor(const FGuid Id, const FPersistantActorValues& ActorValues);
 	
-	void Snapshot(const FName Id, const FPersistantActorValues& ActorValues);
+	void Snapshot(const FGuid Id, const FPersistantActorValues& ActorValues);
 	
 	// Call into the actors and reapply struct
 	// Take struct from this manager, loop through world subsystem

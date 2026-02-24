@@ -7,6 +7,7 @@
 /**
  * 
  */
+#if !UE_BUILD_SHIPPING
 namespace Debug
 {
 	template<typename T>
@@ -48,14 +49,16 @@ concept HasToString = requires(T a)
 	
 	
 }
-
-
-class GAMEDESIGNSTUDIO_API Macros
+#else
+namespace Debug
 {
-public:
-	Macros();
+	template<typename... Args>
+	void PrintToScreen(Args&&...) {}
+}
+#endif
+
+namespace Macros
+{
 	
-	
-	
-	~Macros();
-};
+	bool CanActorSeeActor(const class AActor* CheckingActor, const class AActor* ActorToCheck, TArray<class AActor*> ActorsToIgnore = TArray<class AActor*>());
+}
