@@ -11,6 +11,7 @@
 #include "EnhancedInputComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "PossessableEntity.h"
+#include "RewardSpawnZone.h"
 #include "Core/Puzzles/PuzzleInteractive.h"
 #include "PlayerControllerBase.generated.h"
 
@@ -229,6 +230,12 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Dialogue")
 	void StartDialogue(class UDialogueAsset* InDialogueAsset = nullptr);
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
+	void DialogueBPFunction(const FString& ActionData);
+	
+	UFUNCTION(BlueprintCallable, Category = "Dialogue")
+	ARewardSpawnZone* FindFirstRewardSpawnZone();
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")

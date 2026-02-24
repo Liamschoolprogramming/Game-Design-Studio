@@ -756,21 +756,41 @@ void APlayerControllerBase::StartDialogue(UDialogueAsset* InDialogueAsset)
 			{
 				UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager();
 				QuestManager->ActivateQuestForItem(FName(ActionData));
-			} else if (Action == EDialogueNodeAction::None)
+			}else if (Action == EDialogueNodeAction::BPFunction && ActionData != FString(""))
 			{
-				if (DialoguePlayer->CurrentSpeakerComponent)
-				{
-					ResetCameraFromDialogue(DialoguePlayer->CurrentSpeakerComponent->CameraTransitionTime);
-				}
-				else
-				{
-					ResetCameraFromDialogue(0.5f);
-				}
+				DialogueBPFunction(FString(ActionData));
 				
+			}
+			if (DialoguePlayer->CurrentSpeakerComponent)
+			{
+				ResetCameraFromDialogue(DialoguePlayer->CurrentSpeakerComponent->CameraTransitionTime);
+			}
+			else
+			{
+				ResetCameraFromDialogue(0.5f);
 			}
 		}
 		)
 		);
 
+
+}
+
+ARewardSpawnZone* APlayerControllerBase::FindFirstRewardSpawnZone()
+{
+	UWorld* World = GetWorld();
+	if (!World) return nullptr;
+	//some goofy search
+	for (TObjectIterator<ARewardSpawnZone> It; It; ++It)
+	{
+		if (It->GetWorld() != World)
+			continue;
+
+		if (It)
+		{
+			return *It;
+		}
+	}
+	return nullptr;
 
 }

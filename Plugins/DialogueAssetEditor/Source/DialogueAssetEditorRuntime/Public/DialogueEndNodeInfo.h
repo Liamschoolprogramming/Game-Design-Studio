@@ -9,6 +9,7 @@ enum class EDialogueNodeAction : uint8
 {
 	None,
 	StartQuest, //ActionData is the QuestID
+	BPFunction, //ActionData is passed into a bp switch
 };
 
 UCLASS(BlueprintType)
