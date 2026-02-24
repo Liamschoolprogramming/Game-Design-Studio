@@ -14,11 +14,11 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 	PlayerInventory = {};
 	
 	AllItems = {
-		{"TestItem", FPlayerInventoryItem("Test Item", 0, 10, EInventoryItemType::Quest, false)},
-		{"AnotherTestItem", FPlayerInventoryItem("Another Test Item", 0, 15, EInventoryItemType::Quest, false)},
-		{"Sunstone", FPlayerInventoryItem("Sunstone", 0, 10, EInventoryItemType::Quest, false)},
+		{"TestItem", FPlayerInventoryItem("Test Item", 0, 10, EInventoryItemType::Quest)},
+		{"AnotherTestItem", FPlayerInventoryItem("Another Test Item", 0, 15, EInventoryItemType::Quest)},
+		{"Sunstone", FPlayerInventoryItem("Sunstone", 0, 10, EInventoryItemType::Quest)},
 		{"Golem", FPlayerInventoryItem("Golem", 0, 1, EInventoryItemType::Quest, true)},
-		{"Owl Child", FPlayerInventoryItem("Owl Child", 0, 4, EInventoryItemType::Quest, false)},
+		{"Owl Child", FPlayerInventoryItem("Owl Child", 0, 4, EInventoryItemType::Quest)},
 	};
 }
 
