@@ -25,9 +25,7 @@ void APuzzleInteractive_Pickupable::Interact(APlayerCharacter* PlayerCharacter)
 {
 	if (bBeingCarried)
 	{
-		bBeingCarried = false;
-		CarryingCharacter = nullptr;
-		
+		Drop();
 		
 	}
 	else
@@ -67,7 +65,6 @@ void APuzzleInteractive_Pickupable::Drop()
 	CarryingCharacter = nullptr;
 	SetActorEnableCollision(true);
 	AttachPickupAble(false);
-	
 }
 
 void APuzzleInteractive_Pickupable::AttachPickupAble_Implementation(bool Attach)
