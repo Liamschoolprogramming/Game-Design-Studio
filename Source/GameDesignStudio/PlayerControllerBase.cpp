@@ -545,12 +545,17 @@ void APlayerControllerBase::Tick(float DeltaTime)
 	FVector Start = FVector(PlayerLocation.X, PlayerLocation.Y, PlayerLocation.Z);
 	FCollisionQueryParams CollisionParams = FCollisionQueryParams(FName(TEXT("PossessableTrace")), true, this);
 	FVector End =  FVector(Start.X +  (Forward.X * 2000.f), Start.Y + (Forward.Y * 2000.f), Start.Z);
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
+	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Visibility));
+	TArray<AActor*> IgnoredActors;
+	IgnoredActors.Add(PlayerReference);
 	
-	GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, CollisionParams);
+	bool bHitSomething = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), Start, End, 50.f, ObjectTypesArray, false, IgnoredActors, EDrawDebugTrace::ForOneFrame, Hit, true);
 	AActor* HitActor = Hit.GetActor();
 	
-	if (HitActor != nullptr)
+	if (bHitSomething && HitActor != nullptr)
 	{
+		Debug::PrintToScreen(HitActor->GetActorNameOrLabel(), 2, FColor::Green);
 		if (HitActor->GetClass()->IsChildOf(APossessableEntity::StaticClass()) && HitActor != FacingPossessable)
 		{
 			Debug::PrintToScreen("looking at NEW possessable?", 2, FColor::Green);
