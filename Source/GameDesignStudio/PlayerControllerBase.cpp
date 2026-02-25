@@ -411,7 +411,8 @@ void APlayerControllerBase::CyclePossession()
 		Possess(PlayerReference);
 			
 		PossessionTimerHandle.Invalidate();
-	} else if (!bPossessed)
+	} 
+	else if (!bPossessed)
 	{
 		if (FacingPossessable == nullptr) return;
 		if (PossessionTimerHandle.IsValid()) return; // don't stack handle
@@ -427,26 +428,7 @@ void APlayerControllerBase::CyclePossession()
 			return;
 		}
 		
-		if (GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()) &&
-			GetPawn()->GetClass()->GetSuperClass() == APossessableEntity::StaticClass())
-		{
-			{
-				APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
-				if (PossessableEntity && PlayerReference)
-				{
-					bPossessed = false;
-					PossessableEntity->SetPossessed(false);
-					CameraReference->SetActorRotation(PlayerReference->GetActorRotation());
-					CameraReference->ResetCameraRotation(PlayerReference->GetActorRotation());
-					TargetPawn = nullptr;
-					Possess(PlayerReference);
-			
-					PossessionTimerHandle.Invalidate();
-			
-				}
-			}
-		}
-		else if (FacingPossessable != nullptr)
+		if (FacingPossessable != nullptr)
 		{
 			TargetPawn = FacingPossessable;
 			FTimerDelegate TimerDelegate;
@@ -458,7 +440,7 @@ void APlayerControllerBase::CyclePossession()
 				PossessTimeWidget->AddToViewport();
 			}
 			bPossessed = true;
-			FacingPossessable->OnPossessedStart();
+			StaticCast<APossessableEntity*>(TargetPawn)->OnPossessedStart();
 		}
 	}
 }
@@ -543,7 +525,6 @@ void APlayerControllerBase::Tick(float DeltaTime)
 	FVector PlayerLocation = PlayerReference->GetActorLocation();
 	FVector Forward = PlayerReference->GetActorForwardVector();
 	FVector Start = FVector(PlayerLocation.X, PlayerLocation.Y, PlayerLocation.Z);
-	FCollisionQueryParams CollisionParams = FCollisionQueryParams(FName(TEXT("PossessableTrace")), true, this);
 	FVector End =  FVector(Start.X +  (Forward.X * 2000.f), Start.Y + (Forward.Y * 2000.f), Start.Z);
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
 	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Visibility));
@@ -555,10 +536,8 @@ void APlayerControllerBase::Tick(float DeltaTime)
 	
 	if (bHitSomething && HitActor != nullptr)
 	{
-		Debug::PrintToScreen(HitActor->GetActorNameOrLabel(), 2, FColor::Green);
 		if (HitActor->GetClass()->IsChildOf(APossessableEntity::StaticClass()) && HitActor != FacingPossessable)
 		{
-			Debug::PrintToScreen("looking at NEW possessable?", 2, FColor::Green);
 			FacingPossessable = StaticCast<APossessableEntity*>(HitActor);
 		}
 	}
