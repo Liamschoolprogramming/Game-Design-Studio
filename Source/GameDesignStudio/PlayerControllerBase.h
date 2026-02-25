@@ -59,6 +59,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Possession")
 	TSubclassOf<UUserWidget> PossessionWidget;
 	
+	UPROPERTY(BlueprintReadOnly, Category="Possession")
+	APossessableEntity* FacingPossessable;
+	
+	bool bPossessed = false;
 	
 	void CyclePossession();
 	
