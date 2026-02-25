@@ -619,7 +619,18 @@ void APlayerControllerBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+	FHitResult Hit(ForceInit);
+	FVector start = PlayerReference->GetActorForwardVector();
+	FCollisionQueryParams CollisionParams;
+	FVector end = start +  700.f;
+
+	DrawDebugLine(GetWorld(), start, end, FColor::Green, true, 2.f, false, 4.f);
+	GetWorld()->LineTraceSingleByChannel(Hit, start, end, ECC_WorldDynamic, CollisionParams);
 	
+	if (Hit.GetActor())
+	{
+		Debug::PrintToScreen("hit actor!", 2, FColor::Green);
+	}
 	
 	UpdateMPC();
 }
