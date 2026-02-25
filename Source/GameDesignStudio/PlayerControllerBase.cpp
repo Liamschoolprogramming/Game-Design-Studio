@@ -5,6 +5,7 @@
 #include "GameFramework/InputDeviceSubsystem.h"
 #include "EnhancedInputSubsystems.h"
 #include "Macros.h"
+#include "PossessableEntity.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/SplineComponent.h"
@@ -620,16 +621,23 @@ void APlayerControllerBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	FHitResult Hit(ForceInit);
-	FVector start = PlayerReference->GetActorForwardVector();
+	
+	FVector PlayerLocation = PlayerReference->GetActorLocation();
+	FVector Start = FVector(PlayerLocation.X, PlayerLocation.Y, 100.0);
+	Debug::PrintToScreen(Start, 2, FColor::Green);
 	FCollisionQueryParams CollisionParams;
-	FVector end = start +  700.f;
+	FVector End =  FVector(Start.X +  700.f, Start.Y + 700.f, Start.Z);
 
-	DrawDebugLine(GetWorld(), start, end, FColor::Green, true, 2.f, false, 4.f);
-	GetWorld()->LineTraceSingleByChannel(Hit, start, end, ECC_WorldDynamic, CollisionParams);
+	DrawDebugLine(GetWorld(), Start, End, FColor::Green, true, 2.f, false, 4.f);
+	GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, CollisionParams);
 	
 	if (Hit.GetActor())
 	{
-		Debug::PrintToScreen("hit actor!", 2, FColor::Green);
+		Debug::PrintToScreen(Hit.GetActor()->GetActorNameOrLabel(), 2, FColor::Green);
+		if (Hit.GetActor()->GetClass()->IsChildOf(APossessableEntity::StaticClass()))
+		{
+			Debug::PrintToScreen("looking at possessable?", 2, FColor::Green);
+		}
 	}
 	
 	UpdateMPC();
