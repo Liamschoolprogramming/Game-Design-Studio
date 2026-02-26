@@ -7,6 +7,7 @@
 #include "DialogueGraphNode.h"
 #include "DialogueStartGraphNode.h"
 #include "DialogueNodeInfo.h"
+#include "QuestProgressGraphNode.h"
 #include "StartQuestGraphNode.h"
 
 //this defines actions on nodes
@@ -54,12 +55,21 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 			FText::FromString(TEXT("Makes a new node that starts a given quest.")),
 			0)
 			);
+	TSharedPtr<FNewNodeAction> NewQuestProgressNodeAction(
+		new FNewNodeAction(
+			UQuestProgressGraphNode::StaticClass(),
+			FText::FromString(TEXT("Quests")),
+			FText::FromString(TEXT("New Quest Progress Node")),
+			FText::FromString(TEXT("Makes a new node that can give information about a quest. Use $total for the total number of items needed.\n Use $current for the current number of items collected.")),
+			0)
+			);
 	
 	ContextMenuBuilder.AddAction(NewDialogueNodeAction);
 	ContextMenuBuilder.AddAction(NewEndNodeAction);
 	ContextMenuBuilder.AddAction(NewCheckQuestNodeAction);
 	ContextMenuBuilder.AddAction(NewCompleteQuestNodeAction);
 	ContextMenuBuilder.AddAction(NewStartQuestNodeAction);
+	ContextMenuBuilder.AddAction(NewQuestProgressNodeAction);
 }
 
 const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const

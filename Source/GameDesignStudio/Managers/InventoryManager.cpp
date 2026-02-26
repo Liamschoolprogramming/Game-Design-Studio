@@ -115,7 +115,7 @@ int UInventoryManager::GetCurrentAmountForItem(FName ItemName)
 	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);
 	if (FoundItem == nullptr)
 	{
-		return -1;
+		return 0;
 	}
 	return FoundItem->CurrentAmount;
 }

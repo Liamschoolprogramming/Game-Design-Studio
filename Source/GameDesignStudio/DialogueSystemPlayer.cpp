@@ -12,6 +12,7 @@
 
 #include "DialogueResponseButtonController.h"
 #include "QuestDialogueUIController.h"
+#include "QuestProgressNodeInfo.h"
 #include "Components/Image.h"
 
 #include "Components/VerticalBoxSlot.h"
@@ -123,9 +124,9 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 		{
 			Speaker->ActivateSpeakerCamera();
 			DialogueWidget->CharacterName->SetText(FText::FromString(Speaker->SpeakerName.ToString()));
-			if (NodeInfo->CharcterPortrait)
+			if (NodeInfo->CharacterPortrait)
 			{
-				Speaker->SpeakerImage=NodeInfo->CharcterPortrait;
+				Speaker->SpeakerImage=NodeInfo->CharacterPortrait;
 			}
 			else
 			{
@@ -190,6 +191,60 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 			}
 		}
 	}
+	else if (CurrentNode != nullptr && CurrentNode->NodeType ==  EDialogueNodeType::QuestProgressGraphNode)
+	{
+		if (UQuestProgressNodeInfo* NodeInfo = Cast<UQuestProgressNodeInfo>(CurrentNode->NodeInfo))
+		{
+			if (UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager())
+			{
+				FString DialogueText;
+				if (NodeInfo->Dialogue != TEXT(""))
+				{
+					DialogueText = NodeInfo->Dialogue;
+					TArray<int> Progress = QuestManager->GetQuestProgress(NodeInfo->QuestName);
+					
+					DialogueText = DialogueText.Replace(TEXT("$total"), *FString::FromInt(Progress[1]));
+					DialogueText = DialogueText.Replace(TEXT("$current"), *FString::FromInt(Progress[0]));
+
+					
+				}
+				
+				DialogueWidget->DialogueText->SetText(FText::FromString((DialogueText)));
+		
+				DialogueWidget->ResponseBox->ClearChildren();
+				
+					UDialogueResponseButtonController* Button = UDialogueResponseButtonController::CreateInstance(DialogueWidget->GetOwningPlayer());
+					Button->SetClickHandler(0, [this](int OptionIndex)
+					{
+						ChooseOptionAtIndex(OptionIndex);
+					});
+					Button->ResponseButtonText->SetText(FText::FromString(TEXT("Continue")));
+					UVerticalBoxSlot* Slot = DialogueWidget->ResponseBox->AddChildToVerticalBox(Button);
+					Slot->SetPadding(FMargin(10));
+			
+					
+				}
+				if (UDialogueSpeakerComponent* Speaker = FindSpeakerComponent(GetWorld(), NodeInfo->SpeakerName))
+				{
+					Speaker->ActivateSpeakerCamera();
+					DialogueWidget->CharacterName->SetText(FText::FromString(Speaker->SpeakerName.ToString()));
+					if (NodeInfo->CharacterPortrait)
+					{
+						Speaker->SpeakerImage=NodeInfo->CharacterPortrait;
+					}
+					else
+					{
+						Speaker->SpeakerImage= DefaultCharacterIcon;
+					}
+					if (Speaker->SpeakerImage)
+					{
+						DialogueWidget->CharacterPortrait->SetBrushFromTexture(Speaker->SpeakerImage);
+					}
+					CurrentSpeakerComponent = Speaker;
+				}
+			}
+		}
+	
 	else if (CurrentNode == nullptr || CurrentNode->NodeType == EDialogueNodeType::EndNode)
 	{
 		

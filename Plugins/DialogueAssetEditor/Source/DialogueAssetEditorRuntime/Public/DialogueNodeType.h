@@ -12,4 +12,5 @@ enum class EDialogueNodeType
 	CheckQuestsNode,
 	CompleteQuestGraphNode,
 	StartQuestGraphNode,
+	QuestProgressGraphNode,
 };

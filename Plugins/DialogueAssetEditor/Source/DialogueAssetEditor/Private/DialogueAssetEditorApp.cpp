@@ -10,6 +10,7 @@
 #include "DialogueEndGraphNode.h"
 #include "DialogueGraphSchema.h"
 #include "DialogueNodeInfo.h"
+#include "QuestProgressGraphNode.h"
 #include "StartQuestGraphNode.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 
@@ -226,12 +227,16 @@ void FDialogueAssetEditorApp::UpdateEditorGraphFromWorkingAsset()
 		{
 			NewNode = NewObject<UStartQuestGraphNode>(WorkingGraph);
 		}
+		else if (RuntimeNode->NodeType == EDialogueNodeType::QuestProgressGraphNode)
+		{
+			NewNode = NewObject<UQuestProgressGraphNode>(WorkingGraph);
+		}
 		else if (RuntimeNode->NodeType == EDialogueNodeType::EndNode)
 		{
 			NewNode = NewObject<UDialogueEndGraphNode>(WorkingGraph);
 		} else
 		{
-			UE_LOG(FDialogueAssetEditorAppSub, Error, TEXT("FDialogueAssetEditorApp::UpdateEditorGraphFromWorkingAsset: Unknown type"));
+			UE_LOG(FDialogueAssetEditorAppSub, Fatal, TEXT("FDialogueAssetEditorApp::UpdateEditorGraphFromWorkingAsset: Unknown type"));
 			continue;
 		}
 		NewNode->CreateNewGuid();
