@@ -1,5 +1,8 @@
 ﻿#include "DialogueGraphSchema.h"
 
+#include "CompleteQuestGraphNode.h"
+#include "DialogueCheckQuestGraphNode.h"
+#include "DialogueCheckQuestNodeInfo.h"
 #include "DialogueEndGraphNode.h"
 #include "DialogueGraphNode.h"
 #include "DialogueStartGraphNode.h"
@@ -26,9 +29,27 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 			FText::FromString(TEXT("Makes a new end node")),
 			0)
 			);
+	TSharedPtr<FNewNodeAction> NewCheckQuestNodeAction(
+		new FNewNodeAction(
+			UDialogueCheckQuestGraphNode::StaticClass(),
+			FText::FromString(TEXT("Nodes")),
+			FText::FromString(TEXT("New Check Quest Node")),
+			FText::FromString(TEXT("Makes a new branching node that checks a quest.")),
+			0)
+			);
+	TSharedPtr<FNewNodeAction> NewCompleteQuestNodeAction(
+		new FNewNodeAction(
+			UCompleteQuestGraphNode::StaticClass(),
+			FText::FromString(TEXT("Nodes")),
+			FText::FromString(TEXT("New Complete Quest Node")),
+			FText::FromString(TEXT("Makes a new node that completes a given quest.")),
+			0)
+			);
 	
 	ContextMenuBuilder.AddAction(NewDialogueNodeAction);
 	ContextMenuBuilder.AddAction(NewEndNodeAction);
+	ContextMenuBuilder.AddAction(NewCheckQuestNodeAction);
+	ContextMenuBuilder.AddAction(NewCompleteQuestNodeAction);
 }
 
 const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const

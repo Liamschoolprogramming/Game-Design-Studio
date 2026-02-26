@@ -1,8 +1,10 @@
 #include "DialogueAssetEditorApp.h"
 
+#include "CompleteQuestGraphNode.h"
 #include "DialogueAssetAppMode.h"
 #include "DialogueAssetAppMode.h"
 #include "DialogueAsset.h"
+#include "DialogueCheckQuestGraphNode.h"
 #include "DialogueGraphNode.h"
 #include "DialogueStartGraphNode.h"
 #include "DialogueEndGraphNode.h"
@@ -211,7 +213,15 @@ void FDialogueAssetEditorApp::UpdateEditorGraphFromWorkingAsset()
 		} else if (RuntimeNode->NodeType == EDialogueNodeType::DialogueNode)
 		{
 			NewNode = NewObject<UDialogueGraphNode>(WorkingGraph);
-		}else if (RuntimeNode->NodeType == EDialogueNodeType::EndNode)
+		}else if (RuntimeNode->NodeType == EDialogueNodeType::CheckQuestsNode)
+		{
+			NewNode = NewObject<UDialogueCheckQuestGraphNode>(WorkingGraph);
+		}
+		else if (RuntimeNode->NodeType == EDialogueNodeType::CompleteQuestGraphNode)
+		{
+			NewNode = NewObject<UCompleteQuestGraphNode>(WorkingGraph);
+		}
+		else if (RuntimeNode->NodeType == EDialogueNodeType::EndNode)
 		{
 			NewNode = NewObject<UDialogueEndGraphNode>(WorkingGraph);
 		} else

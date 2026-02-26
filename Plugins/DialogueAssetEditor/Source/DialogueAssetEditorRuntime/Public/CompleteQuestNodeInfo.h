@@ -4,24 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "DialogueNodeInfoBase.h"
-#include "UObject/Object.h"
-#include "DialogueCheckQuestNodeInfo.generated.h"
-
+#include "CompleteQuestNodeInfo.generated.h"
 /**
  * 
  */
 UCLASS()
-class DIALOGUEASSETEDITORRUNTIME_API UDialogueCheckQuestNodeInfo : public UDialogueNodeInfoBase
+class DIALOGUEASSETEDITORRUNTIME_API UCompleteQuestNodeInfo : public UDialogueNodeInfoBase
 {
 	GENERATED_BODY()
-	
-public:
-	
-	UPROPERTY(EditAnywhere)
-	FText DialogueText;
 
+public:
+	//Properties go here
 	UPROPERTY(EditAnywhere)
 	FName QuestName;
-	
-	
 };

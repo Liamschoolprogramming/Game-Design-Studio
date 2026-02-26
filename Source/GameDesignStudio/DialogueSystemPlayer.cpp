@@ -3,17 +3,22 @@
 
 #include "DialogueSystemPlayer.h"
 
+#include "CompleteQuestNodeInfo.h"
 #include "DialogueAsset.h"
+#include "DialogueCheckQuestNodeInfo.h"
 #include "DialogueNodeInfo.h"
 #include "DialogueRuntimeGraph.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 
 #include "DialogueResponseButtonController.h"
+#include "Macros.h"
 #include "QuestDialogueUIController.h"
 #include "Components/Image.h"
 
 #include "Components/VerticalBoxSlot.h"
+#include "Core/Subsystems/GameManagerSubsystem.h"
+#include "Managers/QuestManager.h"
 
 DEFINE_LOG_CATEGORY_STATIC(DialoguePlayer, Log, All);
 
@@ -113,7 +118,47 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 			CurrentSpeakerComponent = Speaker;
 		}
 		
-	} 
+	}
+	else if (CurrentNode != nullptr && CurrentNode->NodeType == EDialogueNodeType::CheckQuestsNode)
+	{
+		if (const UDialogueCheckQuestNodeInfo* NodeInfo = Cast<UDialogueCheckQuestNodeInfo>(CurrentNode->NodeInfo))
+		{
+			if (UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager())
+			{
+				switch (QuestManager->GetQuestState(NodeInfo->QuestName))
+				{
+					case EQuestState::ACTIVE:
+						ChooseOptionAtIndex(0);
+					case EQuestState::INACTIVE:
+						ChooseOptionAtIndex(1);
+					case EQuestState::COMPLETED:
+						ChooseOptionAtIndex(2);
+					
+				}
+
+					
+			}
+			
+		}
+		
+	}
+	else if (CurrentNode != nullptr && CurrentNode->NodeType == EDialogueNodeType::CompleteQuestGraphNode)
+	{
+		if ( UCompleteQuestNodeInfo* NodeInfo = Cast<UCompleteQuestNodeInfo>(CurrentNode->NodeInfo))
+		{
+			if (UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager())
+			{
+				if (QuestManager->CompleteQuest(NodeInfo->QuestName))
+				{
+					ChooseOptionAtIndex(0);
+				}
+				else
+				{
+					ChooseOptionAtIndex(1);
+				}
+			}
+		}
+	}
 	else if (CurrentNode == nullptr || CurrentNode->NodeType == EDialogueNodeType::EndNode)
 	{
 		APlayerController* PlayerController = DialogueWidget->GetOwningPlayer();

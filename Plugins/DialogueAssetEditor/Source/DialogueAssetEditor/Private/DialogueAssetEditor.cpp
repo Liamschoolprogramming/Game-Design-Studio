@@ -56,6 +56,25 @@ protected:
 	}
 };
 
+class SDialogueCheckQuestGraphPin :public SGraphPin
+{
+public:
+	SLATE_BEGIN_ARGS(SDialogueGraphPin){}
+		
+	SLATE_END_ARGS()
+	
+	void Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
+	{
+		SGraphPin::Construct(SGraphPin::FArguments(), InGraphPinObj);
+	}
+	
+protected:
+	virtual FSlateColor GetPinColor() const override
+	{
+		return FSlateColor(FLinearColor(1, 0.914, 0.624));
+	}
+};
+
 class SDialogueEndGraphPin :public SGraphPin
 {
 public:
@@ -90,6 +109,9 @@ struct FDialoguePinFactory : public FGraphPanelPinFactory
 		} else if(FName(TEXT("StartPin")) == Pin->PinType.PinSubCategory)
 		{
 			return SNew(SDialogueStartGraphPin, Pin);
+		} else if(FName(TEXT("Quest")) == Pin->PinType.PinSubCategory)
+		{
+			return SNew(SDialogueCheckQuestGraphPin, Pin);
 		} else if(FName(TEXT("EndPin")) == Pin->PinType.PinSubCategory)
 		{
 			return SNew(SDialogueStartGraphPin, Pin);

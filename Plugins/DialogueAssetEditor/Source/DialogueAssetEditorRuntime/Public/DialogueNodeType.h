@@ -10,4 +10,6 @@ enum class EDialogueNodeType
 	DialogueNode,
 	EndNode,
 	CheckQuestsNode,
+	CompleteQuestGraphNode,
+	StartQuestGraphNode,
 };

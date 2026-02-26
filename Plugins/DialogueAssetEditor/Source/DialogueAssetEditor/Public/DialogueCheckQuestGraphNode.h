@@ -6,13 +6,13 @@
 #include "DialogueGraphNodeBase.h"
 
 #include "DialogueCheckQuestNodeInfo.h"
-#include "DialogueCheckQuestNode.generated.h"
+#include "DialogueCheckQuestGraphNode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DIALOGUEASSETEDITOR_API UDialogueCheckQuestNode : public UDialogueGraphNodeBase
+class DIALOGUEASSETEDITOR_API UDialogueCheckQuestGraphNode : public UDialogueGraphNodeBase
 {
 	GENERATED_BODY()
 	
@@ -35,16 +35,11 @@ public: //UEdGraph interface
 	{
 		return EDialogueNodeType::CheckQuestsNode;
 	}
-	
-	virtual void OnPropertiesChanged() override
-	{
-		SyncPinsWithResponses();
-	}
 
 		
 public: //Dialogue interface
 	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Direction, FName Name) override;
-	void SyncPinsWithResponses();
+
 	
 	
 	virtual void InitNodeInfo(UObject* Owner) override
@@ -67,8 +62,6 @@ protected:
 	UPROPERTY()
 	class UDialogueCheckQuestNodeInfo* NodeInfo = nullptr;
 private:
-	void HandleAddPin();
-	void HandleDeletePin();
 	void HandleDeleteNode();
 	
 	

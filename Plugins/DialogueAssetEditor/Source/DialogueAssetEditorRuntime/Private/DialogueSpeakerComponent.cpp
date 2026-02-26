@@ -67,7 +67,7 @@ void UDialogueSpeakerComponent::OnRegister()
 	{
 		SpeakerCamera->AttachToComponent(
 			SpeakerCameraBoom,
-			FAttachmentTransformRules::SnapToTargetIncludingScale,
+			FAttachmentTransformRules::KeepRelativeTransform,
 			USpringArmComponent::SocketName
 		);
 	}
