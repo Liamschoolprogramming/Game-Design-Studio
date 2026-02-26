@@ -46,7 +46,7 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 		}
 		
 		PlayerInventory.Add(ItemName, ItemToAdd);
-		QuestManager->UpdateCompletionStatusForQuestItem(ItemName);
+		QuestManager->UpdateQuestProgress(ItemName);
 		
 		return Amount;
 	}
@@ -55,13 +55,13 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 	if ((FoundItem->CurrentAmount + Amount) > Maximum)
 	{
 		FoundItem-> CurrentAmount = Maximum;
-		QuestManager->UpdateCompletionStatusForQuestItem(ItemName);
+		QuestManager->UpdateQuestProgress(ItemName);
 		
 		return Maximum;
 	}
 	
 	FoundItem-> CurrentAmount += Amount;
-	QuestManager->UpdateCompletionStatusForQuestItem(ItemName);
+	QuestManager->UpdateQuestProgress(ItemName);
 	
 	return FoundItem-> CurrentAmount;
 }
@@ -76,12 +76,17 @@ int UInventoryManager::RemoveFromInventory(FName ItemName, int Amount)
 	{
 		return 0;
 	}
+	
+	UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager();
+	
 	if (FoundItem->CurrentAmount >= Amount)
 	{
 		FoundItem-> CurrentAmount -= Amount;
+		QuestManager->UpdateQuestProgress(ItemName);
 		return FoundItem-> CurrentAmount;
 	}
 	FoundItem->CurrentAmount = 0;
+	QuestManager->UpdateQuestProgress(ItemName);
 	return 0;
 }
 
