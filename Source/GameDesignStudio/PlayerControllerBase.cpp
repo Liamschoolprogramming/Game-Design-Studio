@@ -6,17 +6,27 @@
 #include "EnhancedInputSubsystems.h"
 #include "Macros.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Blueprint/UserWidget.h"
 #include "Components/SplineComponent.h"
-
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraComponent.h"
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
-#include "PlayerControllerBase.h"
 
 
 DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
 
+//Get whether the player controller has been set to be able to move or not
+bool APlayerControllerBase::GetCanMove()
+{
+	return bCanMove;
+}
 
+//Set the controller's ability to move it's possessed pawn (controlled through possessable entity)
+void APlayerControllerBase::SetCanMove(bool CanMove)
+{
+	bCanMove = CanMove;
+}
 
 void APlayerControllerBase::Jump(const FInputActionValue& Value)
 {
@@ -80,41 +90,90 @@ void APlayerControllerBase::RemovePossessableEntity(APossessableEntity* Entity)
 	}
 }
 
-APossessableEntity* APlayerControllerBase::FindPossessableEntityAtIndex(const int IndexToSearch)
+bool APlayerControllerBase::CanWeCyclePossessableEntity(int IndexToCheck)
 {
-	if (!ClosestPossessableEntities.IsEmpty())
+	if (ClosestPossessableEntities.IsEmpty()) return false;
+	
+	//Debug::PrintToScreen(IndexToCheck);
+	
+	if (IndexToCheck == -1)
 	{
-		return nullptr;
+		
+		return true;
 	}
-	if (ClosestPossessableEntities.IsValidIndex(IndexToSearch))
+	else if (IndexToCheck >= 0)
 	{
-		if (ClosestPossessableEntities[IndexToSearch] != nullptr)
+		if (!ClosestPossessableEntities.IsValidIndex(IndexToCheck)) return false;
+		//if (!CameraReference->CanSeeObject(ClosestPossessableEntities[IndexToCheck])) return false;
+		if (!Macros::CanActorSeeActor(PlayerReference, ClosestPossessableEntities[IndexToCheck])) return false;
+		if (GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()) &&
+	GetPawn()->GetClass()->GetSuperClass() == APossessableEntity::StaticClass())
 		{
-			return ClosestPossessableEntities[IndexToSearch];
+			
+			
+			APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
+			
+			
+			if (ClosestPossessableEntities[IndexToCheck] != PossessableEntity)
+			{
+				
+				return true;
+			}
 		}
 		else
 		{
-			ClosestPossessableEntities.RemoveAt(IndexToSearch);
+			if (ClosestPossessableEntities[IndexToCheck] != nullptr)
+			{
+				return true;
+			}
+		}
+		
+	}
+	return false;
+}
+
+
+void APlayerControllerBase::InteractWithClosestObject()
+{
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+	
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->InteractWithClosestObject();
+	}
+}
+
+//check if we can possess an entity
+bool APlayerControllerBase::CanPossessEntity(APossessableEntity* entity)
+{
+	if (!ClosestPossessableEntities.Contains(entity)) return false;
+	if (!PlayerReference) return false;
+	//if (!CameraReference->CanSeeObject(entity)) return false;
+	if (!Macros::CanActorSeeActor(PlayerReference, entity)) return false;
+	if (GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()) &&
+GetPawn()->GetClass()->GetSuperClass() == APossessableEntity::StaticClass())
+	{
+		APossessableEntity* OurPawn = Cast<APossessableEntity>(GetPawn());
+		if (entity != OurPawn)
+		{
+				
+			return true;
 		}
 	}
-	return nullptr;
+	else
+	{
+		if (entity != nullptr)
+		{
+			return true;
+		}
+	
+	}
+	return false;
 }
 
 void APlayerControllerBase::StartClick(const FInputActionValue& Value)
 {
-	//Do the move to here instead of blueprints
-	FHitResult Hit;
-	GetHitResultUnderCursor(ECC_Visibility,true, Hit);
 	
-	if (Hit.bBlockingHit && CameraReference->bLockCameraToCharacter == true && !bIsMoving)
-	{
-		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Hit.Location);
-		if (ParticleSystem)
-		{
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),ParticleSystem, Hit.Location);
-		}
-		
-	}
 }
 
 void APlayerControllerBase::StopClick(const FInputActionValue& Value)
@@ -129,28 +188,65 @@ void APlayerControllerBase::StopMove(const FInputActionValue& Value)
 
 void APlayerControllerBase::CyclePossessionUp()
 {
+	SortClosestPossessableEntitiesByDistance();
 	if (IndexForPossessables + 1 >= ClosestPossessableEntities.Num())
 	{
+		
 		IndexForPossessables = -1;
+		
+		
+		
 	}
 	else
 	{
+		
 		IndexForPossessables++;
 	}
-	CyclePossesion();
+	
+		CyclePossession();
 }
 
 void APlayerControllerBase::CyclePossessionDown()
 {
+	SortClosestPossessableEntitiesByDistance();
+	bool bCanCycle = false;
 	if (IndexForPossessables - 1 < -1)
 	{
-		IndexForPossessables = ClosestPossessableEntities.Num()-1;
+		if (CanWeCyclePossessableEntity(ClosestPossessableEntities.Num() - 1))
+		{
+			IndexForPossessables = ClosestPossessableEntities.Num()-1;
+			bCanCycle = true;
+		}
+		
 	}
 	else
 	{
-		IndexForPossessables--;
+		if (CanWeCyclePossessableEntity(IndexForPossessables - 1))
+		{
+			IndexForPossessables--;
+			bCanCycle = true;
+		}
+		
 	}
-	CyclePossesion();
+	if (bCanCycle)
+	{
+		CyclePossession();
+	}
+	
+}
+
+void APlayerControllerBase::SortClosestPossessableEntitiesByDistance()
+{
+	FVector ReferenceLocation = GetPawn()->GetActorLocation();
+	
+	ClosestPossessableEntities.Sort([&](const APossessableEntity& A, const APossessableEntity& B)
+	{
+		
+
+	return FVector::DistSquared(A.GetActorLocation(), ReferenceLocation)
+		 < FVector::DistSquared(B.GetActorLocation(), ReferenceLocation);
+	});
+	
 }
 
 void APlayerControllerBase::LookGate(const FInputActionValue& Value)
@@ -239,6 +335,10 @@ void APlayerControllerBase::Look(const FInputActionValue& Value)
 
 void APlayerControllerBase::Move(const FInputActionValue& Value)
 {
+	if (!bCanMove)
+	{
+		return;
+	}
 	//move the camera if we have a reference to it
 	if (CameraReference)
 	{
@@ -267,25 +367,43 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 				
 				
 				
-				FVector f = CameraReference->ForwardVector();
-				FVector r = CameraReference->RightVector();
-				f = f * ActionValue.Y;
-				r = r * ActionValue.X;
+				FVector CameraForward = CameraReference->ForwardVector();
 				
-				FVector Dir = f + r;
+				FVector CameraRight = CameraReference->RightVector();
+				FRotator CurrentRotation = OurPawn->GetActorRotation();
+				
+
+				
+				CameraForward = CameraForward * ActionValue.Y;
+				CameraRight = CameraRight * ActionValue.X;
+
+				
+				
+				FVector DirForRotation = CameraForward + CameraRight;
+
+				
+				
+				
+
+				//Move
+				FVector Dir = CameraForward + CameraRight;
+				//Compensate so we don't slam into the ground
+				Dir = Dir * FVector(1, 1, 0);
 				
 				Dir.Normalize();
-				pos = pos + (Dir * PawnMovementSpeed * GetWorld()->GetDeltaSeconds());
-				OurPawn->SetActorLocation(pos);
+				FVector DeltaMove = pos + (Dir * PawnMovementSpeed * GetWorld()->GetDeltaSeconds());
+				PawnVelocity = Dir * PawnMovementSpeed;
+				OurPawn->SetActorLocation(DeltaMove);
 				
 				//Smoothly rotate to new direction
-				FRotator CurrentRotation = OurPawn->GetActorRotation();
-				FRotator TargetRotation = Dir.Rotation();
+				
+				FRotator TargetRotation = DirForRotation.Rotation();
 				
 				FRotator SmoothRot = FMath::RInterpTo(CurrentRotation, TargetRotation, GetWorld()->GetDeltaSeconds(), PawnRotationSpeed);
 				
 				
 				OurPawn->SetActorRotation(SmoothRot);
+				
 			}
 			
 		}
@@ -293,11 +411,35 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 	}
 }
 
-void APlayerControllerBase::CyclePossesion()
+
+void APlayerControllerBase::PossessTargetPawn()
+{
+	CameraReference->SetActorRotation(TargetPawn->GetActorRotation());
+	
+	CameraReference->ResetCameraRotation(TargetPawn->GetActorRotation());
+	APossessableEntity* PossessableEntity = Cast<APossessableEntity>(TargetPawn);
+	if (PossessableEntity)
+	{
+		PossessableEntity->SetPossessed(true);
+		UE_LOG(LogTemp, Warning, TEXT("Entity ptr: %p"), PossessableEntity);
+		UE_LOG(LogTemp, Warning, TEXT("Niagara ptr: %p"), PossessableEntity ? PossessableEntity->PossessableIndicatorNiagaraComponent : nullptr);
+		if (UNiagaraComponent* NS = PossessableEntity->PossessableIndicatorNiagaraComponent)
+		{
+			NS->Deactivate();
+		}
+		
+	}
+	Possess(TargetPawn);
+	
+	PossessionTimerHandle.Invalidate();
+	
+}
+
+void APlayerControllerBase::CyclePossession()
 {
 	if (ClosestPossessableEntities.IsEmpty()) return;
 	
-	Debug::PrintToScreen(IndexForPossessables);
+	//Debug::PrintToScreen(IndexForPossessables);
 	
 	if (IndexForPossessables == -1)
 	{
@@ -307,7 +449,13 @@ void APlayerControllerBase::CyclePossesion()
 		if (PossessableEntity && PlayerReference)
 		{
 			PossessableEntity->SetPossessed(false);
+			CameraReference->SetActorRotation(PlayerReference->GetActorRotation());
+			CameraReference->ResetCameraRotation(PlayerReference->GetActorRotation());
+			TargetPawn = nullptr;
 			Possess(PlayerReference);
+			
+			PossessionTimerHandle.Invalidate();
+			
 		}
 		
 		
@@ -315,29 +463,81 @@ void APlayerControllerBase::CyclePossesion()
 	}
 	else if (IndexForPossessables >= 0)
 	{
+		
 		if (!ClosestPossessableEntities.IsValidIndex(IndexForPossessables)) return;
+		if (PossessionTimerHandle.IsValid()) return; // don't stack handle
+		
+		const FPlayerStats PlayerStats = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPlayerStatManager()->GetPlayerStats();
+		
+		PlayerStats.MindPoints >= 5 ? CastTime = 3.f : 6.f;
+		
+		if (!Macros::CanActorSeeActor(PlayerReference, ClosestPossessableEntities[IndexForPossessables])) 
+		{
+			FTimerDelegate CycleTimerDelegate;
+			CycleTimerDelegate.BindUFunction(this, FName("CyclePossessionUp"));
+			GetWorld()->GetTimerManager().SetTimerForNextTick(CycleTimerDelegate);
+			return;
+		}
 		if (GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()) &&
 	GetPawn()->GetClass()->GetSuperClass() == APossessableEntity::StaticClass())
 		{
-			APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
-			if (PossessableEntity)
+			
+			if (CanSwitchToOthersWhilePossessed)
 			{
-				PossessableEntity->SetPossessed(false);
+				APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
+				if (PossessableEntity)
+				{
+					PossessableEntity->SetPossessed(false);
+				}
+			
+				if (ClosestPossessableEntities[IndexForPossessables] != PossessableEntity)
+				{
+				
+				
+					TargetPawn = ClosestPossessableEntities[IndexForPossessables];
+					FTimerDelegate TimerDelegate;
+					TimerDelegate.BindUFunction(this, FName("PossessTargetPawn"));
+					GetWorld()->GetTimerManager().SetTimer(PossessionTimerHandle, TimerDelegate, CastTime, false);
+					if (PossessionWidget)
+					{
+						UUserWidget* PossessTimeWidget = CreateWidget(this, PossessionWidget);
+						PossessTimeWidget->AddToViewport();
+					}
+					ClosestPossessableEntities[IndexForPossessables]->OnPossessedStart();
+				
+				}
+			}
+			else
+			{
+				APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
+				if (PossessableEntity && PlayerReference)
+				{
+					PossessableEntity->SetPossessed(false);
+					CameraReference->SetActorRotation(PlayerReference->GetActorRotation());
+					CameraReference->ResetCameraRotation(PlayerReference->GetActorRotation());
+					TargetPawn = nullptr;
+					Possess(PlayerReference);
+			
+					PossessionTimerHandle.Invalidate();
+			
+				}
 			}
 			
-			if (ClosestPossessableEntities[IndexForPossessables] != PossessableEntity)
-			{
-				
-				ClosestPossessableEntities[IndexForPossessables]->SetPossessed(true);
-				Possess(ClosestPossessableEntities[IndexForPossessables]);
-			}
 		}
 		else
 		{
 			if (ClosestPossessableEntities[IndexForPossessables] != nullptr)
 			{
-				ClosestPossessableEntities[IndexForPossessables]->SetPossessed(true);
-				Possess(ClosestPossessableEntities[IndexForPossessables]);
+				TargetPawn = ClosestPossessableEntities[IndexForPossessables];
+				FTimerDelegate TimerDelegate;
+				TimerDelegate.BindUFunction(this, FName("PossessTargetPawn"));
+				GetWorld()->GetTimerManager().SetTimer(PossessionTimerHandle, TimerDelegate, CastTime, false);
+				if (PossessionWidget)
+				{
+					UUserWidget* PossessTimeWidget = CreateWidget(this, PossessionWidget);
+					PossessTimeWidget->AddToViewport();
+				}
+				ClosestPossessableEntities[IndexForPossessables]->OnPossessedStart();
 			}
 		}
 		
@@ -512,6 +712,10 @@ void APlayerControllerBase::SetupInputComponent()
 		if (CyclePossessionDownAction)
 		{
 			EnhancedInputComponent->BindAction(CyclePossessionDownAction, ETriggerEvent::Completed, this, &APlayerControllerBase::CyclePossessionDown);
+		}
+		if (InteractAction)
+		{
+			EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &APlayerControllerBase::InteractWithClosestObject);
 		}
 		
 	}

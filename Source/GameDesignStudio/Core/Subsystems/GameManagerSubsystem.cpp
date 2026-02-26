@@ -1,42 +1,33 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "GameManagerSubsystem.h"
-
 #include "PuzzleWorldSubsystem.h"
+#include "Core/Debug/DebugUtils.h"
 #include "Core/Managers/GameManagerBase.h"
 #include "Managers/PuzzleRiverManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "Misc/MessageDialog.h"
 #include "Managers/InventoryManager.h"
 #include "Managers/PlayerStatManager.h"
 #include "Managers/QuestManager.h"
 
+#if WITH_EDITOR
+#include "Editor.h"
+#endif
+
+// RegisterManagers() method creates the object in memory based on the class, the range
+// for loop goes through that list and calls the objects initialize method after that.
 void UGameManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	
-	//*******************************************************************************************//
-	// RegisterManagers() method creates the object in memory based on the class, the range
-	// for loop goes through that list and calls the objects initialize method after that.
-	
-	// The Initialize() can be though of an AActors BeginPlay() whatever you want to happen
-	// as that object is being created should go in the Initialize() method.
-	
-	// Pair.Value is accessing the manager at the current index in the range
-	// then we use the arrow operator to call the initialize method of that instance and
-	// pass this subsytem as an argument so it registers with it.
-	
-	// Each UObject should only register with one subsystem, so each manager is registered to
-	// the GameManagerSubsystem
-	//*******************************************************************************************//
-	
 	Super::Initialize(Collection);
 	
-	UE_LOG(LogTemp, Warning, TEXT("GameManagerSubsystem Initialize: %s"), *UGameplayStatics::GetGameInstance(GetWorld())->GetName());
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald, FString::Printf(TEXT("Registered GameManagerSubsystem")));
+	DEBUG_TO_SCREEN(FColor::Emerald, "GameManagerSubsystem Initialize: %s", *UGameplayStatics::GetGameInstance(GetWorld())->GetName());
 	
 	RegisterManagers();
+	DEBUG_TO_SCREEN(FColor::Emerald, "Registered GameManagers");
 	
-	//Initializing and Setting this subsystem to the owning subsystem of the manager
+	//Initializing and Setting this subsystem as the owning subsystem of the manager
 	for (auto& Pair : Managers)
 	{
 		Pair.Value->Initialize(this);
@@ -137,52 +128,39 @@ UGameManagerBase* UGameManagerSubsystem::GetManager(TSubclassOf<UGameManagerBase
 		return Found->Get();
 	}
 	
-	
-	
 	return nullptr;
 }
 
 // Defining type at runtime for registering actors to managers
-void UGameManagerSubsystem::RegisterActorToManager(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, const FPersistantActorValues& ActorValues)
+void UGameManagerSubsystem::RegisterActorToManager(TSubclassOf<UGameManagerBase> ManagerClass, FGuid Id, const FPersistantActorValues& ActorValues)
 {
 	
 	if (UGameManagerBase* Manager = GetManagerByClass(ManagerClass))
 	{
 		Manager->RegisterActor(Id, ActorValues);
-		
 		UE_LOG(LogTemp, Warning, TEXT("Registering Actor"));
-		
 	}
 	
 }
-
-/*
-void UGameManagerSubsystem::SnapshotActorValues(TSubclassOf<UGameManagerBase> ManagerClass, FName Id, FPersistantActorValues& ActorValues, APuzzle* Actor)
-{
-	// Gives the manager class and actor Id, calls the manager by the class key in the list
-	// of managers
-	UGameManagerSubsystem* Subsystem = GetWorld()->GetSubsystem<UGameManagerSubsystem>();
-	//UPuzzleWorldSubsystem* WorldSubsystem = GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>();
-	
-	// Finds the manager in the list and registers its current values with the manager
-	Subsystem->GetManager(ManagerClass)->Snapshot(Id, ActorValues);
-}
-*/
 
 void UGameManagerSubsystem::SnapshotActorValues(APuzzle* Actor)
 {
-	// Add an assert for if an actor is missing an owning manager
-	if (!Actor)
+	FString ActorName = FString::Printf(TEXT("%s needs to have their owning manager set"), *Actor->GetName());
+	
+	// Called on every actor on it's beginplay
+	if (Actor->OwningManager == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Actor is NULL"));
+		UE_LOG(LogTemp, Warning, TEXT("Snapshot Actor is nullptr"));
+		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(ActorName));
+		
+		// Editor calls really shouldn't be put in runtime code but for now it's fine
+		#if WITH_EDITOR
+		GEditor->RequestEndPlayMap();
+		#endif
 	}
 	
-	
-	// Include a state keyword to the struct that every method when it enters a state sets its FName State
-	// field to that state
-	
-	// Add enum state name to the struct
-	// Enum state name->ActorStats->State
-	
-	this->GetManager(Actor->OwningManager)->Snapshot(Actor->ActorId, Actor->ActorValues);
+	else if (Actor->OwningManager != nullptr)
+	{
+		this->GetManager(Actor->OwningManager)->Snapshot(Actor->GetActorGuid(), Actor->ActorValues);
+	}
 }

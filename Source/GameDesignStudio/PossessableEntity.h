@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NiagaraComponentPool.h"
 #include "PlayerCharacter.h"
 
 
@@ -30,8 +31,18 @@ public:
 	UPROPERTY()
 	APlayerCharacter* PlayerCharacter;
 	
+	//Variable that can be set within a possessable entity BP that determines if it can move around or not
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bCanMove = true;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	UNiagaraComponent* PossessableIndicatorNiagaraComponent;
+	
 	UFUNCTION()
 	void SetPossessed(bool NewPossessed);
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPossessedStart();
 	
 protected:
 	virtual void BeginPlay() override;
