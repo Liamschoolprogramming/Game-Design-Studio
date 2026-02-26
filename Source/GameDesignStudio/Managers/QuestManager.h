@@ -31,7 +31,16 @@ public:
 	void ProvideReward(FName ItemName);
 	
 	UFUNCTION(BlueprintCallable)
-	void UpdateCompletionStatusForQuestItem(FName ItemName);
+	bool CompleteQuest(FName ItemName);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool CanCompleteQuest(FName ItemName);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	TArray<int> GetQuestProgress(FName ItemName);
+	
+	UFUNCTION(BlueprintCallable)
+	void UpdateQuestProgress(FName ItemName);
 	
 	UFUNCTION(BlueprintCallable)
 	EQuestState GetQuestState(FName ItemName);

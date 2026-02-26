@@ -18,7 +18,7 @@ void APuzzleInteractive_QuestItem::Interact(APlayerCharacter* PlayerCharacter)
 		bPickedUp = true;
 		UInventoryManager* InventoryManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetInventoryManager();
 		InventoryManager->AddToInventory(ItemName, 1);
-		QuestManager->UpdateCompletionStatusForQuestItem(ItemName);
+		QuestManager->UpdateQuestProgress(ItemName);
 		
 		Destroy();
 	}
