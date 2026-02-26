@@ -8,5 +8,6 @@ enum class EDialogueNodeType
 	Unknown,
 	StartNode,
 	DialogueNode,
-	EndNode
+	EndNode,
+	CheckQuestsNode,
 };
