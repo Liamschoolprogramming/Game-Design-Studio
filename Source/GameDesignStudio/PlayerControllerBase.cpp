@@ -185,23 +185,22 @@ void APlayerControllerBase::StopMove(const FInputActionValue& Value)
 	bIsMoving = false;
 }
 
-void APlayerControllerBase::SortClosestPossessableEntitiesByDistance()
-{
-	FVector ReferenceLocation = GetPawn()->GetActorLocation();
-	
-	ClosestPossessableEntities.Sort([&](const APossessableEntity& A, const APossessableEntity& B)
-	{
-		
-
-	return FVector::DistSquared(A.GetActorLocation(), ReferenceLocation)
-		 < FVector::DistSquared(B.GetActorLocation(), ReferenceLocation);
-	});
-	
-}
+// void APlayerControllerBase::SortClosestPossessableEntitiesByDistance()
+// {
+// 	FVector ReferenceLocation = GetPawn()->GetActorLocation();
+// 	
+// 	ClosestPossessableEntities.Sort([&](const APossessableEntity& A, const APossessableEntity& B)
+// 	{
+// 		
+// 	return FVector::DistSquared(A.GetActorLocation(), ReferenceLocation)
+// 		 < FVector::DistSquared(B.GetActorLocation(), ReferenceLocation);
+// 	});
+// 	
+// }
 
 void APlayerControllerBase::CyclePossessionUp()
 {
-	SortClosestPossessableEntitiesByDistance();
+	//SortClosestPossessableEntitiesByDistance();
 	if (IndexForPossessables + 1 >= ClosestPossessableEntities.Num())
 	{
 		IndexForPossessables = -1;
@@ -210,12 +209,12 @@ void APlayerControllerBase::CyclePossessionUp()
 	{
 		IndexForPossessables++;
 	}
-	OnCyclePossession();
+	OnCyclePossessionTarget();
 }
 
 void APlayerControllerBase::CyclePossessionDown()
 {
-	SortClosestPossessableEntitiesByDistance();
+	//SortClosestPossessableEntitiesByDistance();
 	bool bCanCycle = false;
 	if (IndexForPossessables - 1 < -1)
 	{
@@ -233,10 +232,10 @@ void APlayerControllerBase::CyclePossessionDown()
 			bCanCycle = true;
 		}
 	}
-	OnCyclePossession();
+	OnCyclePossessionTarget();
 }
 
-void APlayerControllerBase::OnCyclePossession_Implementation() { }
+void APlayerControllerBase::OnCyclePossessionTarget_Implementation() { }
 
 void APlayerControllerBase::ConfirmPossession()
 {
@@ -275,15 +274,33 @@ void APlayerControllerBase::ConfirmPossession()
 			GetWorld()->GetTimerManager().SetTimerForNextTick(CycleTimerDelegate);
 			return;
 		}
+		
+		APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
+		if (PossessableEntity)
+		{
+			PossessableEntity->SetPossessed(false);
+		}
+			
+		if (ClosestPossessableEntities[IndexForPossessables] != PossessableEntity)
+		{
+			TargetPawn = ClosestPossessableEntities[IndexForPossessables];
+			FTimerDelegate TimerDelegate;
+			TimerDelegate.BindUFunction(this, FName("PossessTargetPawn"));
+			GetWorld()->GetTimerManager().SetTimer(PossessionTimerHandle, TimerDelegate, CastTime, false);
+			if (PossessionWidget)
+			{
+				UUserWidget* PossessTimeWidget = CreateWidget(this, PossessionWidget);
+				PossessTimeWidget->AddToViewport();
+			}
+			ClosestPossessableEntities[IndexForPossessables]->OnPossessedStart();
+				
+		}
 	}
 }
 
 void APlayerControllerBase::CyclePossession()
 {
 	if (ClosestPossessableEntities.IsEmpty()) return;
-	
-	
-	//Debug::PrintToScreen(IndexForPossessables);
 	
 	if (IndexForPossessables == -1)
 	{

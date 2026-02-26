@@ -60,7 +60,7 @@ public:
 	TSubclassOf<UUserWidget> PossessionWidget;
 	
 	UFUNCTION(BlueprintNativeEvent, Category="Possession")
-	void OnCyclePossession();
+	void OnCyclePossessionTarget();
 	
 	// TODO REMOVE:
 	void CyclePossession();
@@ -162,9 +162,7 @@ public:
 	
 	TArray<APossessableEntity*> ClosestPossessableEntities;
 	
-	
-	void SortClosestPossessableEntitiesByDistance();
-	
+	//void SortClosestPossessableEntitiesByDistance();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement")
 	FVector PawnVelocity;
