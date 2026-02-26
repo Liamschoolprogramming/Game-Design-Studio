@@ -59,7 +59,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Possession")
 	TSubclassOf<UUserWidget> PossessionWidget;
 	
+	UFUNCTION(BlueprintNativeEvent, Category="Possession")
+	void OnCyclePossession();
 	
+	// TODO REMOVE:
 	void CyclePossession();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
@@ -121,6 +124,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	UInputAction* CyclePossessionDownAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* ConfirmPossessionAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	UInputAction* InteractAction;
@@ -163,8 +169,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement")
 	FVector PawnVelocity;
 	
-	//-1 will be the index for the player character
-	int IndexForPossessables = -1;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Possession")
+	int IndexForPossessables = -1; //-1 will be the index for the player character
 	
 	UFUNCTION(BlueprintCallable, Category="Possession")
 	void AddPossessableEntity(APossessableEntity* Entity);
@@ -198,6 +204,7 @@ public:
 	UFUNCTION()
 	void CyclePossessionUp();
 	void CyclePossessionDown();
+	void ConfirmPossession();
 	
 	void LookGate(const FInputActionValue& Value);
 	void LookGateStart();
