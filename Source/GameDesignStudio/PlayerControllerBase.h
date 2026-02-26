@@ -62,6 +62,12 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category="Possession")
 	void OnCyclePossessionTarget();
 	
+	UFUNCTION(BlueprintNativeEvent, Category="Possession")
+	void RemovePossessableFromHotbar(int IndexToRemove);
+	
+	UFUNCTION(BlueprintNativeEvent, Category="Possession")
+	void AddPossessableToHotbar();
+	
 	// TODO REMOVE:
 	void CyclePossession();
 	

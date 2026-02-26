@@ -64,11 +64,16 @@ void APlayerControllerBase::UpdateMPC()
 //This adds a possessable entity to our array only if the Entity given is not a null pointer or if it is already in it
 void APlayerControllerBase::AddPossessableEntity(APossessableEntity* Entity)
 {
+	for (int i = 0; i < ClosestPossessableEntities.Num(); i++)
+	{
+		Debug::PrintToScreen(ClosestPossessableEntities[i]->GetName());
+	}
 	if (ClosestPossessableEntities.Find(Entity) != INDEX_NONE) return;
 	if (Entity)
 	{
 		ClosestPossessableEntities.Add(Entity);
 	}
+	AddPossessableToHotbar();
 }
 //This removes a possessable entity from our array only if the Entity given is not a null pointer. 
 void APlayerControllerBase::RemovePossessableEntity(APossessableEntity* Entity)
@@ -86,9 +91,15 @@ void APlayerControllerBase::RemovePossessableEntity(APossessableEntity* Entity)
 	}
 	else if (Entity)
 	{
+		int IndexToRemove = ClosestPossessableEntities.Find(Entity);
+		RemovePossessableFromHotbar(IndexToRemove);
 		ClosestPossessableEntities.Remove(Entity);
 	}
 }
+
+void APlayerControllerBase::RemovePossessableFromHotbar_Implementation(int IndexToRemove) { }
+
+void APlayerControllerBase::AddPossessableToHotbar_Implementation() { }
 
 bool APlayerControllerBase::CanWeCyclePossessableEntity(int IndexToCheck)
 {
