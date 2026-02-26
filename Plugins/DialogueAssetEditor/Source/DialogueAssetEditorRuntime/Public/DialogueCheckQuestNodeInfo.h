@@ -17,8 +17,6 @@ class DIALOGUEASSETEDITORRUNTIME_API UDialogueCheckQuestNodeInfo : public UDialo
 	
 public:
 	
-	UPROPERTY(EditAnywhere)
-	FText DialogueText;
 
 	UPROPERTY(EditAnywhere)
 	FName QuestName;

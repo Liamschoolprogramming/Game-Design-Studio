@@ -7,6 +7,7 @@
 #include "DialogueGraphNode.h"
 #include "DialogueStartGraphNode.h"
 #include "DialogueNodeInfo.h"
+#include "StartQuestGraphNode.h"
 
 //this defines actions on nodes
 
@@ -15,7 +16,7 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 	TSharedPtr<FNewNodeAction> NewDialogueNodeAction(
 		new FNewNodeAction(
 			UDialogueGraphNode::StaticClass(),
-			FText::FromString(TEXT("Nodes")),
+			FText::FromString(TEXT("Dialogue")),
 			FText::FromString(TEXT("New Node")),
 			FText::FromString(TEXT("Makes a new dialogue node")),
 			0)
@@ -32,7 +33,7 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 	TSharedPtr<FNewNodeAction> NewCheckQuestNodeAction(
 		new FNewNodeAction(
 			UDialogueCheckQuestGraphNode::StaticClass(),
-			FText::FromString(TEXT("Nodes")),
+			FText::FromString(TEXT("Quests")),
 			FText::FromString(TEXT("New Check Quest Node")),
 			FText::FromString(TEXT("Makes a new branching node that checks a quest.")),
 			0)
@@ -40,9 +41,17 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 	TSharedPtr<FNewNodeAction> NewCompleteQuestNodeAction(
 		new FNewNodeAction(
 			UCompleteQuestGraphNode::StaticClass(),
-			FText::FromString(TEXT("Nodes")),
+			FText::FromString(TEXT("Quests")),
 			FText::FromString(TEXT("New Complete Quest Node")),
 			FText::FromString(TEXT("Makes a new node that completes a given quest.")),
+			0)
+			);
+	TSharedPtr<FNewNodeAction> NewStartQuestNodeAction(
+		new FNewNodeAction(
+			UStartQuestGraphNode::StaticClass(),
+			FText::FromString(TEXT("Quests")),
+			FText::FromString(TEXT("New Start Quest Node")),
+			FText::FromString(TEXT("Makes a new node that starts a given quest.")),
 			0)
 			);
 	
@@ -50,6 +59,7 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 	ContextMenuBuilder.AddAction(NewEndNodeAction);
 	ContextMenuBuilder.AddAction(NewCheckQuestNodeAction);
 	ContextMenuBuilder.AddAction(NewCompleteQuestNodeAction);
+	ContextMenuBuilder.AddAction(NewStartQuestNodeAction);
 }
 
 const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const

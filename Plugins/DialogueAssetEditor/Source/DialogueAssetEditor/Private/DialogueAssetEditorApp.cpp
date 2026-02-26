@@ -10,6 +10,7 @@
 #include "DialogueEndGraphNode.h"
 #include "DialogueGraphSchema.h"
 #include "DialogueNodeInfo.h"
+#include "StartQuestGraphNode.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 
 DEFINE_LOG_CATEGORY_STATIC(FDialogueAssetEditorAppSub, Log, All)
@@ -220,6 +221,10 @@ void FDialogueAssetEditorApp::UpdateEditorGraphFromWorkingAsset()
 		else if (RuntimeNode->NodeType == EDialogueNodeType::CompleteQuestGraphNode)
 		{
 			NewNode = NewObject<UCompleteQuestGraphNode>(WorkingGraph);
+		}
+		else if (RuntimeNode->NodeType == EDialogueNodeType::StartQuestGraphNode)
+		{
+			NewNode = NewObject<UStartQuestGraphNode>(WorkingGraph);
 		}
 		else if (RuntimeNode->NodeType == EDialogueNodeType::EndNode)
 		{

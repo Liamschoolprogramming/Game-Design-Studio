@@ -23,14 +23,10 @@ FText UDialogueEndGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 
 void UDialogueEndGraphNode::HandleDeleteNode()
 {
-	UEdGraphPin* Pin = GetPinAt(Pins.Num() - 1);
-	if (Pin->Direction != EGPD_Input)
-	{
-		GetGraph()->RemoveNode(this);
+	GetGraph()->RemoveNode(this);
 		
-		GetGraph()->NotifyGraphChanged();
-		GetGraph()->Modify();
-	}
+	GetGraph()->NotifyGraphChanged();
+	GetGraph()->Modify();
 }
 
 void UDialogueEndGraphNode::GetNodeContextMenuActions(class UToolMenu* Menu,

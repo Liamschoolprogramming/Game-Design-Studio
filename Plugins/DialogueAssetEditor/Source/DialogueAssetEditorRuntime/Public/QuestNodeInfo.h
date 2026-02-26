@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "DialogueNodeInfoBase.h"
-#include "CompleteQuestNodeInfo.generated.h"
+#include "QuestNodeInfo.generated.h"
 /**
  * 
  */
 UCLASS()
-class DIALOGUEASSETEDITORRUNTIME_API UCompleteQuestNodeInfo : public UDialogueNodeInfoBase
+class DIALOGUEASSETEDITORRUNTIME_API UQuestNodeInfo : public UDialogueNodeInfoBase
 {
 	GENERATED_BODY()
 

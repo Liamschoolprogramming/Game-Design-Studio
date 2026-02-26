@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CompleteQuestNodeInfo.h"
+#include "QuestNodeInfo.h"
 #include "DialogueGraphNodeBase.h"
 #include "UObject/Object.h"
 #include "CompleteQuestGraphNode.generated.h"
@@ -45,23 +45,23 @@ public: //Dialogue interface
 	
 	virtual void InitNodeInfo(UObject* Owner) override
 	{
-		NodeInfo = NewObject<UCompleteQuestNodeInfo>(Owner);
+		NodeInfo = NewObject<UQuestNodeInfo>(Owner);
 	}
 	virtual void SetNodeInfo(class UDialogueNodeInfoBase* InNodeInfo) override
 	{
-		NodeInfo = Cast<UCompleteQuestNodeInfo>(InNodeInfo);
+		NodeInfo = Cast<UQuestNodeInfo>(InNodeInfo);
 	}
 	virtual UDialogueNodeInfoBase* GetNodeInfo() const override
 	{
 		return NodeInfo;
 	}
-	virtual UCompleteQuestNodeInfo* GetDialogueNodeInfo()
+	virtual UQuestNodeInfo* GetDialogueNodeInfo()
 	{
 		return NodeInfo;
 	}
 protected:
 	UPROPERTY()
-	class UCompleteQuestNodeInfo* NodeInfo = nullptr;
+	class UQuestNodeInfo* NodeInfo = nullptr;
 private:
 	void HandleDeleteNode();
 };

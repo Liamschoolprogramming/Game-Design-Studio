@@ -3,40 +3,41 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DialogueGraphNodeBase.h"
-
 #include "QuestNodeInfo.h"
-#include "DialogueCheckQuestGraphNode.generated.h"
+#include "DialogueGraphNodeBase.h"
+#include "StartQuestGraphNode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DIALOGUEASSETEDITOR_API UDialogueCheckQuestGraphNode : public UDialogueGraphNodeBase
+class DIALOGUEASSETEDITOR_API UStartQuestGraphNode : public UDialogueGraphNodeBase
 {
 	GENERATED_BODY()
-	
+
 public: //UEdGraph interface
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
+
 	virtual FLinearColor GetNodeTitleColor() const override
 	{
 		return FLinearColor(FLinearColor(1.f, 0.631f, 0.f));
 	}
-	virtual bool CanUserDeleteNode() const override{ return true; }
 
-	virtual void GetNodeContextMenuActions(class UToolMenu* Menu, class UGraphNodeContextMenuContext* Context) const override;
-	
+	virtual bool CanUserDeleteNode() const override { return true; }
+
+	virtual void
+	GetNodeContextMenuActions(class UToolMenu* Menu, class UGraphNodeContextMenuContext* Context) const override;
+
 	virtual UEdGraphPin* CreateDefaultInputPin() override;
 	virtual void CreateDefaultOutputPins() override;
-	
-	
-	
+
+
 	virtual EDialogueNodeType GetDialogueNodeType() const override
 	{
-		return EDialogueNodeType::CheckQuestsNode;
+		return EDialogueNodeType::StartQuestGraphNode;
 	}
 
-		
+			
 public: //Dialogue interface
 	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Direction, FName Name) override;
 
@@ -63,6 +64,4 @@ protected:
 	class UQuestNodeInfo* NodeInfo = nullptr;
 private:
 	void HandleDeleteNode();
-	
-	
 };

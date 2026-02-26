@@ -22,4 +22,7 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 	FName SpeakerName;
+
+	UPROPERTY(EditAnywhere)
+	UTexture2D* CharcterPortrait;
 };

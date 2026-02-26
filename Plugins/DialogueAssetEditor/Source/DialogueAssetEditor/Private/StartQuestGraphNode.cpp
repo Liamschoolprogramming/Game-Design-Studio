@@ -1,14 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "DialogueCheckQuestGraphNode.h"
+#include "StartQuestGraphNode.h"
 
-FText UDialogueCheckQuestGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
+FText UStartQuestGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	
 	if (NodeInfo != nullptr)
 	{
-		FString OutputString = TEXT("Complete Quest");
+		FString OutputString = TEXT("Start Quest");
 		if (!NodeInfo->QuestName.IsNone())
 		{
 			FString ActionData = NodeInfo->QuestName.ToString();
@@ -20,10 +19,10 @@ FText UDialogueCheckQuestGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType)
 		}
 		return FText::FromString(OutputString);
 	}
-	return FText::FromString(TEXT("Complete Quest"));
+	return FText::FromString(TEXT("Start Quest"));
 }
 
-void UDialogueCheckQuestGraphNode::GetNodeContextMenuActions(class UToolMenu* Menu,
+void UStartQuestGraphNode::GetNodeContextMenuActions(class UToolMenu* Menu,
 	class UGraphNodeContextMenuContext* Context) const
 {
 	FToolMenuSection& section = Menu->AddSection(TEXT("SectionName"), FText::FromString(TEXT("Dialogue Node Actions")));
@@ -36,8 +35,8 @@ void UDialogueCheckQuestGraphNode::GetNodeContextMenuActions(class UToolMenu* Me
 		FText::FromString(TEXT("Deletes the node")),
 		FSlateIcon(TEXT("DialogueAssetEditorStyle"),TEXT("DialogueAssetEditor.NodeDeleteNodeIcon")),
 		FUIAction(FExecuteAction::CreateUObject(
-			const_cast<UDialogueCheckQuestGraphNode*>(this),
-			&UDialogueCheckQuestGraphNode::HandleDeleteNode
+			const_cast<UStartQuestGraphNode*>(this),
+			&UStartQuestGraphNode::HandleDeleteNode
 			)
 			 
 			
@@ -45,24 +44,20 @@ void UDialogueCheckQuestGraphNode::GetNodeContextMenuActions(class UToolMenu* Me
 	);
 }
 
-UEdGraphPin* UDialogueCheckQuestGraphNode::CreateDefaultInputPin()
+UEdGraphPin* UStartQuestGraphNode::CreateDefaultInputPin()
 {
 	return CreateDialoguePin(EGPD_Input, TEXT("FlowInput"));
 }
 
-void UDialogueCheckQuestGraphNode::CreateDefaultOutputPins()
+void UStartQuestGraphNode::CreateDefaultOutputPins()
 {
-	FString defaultPositive = TEXT("Active");
-	FString defaultNegative = TEXT("Inactive");
-	FString defaultComplete =  TEXT("Complete");
+	FString defaultPositive = TEXT("Started");
+
 	CreateDialoguePin(EGPD_Output, FName(defaultPositive));
-	
-	CreateDialoguePin(EGPD_Output, FName(defaultNegative));
-	CreateDialoguePin(EGPD_Output, FName(defaultComplete));
-	
+
 }
 
-UEdGraphPin* UDialogueCheckQuestGraphNode::CreateDialoguePin(EEdGraphPinDirection Direction, FName Name)
+UEdGraphPin* UStartQuestGraphNode::CreateDialoguePin(EEdGraphPinDirection Direction, FName Name)
 {
 	FName Category = (Direction == EGPD_Input) ? TEXT("Input") : TEXT("Output");
 	FName SubCategory = TEXT("Quest");
@@ -76,7 +71,7 @@ UEdGraphPin* UDialogueCheckQuestGraphNode::CreateDialoguePin(EEdGraphPinDirectio
 	return Pin;
 }
 
-void UDialogueCheckQuestGraphNode::HandleDeleteNode()
+void UStartQuestGraphNode::HandleDeleteNode()
 {
 	GetGraph()->RemoveNode(this);
 }
