@@ -14,11 +14,28 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 	PlayerInventory = {};
 	
 	AllItems = {
+		//Quest Items
 		{"TestItem", FPlayerInventoryItem("Test Item", 0, 10, EInventoryItemType::Quest)},
 		{"AnotherTestItem", FPlayerInventoryItem("Another Test Item", 0, 15, EInventoryItemType::Quest)},
 		{"Sunstone", FPlayerInventoryItem("Sunstone", 0, 10, EInventoryItemType::Quest)},
 		{"Golem", FPlayerInventoryItem("Golem", 0, 1, EInventoryItemType::Quest, true)},
 		{"Owl Child", FPlayerInventoryItem("Owl Child", 0, 4, EInventoryItemType::Quest)},
+		
+		//Gear
+		{"Aegis Charm", FPlayerInventoryItem("Aegis Charm", 0, 1, 
+			FGearInfo(
+			{},
+			{"DamageNullification"},
+			EGearType::Head)
+			)
+		},
+		{"Windrunner Sandals", FPlayerInventoryItem("Windrunner Sandals", 0, 1, 
+			FGearInfo(
+			{{"Stamina", 5}},
+			{},
+			EGearType::Head)
+			)
+		},
 	};
 }
 
@@ -38,7 +55,7 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 	{
 		FPlayerInventoryItem* NewItem = AllItems.Find(ItemName);
 		
-		FPlayerInventoryItem ItemToAdd = FPlayerInventoryItem(NewItem->ItemDisplayName, Amount, NewItem->MaxAmount, EInventoryItemType::Quest, NewItem->Hidden);
+		FPlayerInventoryItem ItemToAdd = FPlayerInventoryItem(NewItem->ItemDisplayName, Amount, NewItem->MaxAmount, EInventoryItemType::Quest, NewItem->bHidden, NewItem->GearInfo);
 		
 		if (NewItem == nullptr)
 		{

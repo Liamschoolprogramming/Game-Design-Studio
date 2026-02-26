@@ -17,27 +17,29 @@ void UGearManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 	};
 }
 
-// Tries to add an item to the inventory, returns new amount in inventory for that item.
+// Equips the provided gear in its designated slot. Returns the gear being replaced.
 FPlayerInventoryItem UGearManager::EquipGear(FPlayerInventoryItem Gear)
 {
 	FPlayerInventoryItem ReplacedGear;
 	
-	if (Gear.GearInfo.GearType == EGearType::Head)
+	switch (Gear.GearInfo.GearType)
 	{
-		ReplacedGear = *PlayerGear.Find("Head");
-		PlayerGear.Add("Head", Gear);
-	}
-	else if (Gear.GearInfo.GearType == EGearType::Body)
-	{
-		ReplacedGear = *PlayerGear.Find("Body");
-		PlayerGear.Add("Body", Gear);
-	}
-	else
-	{
-		ReplacedGear = *PlayerGear.Find("Legs");
-		PlayerGear.Add("Legs", Gear);
+		case EGearType::Head:
+			ReplacedGear = *PlayerGear.Find("Head");
+			PlayerGear.Add("Head", Gear);
+			break;
+		case EGearType::Body:
+			ReplacedGear = *PlayerGear.Find("Body");
+			PlayerGear.Add("Body", Gear);
+			break;
+		case EGearType::Legs:
+			ReplacedGear = *PlayerGear.Find("Legs");
+			PlayerGear.Add("Legs", Gear);
+			break;
 	}
 	
+	RemoveGearStats(ReplacedGear);
+	ApplyGearStats(Gear);
 	return ReplacedGear;
 }
 

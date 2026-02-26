@@ -66,7 +66,7 @@ struct FPlayerInventoryItem
 	EInventoryItemType ItemType;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool Hidden;
+	bool bHidden;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGearInfo GearInfo;
@@ -76,7 +76,7 @@ struct FPlayerInventoryItem
 		MaxAmount = 1000;
 		CurrentAmount = 0;
 		ItemType = EInventoryItemType::Quest;
-		Hidden = false;
+		bHidden = false;
 	}
 	
 	//Simple Constructor, No Gear Info & Not Hidden
@@ -86,30 +86,41 @@ struct FPlayerInventoryItem
 		MaxAmount = Max;
 		ItemDisplayName = ItemName;
 		ItemType = InvItemType;
-		Hidden = false;
+		bHidden = false;
 		GearInfo = FGearInfo();
 	}
 	
 	//Constructor with Hidden value, used for Quests without an actual item (Ex: Golem Quest)
-	FPlayerInventoryItem(FName ItemName, int Amount, int Max, EInventoryItemType InvItemType, bool InvHidden)
+	FPlayerInventoryItem(FName ItemName, int Amount, int Max, EInventoryItemType ItemType, bool bHidden)
 	{
 		CurrentAmount = Amount;
 		MaxAmount = Max;
 		ItemDisplayName = ItemName;
-		ItemType = InvItemType;
-		Hidden = InvHidden;
-		GearInfo = FGearInfo();
+		this->ItemType = ItemType;
+		this->bHidden = bHidden;
+		this->GearInfo = FGearInfo();
 	}
 	
 	//Constructor with Gear Info, should be used when making gear
-	FPlayerInventoryItem(FName ItemName, int Amount, int Max, FGearInfo GearStats)
+	FPlayerInventoryItem(FName ItemName, int Amount, int Max, FGearInfo GearInfo)
 	{
 		CurrentAmount = Amount;
 		MaxAmount = Max;
 		ItemDisplayName = ItemName;
 		ItemType = EInventoryItemType::Gear;
-		Hidden = false;
-		GearInfo = GearStats;
+		bHidden = false;
+		this->GearInfo = GearInfo;
+	}
+	
+	//Complete constructor with everything
+	FPlayerInventoryItem(FName ItemName, int Amount, int Max, EInventoryItemType ItemType, bool bHidden, FGearInfo GearInfo)
+	{
+		CurrentAmount = Amount;
+		MaxAmount = Max;
+		ItemDisplayName = ItemName;
+		this->ItemType = ItemType;;
+		this->bHidden = bHidden;
+		this->GearInfo = GearInfo;
 	}
 };
 
