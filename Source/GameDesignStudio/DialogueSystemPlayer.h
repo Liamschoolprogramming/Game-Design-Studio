@@ -25,6 +25,7 @@ class GAMEDESIGNSTUDIO_API UDialogueSystemPlayer : public UObject
 	GENERATED_BODY()
 
 public:
+	UDialogueSystemPlayer();
 	// Pass delegate by value (Unreal-friendly)
 	void PlayDialogue(UDialogueAsset* InDialogueAsset, 
 					  APlayerController* InPlayerController, 
@@ -46,7 +47,7 @@ private:
 	UPROPERTY()
 	UQuestDialogueUIController* DialogueWidget = nullptr;
 
-	
+	UTexture2D* DefaultCharacterIcon;
 	
 	FOnDialogueEnded OnDialogueEnded;
 };

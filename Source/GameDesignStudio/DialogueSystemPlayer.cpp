@@ -3,16 +3,14 @@
 
 #include "DialogueSystemPlayer.h"
 
-#include "CompleteQuestNodeInfo.h"
+#include "QuestNodeInfo.h"
 #include "DialogueAsset.h"
-#include "DialogueCheckQuestNodeInfo.h"
 #include "DialogueNodeInfo.h"
 #include "DialogueRuntimeGraph.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 
 #include "DialogueResponseButtonController.h"
-#include "Macros.h"
 #include "QuestDialogueUIController.h"
 #include "Components/Image.h"
 
@@ -22,9 +20,23 @@
 
 DEFINE_LOG_CATEGORY_STATIC(DialoguePlayer, Log, All);
 
-void UDialogueSystemPlayer::PlayDialogue(class UDialogueAsset* InDialogueAsset, APlayerController* InPlayerController,
-                                    FOnDialogueEnded InOnDialogueEnded)
+UDialogueSystemPlayer::UDialogueSystemPlayer()
 {
+	
+	static ConstructorHelpers::FObjectFinder<UTexture2D> TextureObj(
+		TEXT("/Game/GameDesignStudio/Dialogue/TestCharacterPortraits/T_DefaultCharacterPortrait.T_DefaultCharacterPortrait")
+	);
+	if (TextureObj.Succeeded())
+	{
+		DefaultCharacterIcon = TextureObj.Object;
+	}
+}
+
+void UDialogueSystemPlayer::PlayDialogue(class UDialogueAsset* InDialogueAsset, APlayerController* InPlayerController,
+                                         FOnDialogueEnded InOnDialogueEnded)
+{
+	
+	
 	OnDialogueEnded = InOnDialogueEnded;
 	UDialogueRuntimeGraph* RuntimeGraph = InDialogueAsset->Graph;
 	
@@ -111,6 +123,14 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 		{
 			Speaker->ActivateSpeakerCamera();
 			DialogueWidget->CharacterName->SetText(FText::FromString(Speaker->SpeakerName.ToString()));
+			if (NodeInfo->CharcterPortrait)
+			{
+				Speaker->SpeakerImage=NodeInfo->CharcterPortrait;
+			}
+			else
+			{
+				Speaker->SpeakerImage= DefaultCharacterIcon;
+			}
 			if (Speaker->SpeakerImage)
 			{
 				DialogueWidget->CharacterPortrait->SetBrushFromTexture(Speaker->SpeakerImage);
@@ -121,7 +141,7 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 	}
 	else if (CurrentNode != nullptr && CurrentNode->NodeType == EDialogueNodeType::CheckQuestsNode)
 	{
-		if (const UDialogueCheckQuestNodeInfo* NodeInfo = Cast<UDialogueCheckQuestNodeInfo>(CurrentNode->NodeInfo))
+		if (const UQuestNodeInfo* NodeInfo = Cast<UQuestNodeInfo>(CurrentNode->NodeInfo))
 		{
 			if (UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager())
 			{
@@ -144,7 +164,7 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 	}
 	else if (CurrentNode != nullptr && CurrentNode->NodeType == EDialogueNodeType::CompleteQuestGraphNode)
 	{
-		if ( UCompleteQuestNodeInfo* NodeInfo = Cast<UCompleteQuestNodeInfo>(CurrentNode->NodeInfo))
+		if ( UQuestNodeInfo* NodeInfo = Cast<UQuestNodeInfo>(CurrentNode->NodeInfo))
 		{
 			if (UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager())
 			{
@@ -159,9 +179,20 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 			}
 		}
 	}
+	else if (CurrentNode != nullptr && CurrentNode->NodeType == EDialogueNodeType::StartQuestGraphNode)
+	{
+		if ( UQuestNodeInfo* NodeInfo = Cast<UQuestNodeInfo>(CurrentNode->NodeInfo))
+		{
+			if (UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager())
+			{
+				QuestManager->ActivateQuestForItem(NodeInfo->QuestName);
+				ChooseOptionAtIndex(0);
+			}
+		}
+	}
 	else if (CurrentNode == nullptr || CurrentNode->NodeType == EDialogueNodeType::EndNode)
 	{
-		APlayerController* PlayerController = DialogueWidget->GetOwningPlayer();
+		
 		DialogueWidget->RemoveFromParent();
 		DialogueWidget = nullptr;
 		
