@@ -4,14 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Misc/OutputDeviceNull.h"
+//#include "Managers/PuzzleGriefManager.h"
 #include "GameFramework/Actor.h"
 #include "GriefObject.generated.h"
+
+class UPuzzleGriefManager;
 
 UCLASS()
 class GAMEDESIGNSTUDIO_API AGriefObject : public AActor
 {
 	GENERATED_BODY()
 	
+	UPuzzleGriefManager* GriefManager;
 public:	
 	// Sets default values for this actor's properties
 	AGriefObject();
@@ -21,6 +25,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Blueprint Class")
 		AActor* BlueprintActor;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Manager")
+		TSubclassOf<UPuzzleGriefManager> OwningManager;
 
 protected:
 	// Called when the game starts or when spawned

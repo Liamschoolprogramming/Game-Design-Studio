@@ -10,6 +10,7 @@
 /**
  * 
  */
+
 UCLASS()
 class GAMEDESIGNSTUDIO_API UPuzzleGriefManager : public UGameManagerBase
 {
@@ -20,9 +21,12 @@ class GAMEDESIGNSTUDIO_API UPuzzleGriefManager : public UGameManagerBase
 	
 public:
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void RegisterGriefActor(AGriefObject* GriefObject);
 	
 	UFUNCTION(BlueprintCallable)
 	void DisableAllGriefObjects();
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    bool solved;
 };

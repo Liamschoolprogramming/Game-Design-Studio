@@ -3,6 +3,9 @@
 
 #include "GriefObject.h"
 
+#include "Core/Subsystems/GameManagerSubsystem.h"
+#include "Managers/PuzzleGriefManager.h"
+
 // Sets default values
 AGriefObject::AGriefObject()
 {
@@ -15,7 +18,11 @@ AGriefObject::AGriefObject()
 void AGriefObject::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	// this is very poor implementation. I will fix it later.
+	// for now though, this does work. the function "RegisterGriefActor" can also be called in Blueprint
+	// if for some reason that is necessary (it likely will because I am not very familiar with c++ unfortunately)
+	UPuzzleGriefManager* CurGriefManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPuzzleGriefManager();
+	CurGriefManager->RegisterGriefActor(this);
 }
 
 void AGriefObject::DisableParticlesInBlueprint()
@@ -24,6 +31,7 @@ void AGriefObject::DisableParticlesInBlueprint()
 	const FString command = FString::Printf(TEXT("DisableGrief"));
 	if (BlueprintActor)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("This Grief Object should be disabled."));
 		BlueprintActor->CallFunctionByNameWithArguments(*command, ar, NULL, true);
 	}
 }
