@@ -4,10 +4,13 @@
 #include "DialogueAssetAction.h"
 #include "IAssetTools.h"
 #include "AssetToolsModule.h"
+#include "CameraControllerVisualiser.h"
 #include "Styling/SlateStyleRegistry.h"
 #include "EdGraphUtilities.h"
+#include "UnrealEdGlobals.h"
 #include "KismetPins/SGraphPinColor.h"
 #include "EdGraph/EdGraphPin.h"
+#include "Editor/UnrealEdEngine.h"
 #include "Interfaces/IPluginManager.h"
 
 #define LOCTEXT_NAMESPACE "FDialogueAssetEditorModule"
@@ -151,6 +154,18 @@ void FDialogueAssetEditorModule::StartupModule()
 	
 	DialoguePinFactory = MakeShareable(new FDialoguePinFactory());
 	FEdGraphUtilities::RegisterVisualPinFactory(DialoguePinFactory);
+	
+	if (GUnrealEd)
+	{
+		TSharedPtr<FComponentVisualizer> Visualizer =
+			MakeShareable(new FCameraControllerVisualiser);
+
+		GUnrealEd->RegisterComponentVisualizer(
+			UCameraControlComponent::StaticClass()->GetFName(),
+			Visualizer);
+
+		Visualizer->OnRegister();
+	}
 }
 
 /**
