@@ -11,9 +11,36 @@ void UGearManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 	Super::Initialize(InstanceOwner);
 	
 	PlayerGear = {
-		{"Head", FPlayerInventoryItem("None", 0, 0, FGearInfo() )},
-		{"Body", FPlayerInventoryItem("None", 0, 0, FGearInfo() )},
-		{"Legs", FPlayerInventoryItem("None", 0, 0, FGearInfo() )},
+		{"Head", FPlayerInventoryItem(
+			"None",
+			TSoftObjectPtr<UTexture2D>(
+				FSoftObjectPath(TEXT("/Game/GameDesignStudio/Art/UI/T_Placeholder.T_Placeholder"))
+			),
+			"Nothing.",
+			0, 0,
+			FGearInfo() 
+			)
+		},
+		{"Body", FPlayerInventoryItem(
+			"None",
+			TSoftObjectPtr<UTexture2D>(
+				FSoftObjectPath(TEXT("/Game/GameDesignStudio/Art/UI/T_Placeholder.T_Placeholder"))
+			),
+			"Nothing.",
+			0, 0,
+			FGearInfo() 
+			)
+		},
+		{"Legs", FPlayerInventoryItem(
+			"None",
+			TSoftObjectPtr<UTexture2D>(
+				FSoftObjectPath(TEXT("/Game/GameDesignStudio/Art/UI/T_Placeholder.T_Placeholder"))
+			),
+			"Nothing.",
+			0, 0,
+			FGearInfo() 
+			)
+		},
 	};
 }
 

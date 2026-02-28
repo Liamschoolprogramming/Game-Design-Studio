@@ -2,6 +2,7 @@
 
 #include "InventoryManager.h"
 
+#include "InventoryInterface.h"
 #include "QuestInterface.h"
 #include "QuestManager.h"
 #include "Blueprint/UserWidget.h"
@@ -15,25 +16,67 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 	
 	AllItems = {
 		//Quest Items
-		{"TestItem", FPlayerInventoryItem("Test Item", 0, 10, EInventoryItemType::Quest)},
-		{"AnotherTestItem", FPlayerInventoryItem("Another Test Item", 0, 15, EInventoryItemType::Quest)},
-		{"Sunstone", FPlayerInventoryItem("Sunstone", 0, 10, EInventoryItemType::Quest)},
-		{"Golem", FPlayerInventoryItem("Golem", 0, 1, EInventoryItemType::Quest, true)},
-		{"Owl Child", FPlayerInventoryItem("Owl Child", 0, 4, EInventoryItemType::Quest)},
-		
-		//Gear
-		{"Aegis Charm", FPlayerInventoryItem("Aegis Charm", 0, 1, 
-			FGearInfo(
-			{},
-			{"DamageNullification"},
-			EGearType::Head)
+		{"Sunstone", FPlayerInventoryItem(
+			"Sunstone",
+			TSoftObjectPtr<UTexture2D>(
+				FSoftObjectPath(TEXT("/Engine/Tutorial/Landscape/TutorialAssets/Landscape.Landscape"))
+			),
+			"A sunstone.",
+			0, 10,
+			EInventoryItemType::Quest
 			)
 		},
-		{"Windrunner Sandals", FPlayerInventoryItem("Windrunner Sandals", 0, 1, 
-			FGearInfo(
-			{{"Stamina", 5}},
-			{},
-			EGearType::Head)
+		{"Berry", FPlayerInventoryItem(
+			"Berry",
+			TSoftObjectPtr<UTexture2D>(
+				FSoftObjectPath(TEXT("/Engine/Tutorial/Mobile/TutorialAssets/IOS.IOS"))
+			),
+			"A berry.",
+			0, 10,
+			EInventoryItemType::Quest
+			)
+		},
+		{"Golem", FPlayerInventoryItem(
+			"Golem",
+			TSoftObjectPtr<UTexture2D>(
+				FSoftObjectPath(TEXT("/Engine/Tutorial/Mobile/TutorialAssets/android_Icon.android_Icon"))
+			),
+			"A golem.",
+			0, 1,
+			EInventoryItemType::Quest,
+			true
+			)
+		},
+		{"Owl Child", FPlayerInventoryItem(
+			"Owl Child",
+			TSoftObjectPtr<UTexture2D>(
+				FSoftObjectPath(TEXT("/Engine/EngineResources/AICON-Green.AICON-Green"))
+			),
+			"One of Whistlebranch's children.",
+			0, 4,
+			EInventoryItemType::Quest
+			)
+		},
+		
+		//Gear
+		{"Aegis Charm", FPlayerInventoryItem(
+			"Aegis Charm", 
+			TSoftObjectPtr<UTexture2D>(
+				FSoftObjectPath(TEXT("/Engine/EngineResources/AICON-Red.AICON-Red"))
+			),
+			"A charm given to you by Verdan.",
+			0, 1, 
+			FGearInfo({}, {"DamageNullification"}, EGearType::Head)
+			)
+		},
+		{"Windrunner Sandals", FPlayerInventoryItem(
+			"Windrunner Sandals",
+			TSoftObjectPtr<UTexture2D>(
+				FSoftObjectPath(TEXT("/Engine/EditorResources/Ai_Spawnpoint.Ai_Spawnpoint"))
+			),
+			"Sandals that you found in a chest.",
+			0, 1, 
+			FGearInfo({{"Stamina", 5}}, {}, EGearType::Head)
 			)
 		},
 	};
@@ -55,7 +98,7 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 	{
 		FPlayerInventoryItem* NewItem = AllItems.Find(ItemName);
 		
-		FPlayerInventoryItem ItemToAdd = FPlayerInventoryItem(NewItem->ItemDisplayName, Amount, NewItem->MaxAmount, EInventoryItemType::Quest, NewItem->bHidden, NewItem->GearInfo);
+		FPlayerInventoryItem ItemToAdd = FPlayerInventoryItem(NewItem->ItemDisplayName, NewItem->Icon, NewItem->Description, Amount, NewItem->MaxAmount, EInventoryItemType::Quest, NewItem->bHidden, NewItem->GearInfo);
 		
 		if (NewItem == nullptr)
 		{
@@ -64,6 +107,7 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 		
 		PlayerInventory.Add(ItemName, ItemToAdd);
 		QuestManager->UpdateQuestProgress(ItemName);
+		IInventoryInterface::Execute_OnItemAdded(InventoryMenu, ItemName);
 		
 		return Amount;
 	}
@@ -73,12 +117,14 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 	{
 		FoundItem-> CurrentAmount = Maximum;
 		QuestManager->UpdateQuestProgress(ItemName);
+		IInventoryInterface::Execute_OnItemAdded(InventoryMenu, ItemName);
 		
 		return Maximum;
 	}
 	
 	FoundItem-> CurrentAmount += Amount;
 	QuestManager->UpdateQuestProgress(ItemName);
+	IInventoryInterface::Execute_OnItemAdded(InventoryMenu, ItemName);
 	
 	return FoundItem-> CurrentAmount;
 }
@@ -100,10 +146,14 @@ int UInventoryManager::RemoveFromInventory(FName ItemName, int Amount)
 	{
 		FoundItem-> CurrentAmount -= Amount;
 		QuestManager->UpdateQuestProgress(ItemName);
+		IInventoryInterface::Execute_OnItemRemoved(InventoryMenu, ItemName);
+		
 		return FoundItem-> CurrentAmount;
 	}
 	FoundItem->CurrentAmount = 0;
 	QuestManager->UpdateQuestProgress(ItemName);
+	IInventoryInterface::Execute_OnItemRemoved(InventoryMenu, ItemName);
+	
 	return 0;
 }
 
