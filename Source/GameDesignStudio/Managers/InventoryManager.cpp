@@ -66,7 +66,7 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 			),
 			"A charm given to you by Verdan.",
 			0, 1, 
-			FGearInfo({}, {"DamageNullification"}, EGearType::Head)
+			FGearInfo({{"Health",  5}}, {"DamageNullification"}, EGearType::Head)
 			)
 		},
 		{"Windrunner Sandals", FPlayerInventoryItem(
@@ -82,7 +82,12 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 	};
 }
 
-// Tries to add an item to the inventory, returns new amount in inventory for that item.
+/**
+ * Adds the given amount of the provided item to the player's inventory
+ * @param ItemName
+ * @param Amount
+ * @return New amount in the player's inventory for the provided item
+ */
 int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 {
 	if (ItemName ==  NAME_None)
@@ -98,7 +103,7 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 	{
 		FPlayerInventoryItem* NewItem = AllItems.Find(ItemName);
 		
-		FPlayerInventoryItem ItemToAdd = FPlayerInventoryItem(NewItem->ItemDisplayName, NewItem->Icon, NewItem->Description, Amount, NewItem->MaxAmount, EInventoryItemType::Quest, NewItem->bHidden, NewItem->GearInfo);
+		FPlayerInventoryItem ItemToAdd = FPlayerInventoryItem(NewItem->ItemDisplayName, NewItem->Icon, NewItem->Description, Amount, NewItem->MaxAmount, NewItem->ItemType, NewItem->bHidden, NewItem->GearInfo);
 		
 		if (NewItem == nullptr)
 		{
@@ -129,8 +134,12 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 	return FoundItem-> CurrentAmount;
 }
 
-// Tries to remove a specified amount of a given item from the inventory
-// and returns the new integer amount in inventory for that item.
+/**
+ * Removes the given amount of the provided item from the player's inventory
+ * @param ItemName
+ * @param Amount
+ * @return New amount in the player's inventory for the provided item
+ */
 int UInventoryManager::RemoveFromInventory(FName ItemName, int Amount)
 {
 	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);
@@ -157,6 +166,11 @@ int UInventoryManager::RemoveFromInventory(FName ItemName, int Amount)
 	return 0;
 }
 
+/**
+ * Sets the max amount of the provided item that the player can hold
+ * @param ItemName
+ * @param MaxAmount
+ */
 void UInventoryManager::SetMaxAmountForItem(FName ItemName, int MaxAmount)
 {
 	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);
@@ -167,6 +181,10 @@ void UInventoryManager::SetMaxAmountForItem(FName ItemName, int MaxAmount)
 	}
 }
 
+/**
+ * @param ItemName
+ * @return The PlayerInventoryItem Struct associated with the provided item name
+ */
 FPlayerInventoryItem UInventoryManager::GetItemDetails(FName ItemName)
 {
 	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);
@@ -177,6 +195,10 @@ FPlayerInventoryItem UInventoryManager::GetItemDetails(FName ItemName)
 	return *FoundItem;
 }
 
+/**
+ * @param ItemName
+ * @return The amount of the provided item in the player's inventory. -1 if the player has never obtained the item.
+ */
 int UInventoryManager::GetCurrentAmountForItem(FName ItemName)
 {
 	FPlayerInventoryItem* FoundItem = PlayerInventory.Find(ItemName);

@@ -19,6 +19,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FPlayerInventoryItem EquipGear(FPlayerInventoryItem Gear);
 	
+	UFUNCTION(BlueprintCallable)
+	FPlayerInventoryItem UnequipGear(EGearType GearType);
+	
 	UFUNCTION(Blueprintable)
 	void ApplyGearStats(FPlayerInventoryItem Gear);
 	

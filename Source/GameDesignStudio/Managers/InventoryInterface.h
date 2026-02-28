@@ -27,4 +27,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void OnItemRemoved(FName ItemName);
+	
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void OnGearChanged(EGearType GearType, FName OldGearName, FName NewGearName);
 };
