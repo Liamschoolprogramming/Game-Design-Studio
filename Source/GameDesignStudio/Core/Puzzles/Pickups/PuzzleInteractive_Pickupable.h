@@ -37,6 +37,9 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FVector PushDirection;
 	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void AttachPickupAble(bool Attach);
+	
 protected:
 	FVector Offset = FVector(200,200,0);
 	
