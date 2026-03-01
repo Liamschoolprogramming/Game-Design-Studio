@@ -9,14 +9,13 @@
  * 
  */
 UCLASS()
-class DIALOGUEASSETEDITORRUNTIME_API UQuestProgressNodeInfo : public UDialogueNodeInfoBase
+class DIALOGUEASSETEDITORRUNTIME_API UQuestProgressNodeInfo : public UQuestNodeInfo
 {
 	GENERATED_BODY()
 
 public:
 	//Properties go here
-	UPROPERTY(EditAnywhere)
-	FName QuestName;
+	
 
 	UPROPERTY(EditAnywhere)
 	FName SpeakerName;

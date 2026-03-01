@@ -13,4 +13,5 @@ enum class EDialogueNodeType
 	CompleteQuestGraphNode,
 	StartQuestGraphNode,
 	QuestProgressGraphNode,
+	RandomDialogueNode,
 };

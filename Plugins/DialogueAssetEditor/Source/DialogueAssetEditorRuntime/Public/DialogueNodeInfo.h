@@ -14,7 +14,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	FText Title;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="DialogueText")
 	FText DialogueText;
 	
 	UPROPERTY(EditAnywhere)

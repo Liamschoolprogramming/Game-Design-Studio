@@ -11,6 +11,7 @@
 #include "DialogueGraphSchema.h"
 #include "DialogueNodeInfo.h"
 #include "QuestProgressGraphNode.h"
+#include "RandomDialogueGraphNode.h"
 #include "StartQuestGraphNode.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 
@@ -230,6 +231,10 @@ void FDialogueAssetEditorApp::UpdateEditorGraphFromWorkingAsset()
 		else if (RuntimeNode->NodeType == EDialogueNodeType::QuestProgressGraphNode)
 		{
 			NewNode = NewObject<UQuestProgressGraphNode>(WorkingGraph);
+		}
+		else if (RuntimeNode->NodeType == EDialogueNodeType::RandomDialogueNode)
+		{
+			NewNode = NewObject<URandomDialogueGraphNode>(WorkingGraph);
 		}
 		else if (RuntimeNode->NodeType == EDialogueNodeType::EndNode)
 		{

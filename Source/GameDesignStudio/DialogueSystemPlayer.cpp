@@ -13,6 +13,7 @@
 #include "DialogueResponseButtonController.h"
 #include "QuestDialogueUIController.h"
 #include "QuestProgressNodeInfo.h"
+#include "RandomDialogueNodeInfo.h"
 #include "Components/Image.h"
 
 #include "Components/VerticalBoxSlot.h"
@@ -244,7 +245,56 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 				}
 			}
 		}
-	
+	else if (CurrentNode != nullptr && CurrentNode->NodeType == EDialogueNodeType::RandomDialogueNode)
+	{
+		URandomDialogueNodeInfo* NodeInfo = Cast<URandomDialogueNodeInfo>(CurrentNode->NodeInfo);
+		
+		//pick a random line from responses
+		FText DialogueText;
+		if (NodeInfo->DialogueOptions.Num() > 0)
+		{
+			int32 RandomIndex = FMath::RandRange(0, NodeInfo->DialogueOptions.Num() - 1);
+			
+			DialogueText = NodeInfo->DialogueOptions[RandomIndex];
+		}
+		
+		
+		DialogueWidget->DialogueText->SetText(DialogueText);
+		
+		DialogueWidget->ResponseBox->ClearChildren();
+		int OptionIndex = 0;
+		for (FText response : NodeInfo->DialogueResponses)
+		{
+			UDialogueResponseButtonController* Button = UDialogueResponseButtonController::CreateInstance(DialogueWidget->GetOwningPlayer());
+			Button->SetClickHandler(OptionIndex, [this](int OptionIndex)
+			{
+				ChooseOptionAtIndex(OptionIndex);
+			});
+			Button->ResponseButtonText->SetText(response);
+			UVerticalBoxSlot* Slot = DialogueWidget->ResponseBox->AddChildToVerticalBox(Button);
+			Slot->SetPadding(FMargin(10));
+			
+			OptionIndex++;
+		}
+		if (UDialogueSpeakerComponent* Speaker = FindSpeakerComponent(GetWorld(), NodeInfo->SpeakerName))
+		{
+			Speaker->ActivateSpeakerCamera();
+			DialogueWidget->CharacterName->SetText(FText::FromString(Speaker->SpeakerName.ToString()));
+			if (NodeInfo->CharacterPortrait)
+			{
+				Speaker->SpeakerImage=NodeInfo->CharacterPortrait;
+			}
+			else
+			{
+				Speaker->SpeakerImage= DefaultCharacterIcon;
+			}
+			if (Speaker->SpeakerImage)
+			{
+				DialogueWidget->CharacterPortrait->SetBrushFromTexture(Speaker->SpeakerImage);
+			}
+			CurrentSpeakerComponent = Speaker;
+		}
+	}
 	else if (CurrentNode == nullptr || CurrentNode->NodeType == EDialogueNodeType::EndNode)
 	{
 		

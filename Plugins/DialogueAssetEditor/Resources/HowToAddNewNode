@@ -1,0 +1,6 @@
+﻿add new NodeInfo
+add new NodeType
+add new GraphNode
+edit DialogueAssetEditorApp.cpp
+edit DialogueGraphSchema.cpp
+edit the DialogueSystemPlayer.cpp
