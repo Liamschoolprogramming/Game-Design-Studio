@@ -32,9 +32,9 @@ public: //UEdGraph interface
 	virtual void CreateDefaultOutputPins() override;
 
 
-	virtual EDialogueNodeType GetDialogueNodeType() const override
+	virtual FName GetDialogueNodeType() const override
 	{
-		return EDialogueNodeType::QuestProgressGraphNode;
+		return "QuestProgressGraphNode";
 	}
 
 	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Direction, FName Name) override;

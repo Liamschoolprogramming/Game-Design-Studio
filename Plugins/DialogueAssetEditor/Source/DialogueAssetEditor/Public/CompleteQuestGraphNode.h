@@ -33,9 +33,9 @@ public: //UEdGraph interface
 	virtual void CreateDefaultOutputPins() override;
 
 
-	virtual EDialogueNodeType GetDialogueNodeType() const override
+	virtual FName GetDialogueNodeType() const override
 	{
-		return EDialogueNodeType::CompleteQuestGraphNode;
+		return "CompleteQuestGraphNode";
 	}
 		
 public: //Dialogue interface

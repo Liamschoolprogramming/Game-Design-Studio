@@ -118,6 +118,8 @@ UEdGraphNode* FNewNodeAction::PerformAction(UEdGraph* ParentGraph, UEdGraphPin* 
 	Result->NodePosY = Location.Y;
 	
 	Result->InitNodeInfo(Result);
+	Result->InitNodeBehaviour(Result);
+	
 	
 	UEdGraphPin* InputPin = Result->CreateDefaultInputPin();
 	Result->CreateDefaultOutputPins();

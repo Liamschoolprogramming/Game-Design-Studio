@@ -22,8 +22,8 @@ public: // UEdGraphNode interface
 public://our interface
 	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Direction, FName Name) override;
 	
-	virtual EDialogueNodeType GetDialogueNodeType() const override
+	virtual FName GetDialogueNodeType() const override
 	{
-		return EDialogueNodeType::StartNode;
+		return "StartNode";
 	}
 };

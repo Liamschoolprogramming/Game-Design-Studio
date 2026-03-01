@@ -4,8 +4,18 @@
 #include "DialogueAssetAction.h"
 #include "IAssetTools.h"
 #include "AssetToolsModule.h"
+#include "CompleteQuestGraphNode.h"
+#include "DialogueCheckQuestGraphNode.h"
+#include "DialogueEndGraphNode.h"
+#include "DialogueGraphNode.h"
+#include "DialogueGraphNodeBase.h"
+#include "DialogueGraphNodeFactory.h"
+#include "DialogueStartGraphNode.h"
 #include "Styling/SlateStyleRegistry.h"
 #include "EdGraphUtilities.h"
+#include "QuestProgressGraphNode.h"
+#include "RandomDialogueGraphNode.h"
+#include "StartQuestGraphNode.h"
 #include "UnrealEdGlobals.h"
 #include "KismetPins/SGraphPinColor.h"
 #include "EdGraph/EdGraphPin.h"
@@ -122,6 +132,7 @@ struct FDialoguePinFactory : public FGraphPanelPinFactory
 	}
 };
 
+
 /**
  * Register and load everything in the editor module
  * 
@@ -153,6 +164,16 @@ void FDialogueAssetEditorModule::StartupModule()
 	
 	DialoguePinFactory = MakeShareable(new FDialoguePinFactory());
 	FEdGraphUtilities::RegisterVisualPinFactory(DialoguePinFactory);
+	
+	
+	FDialogueGraphNodeFactory::RegisterNodeType("StartNode", [](UObject* Outer) { return NewObject<UDialogueStartGraphNode>(Outer); });
+	FDialogueGraphNodeFactory::RegisterNodeType("DialogueNode", [](UObject* Outer) { return NewObject<UDialogueGraphNode>(Outer); });
+	FDialogueGraphNodeFactory::RegisterNodeType("CheckQuestsNode", [](UObject* Outer) { return NewObject<UDialogueCheckQuestGraphNode>(Outer); });
+	FDialogueGraphNodeFactory::RegisterNodeType("CompleteQuestGraphNode", [](UObject* Outer) { return NewObject<UCompleteQuestGraphNode>(Outer); });
+	FDialogueGraphNodeFactory::RegisterNodeType("StartQuestGraphNode", [](UObject* Outer) { return NewObject<UStartQuestGraphNode>(Outer); });
+	FDialogueGraphNodeFactory::RegisterNodeType("QuestProgressGraphNode", [](UObject* Outer) { return NewObject<UQuestProgressGraphNode>(Outer); });
+	FDialogueGraphNodeFactory::RegisterNodeType("RandomDialogueNode", [](UObject* Outer) { return NewObject<URandomDialogueGraphNode>(Outer); });
+	FDialogueGraphNodeFactory::RegisterNodeType("EndNode", [](UObject* Outer) { return NewObject<UDialogueEndGraphNode>(Outer); });
 	
 }
 

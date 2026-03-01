@@ -20,7 +20,7 @@
 #include "Core/Subsystems/GameManagerSubsystem.h"
 #include "Managers/QuestManager.h"
 
-DEFINE_LOG_CATEGORY_STATIC(DialoguePlayer, Log, All);
+DEFINE_LOG_CATEGORY_STATIC(DialoguePlayerSub, Log, All);
 
 UDialogueSystemPlayer::UDialogueSystemPlayer()
 {
@@ -45,7 +45,7 @@ void UDialogueSystemPlayer::PlayDialogue(class UDialogueAsset* InDialogueAsset, 
 	//get start node
 	for (UDialogueRuntimeNode* Node : RuntimeGraph->Nodes)
 	{
-		if (Node->NodeType == EDialogueNodeType::StartNode)
+		if (Node->NodeType == "StartNode")
 		{
 			CurrentNode = Node;
 			break;
@@ -53,7 +53,7 @@ void UDialogueSystemPlayer::PlayDialogue(class UDialogueAsset* InDialogueAsset, 
 	}
 	if (CurrentNode == nullptr)
 	{
-		UE_LOG(DialoguePlayer, Error, TEXT("No start node"));
+		UE_LOG(DialoguePlayerSub, Error, TEXT("No start node"));
 		return;
 	}
 	//create and display dialogue UI
@@ -99,11 +99,59 @@ ADialogueCineCamera* UDialogueSystemPlayer::FindCineCamera(UWorld* World, FName 
 	return nullptr;
 }
 
+void UDialogueSystemPlayer::SetDialogueText(FText InText)
+{
+	if (DialogueWidget)
+	{
+		DialogueWidget->DialogueText->SetText(InText);
+	}
+}
+
+void UDialogueSystemPlayer::ClearResponses()
+{
+	if (DialogueWidget)
+	{
+		DialogueWidget->ResponseBox->ClearChildren();
+	}
+}
+
+void UDialogueSystemPlayer::AddResponseButton(FText InResponseText, int InOptionIndex)
+{
+	UDialogueResponseButtonController* Button = UDialogueResponseButtonController::CreateInstance(DialogueWidget->GetOwningPlayer());
+	Button->SetClickHandler(InOptionIndex, [this](int Index){ ChooseOptionAtIndex(Index); });
+	Button->ResponseButtonText->SetText(InResponseText);
+	UVerticalBoxSlot* Slot = DialogueWidget->ResponseBox->AddChildToVerticalBox(Button);
+	Slot->SetPadding(FMargin(10));
+}
+
+void UDialogueSystemPlayer::SetupCameraAndSpeaker(FName CameraName, FName InSpeakerName, UTexture2D* Portrait)
+{
+	ADialogueCineCamera* Camera = FindCineCamera(GetWorld(), CameraName);
+	UDialogueSpeakerComponent* Speaker = FindSpeakerComponent(GetWorld(), InSpeakerName);
+
+	if (Camera && Speaker)
+	{
+		Camera->ActivateCamera();
+		DialogueWidget->CharacterName->SetText(FText::FromString(InSpeakerName.ToString()));
+		Speaker->SpeakerImage = Portrait ? Portrait : DefaultCharacterIcon;
+		DialogueWidget->CharacterPortrait->SetBrushFromTexture(Speaker->SpeakerImage);
+		CurrentSpeakerComponent = Speaker;
+	}
+	else if (Speaker)
+	{
+		Speaker->ActivateSpeakerCamera();
+		DialogueWidget->CharacterName->SetText(FText::FromString(InSpeakerName.ToString()));
+		Speaker->SpeakerImage = Portrait ? Portrait : DefaultCharacterIcon;
+		DialogueWidget->CharacterPortrait->SetBrushFromTexture(Speaker->SpeakerImage);
+		CurrentSpeakerComponent = Speaker;
+	}
+}
+
 void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 {
 	if (Index >= CurrentNode->OutputPins.Num() || Index < 0)
 	{
-		UE_LOG(DialoguePlayer, Error, TEXT("Invalid response option at index %d"), Index);	
+		UE_LOG(DialoguePlayerSub, Error, TEXT("Invalid response option at index %d"), Index);	
 		return ;
 	}
 	
@@ -117,69 +165,19 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 		//no connection so we assume it's an end node
 		CurrentNode = nullptr;
 	}
-	if (CurrentNode != nullptr && CurrentNode->NodeType == EDialogueNodeType::DialogueNode)
+	if (CurrentNode != nullptr && CurrentNode->NodeType == "DialogueNode")
 	{
-		UDialogueNodeInfo* NodeInfo = Cast<UDialogueNodeInfo>(CurrentNode->NodeInfo);
-		//set the DialogueText named Text object on the widget
-		DialogueWidget->DialogueText->SetText(NodeInfo->DialogueText);
-		
-		DialogueWidget->ResponseBox->ClearChildren();
-		int OptionIndex = 0;
-		for (FText response : NodeInfo->DialogueResponses)
+		if (CurrentNode->NodeBehaviour)
 		{
-			UDialogueResponseButtonController* Button = UDialogueResponseButtonController::CreateInstance(DialogueWidget->GetOwningPlayer());
-			Button->SetClickHandler(OptionIndex, [this](int OptionIndex)
-			{
-				ChooseOptionAtIndex(OptionIndex);
-			});
-			Button->ResponseButtonText->SetText(response);
-			UVerticalBoxSlot* Slot = DialogueWidget->ResponseBox->AddChildToVerticalBox(Button);
-			Slot->SetPadding(FMargin(10));
-			
-			OptionIndex++;
+			CurrentNode->NodeBehaviour->Execute(CurrentNode->NodeInfo, this);
 		}
-		ADialogueCineCamera* Camera = FindCineCamera(GetWorld(), NodeInfo->CameraName);
-		UDialogueSpeakerComponent* Speaker = FindSpeakerComponent(GetWorld(), NodeInfo->SpeakerName);
-		if (Camera && Speaker)
+		else
 		{
-			Camera->ActivateCamera();
-			DialogueWidget->CharacterName->SetText(FText::FromString(NodeInfo->SpeakerName.ToString()));
-			if (NodeInfo->CharacterPortrait)
-			{
-				Speaker->SpeakerImage=NodeInfo->CharacterPortrait;
-			}
-			else
-			{
-				Speaker->SpeakerImage= DefaultCharacterIcon;
-			}
-			if (Speaker->SpeakerImage)
-			{
-				DialogueWidget->CharacterPortrait->SetBrushFromTexture(Speaker->SpeakerImage);
-			}
-			CurrentSpeakerComponent = Speaker;
+			UE_LOG(DialoguePlayerSub, Fatal, TEXT("Current Node has no behaviour"))
 		}
-		else if (Speaker)
-		{
-			Speaker->ActivateSpeakerCamera();
-			DialogueWidget->CharacterName->SetText(FText::FromString(Speaker->SpeakerName.ToString()));
-			if (NodeInfo->CharacterPortrait)
-			{
-				Speaker->SpeakerImage=NodeInfo->CharacterPortrait;
-			}
-			else
-			{
-				Speaker->SpeakerImage= DefaultCharacterIcon;
-			}
-			if (Speaker->SpeakerImage)
-			{
-				DialogueWidget->CharacterPortrait->SetBrushFromTexture(Speaker->SpeakerImage);
-			}
-			CurrentSpeakerComponent = Speaker;
-		}
-		
 		
 	}
-	else if (CurrentNode != nullptr && CurrentNode->NodeType == EDialogueNodeType::CheckQuestsNode)
+	else if (CurrentNode != nullptr && CurrentNode->NodeType == "CheckQuestsNode")
 	{
 		if (const UQuestNodeInfo* NodeInfo = Cast<UQuestNodeInfo>(CurrentNode->NodeInfo))
 		{
@@ -202,7 +200,7 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 		}
 		
 	}
-	else if (CurrentNode != nullptr && CurrentNode->NodeType == EDialogueNodeType::CompleteQuestGraphNode)
+	else if (CurrentNode != nullptr && CurrentNode->NodeType == "CompleteQuestGraphNode")
 	{
 		if ( UQuestNodeInfo* NodeInfo = Cast<UQuestNodeInfo>(CurrentNode->NodeInfo))
 		{
@@ -219,7 +217,7 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 			}
 		}
 	}
-	else if (CurrentNode != nullptr && CurrentNode->NodeType == EDialogueNodeType::StartQuestGraphNode)
+	else if (CurrentNode != nullptr && CurrentNode->NodeType == "StartQuestGraphNode")
 	{
 		if ( UQuestNodeInfo* NodeInfo = Cast<UQuestNodeInfo>(CurrentNode->NodeInfo))
 		{
@@ -230,7 +228,7 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 			}
 		}
 	}
-	else if (CurrentNode != nullptr && CurrentNode->NodeType ==  EDialogueNodeType::QuestProgressGraphNode)
+	else if (CurrentNode != nullptr && CurrentNode->NodeType == "QuestProgressGraphNode")
 	{
 		if (UQuestProgressNodeInfo* NodeInfo = Cast<UQuestProgressNodeInfo>(CurrentNode->NodeInfo))
 		{
@@ -283,7 +281,7 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 				}
 			}
 		}
-	else if (CurrentNode != nullptr && CurrentNode->NodeType == EDialogueNodeType::RandomDialogueNode)
+	else if (CurrentNode != nullptr && CurrentNode->NodeType == "RandomDialogueNode")
 	{
 		URandomDialogueNodeInfo* NodeInfo = Cast<URandomDialogueNodeInfo>(CurrentNode->NodeInfo);
 		
@@ -333,7 +331,7 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 			CurrentSpeakerComponent = Speaker;
 		}
 	}
-	else if (CurrentNode == nullptr || CurrentNode->NodeType == EDialogueNodeType::EndNode)
+	else if (CurrentNode == nullptr || CurrentNode->NodeType == "EndNode")
 	{
 		
 		DialogueWidget->RemoveFromParent();

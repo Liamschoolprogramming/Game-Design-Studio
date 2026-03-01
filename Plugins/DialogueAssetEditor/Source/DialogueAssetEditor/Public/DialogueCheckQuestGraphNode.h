@@ -31,9 +31,9 @@ public: //UEdGraph interface
 	
 	
 	
-	virtual EDialogueNodeType GetDialogueNodeType() const override
+	virtual FName GetDialogueNodeType() const override
 	{
-		return EDialogueNodeType::CheckQuestsNode;
+		return "CheckQuestsNode";
 	}
 
 		

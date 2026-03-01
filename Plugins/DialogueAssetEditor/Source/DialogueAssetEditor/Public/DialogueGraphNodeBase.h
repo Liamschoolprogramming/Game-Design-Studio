@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "DialogueNodeBehaviour.h"
 #include "EdGraph/EdGraphNode.h"
 #include "DialogueNodeType.h"
 #include "DialogueNodeInfoBase.h"
@@ -41,9 +42,24 @@ public: // our interface
 		return nullptr;
 	}
 	
-	virtual EDialogueNodeType GetDialogueNodeType() const
+	virtual void InitNodeBehaviour(UObject* Owner)
 	{
-		return EDialogueNodeType::Unknown;
+		/* Override for functionality */
+	}
+	virtual void SetNodeBehaviour(class UDialogueNodeBehaviour* InNodeInfo)
+	{
+		/* Override for functionality */
+	}
+
+	
+	virtual UDialogueNodeBehaviour* GetNodeBehaviour() const
+	{
+		return nullptr;
+	}
+	
+	virtual FName GetDialogueNodeType() const
+	{
+		return "";
 	}
 	
 	virtual void OnPropertiesChanged()

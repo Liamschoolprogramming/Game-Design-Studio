@@ -4,6 +4,8 @@
 #include "DialogueCineCamera.h"
 #include "UObject/Object.h"
 #include "DialogueEndNodeInfo.h"
+#include "DialogueExecutionHandler.h"
+#include "DialogueNodeBehaviour.h"
 #include "DialogueSpeakerComponent.h"
 
 /**
@@ -21,7 +23,7 @@ class UQuestDialogueUIController;
 DECLARE_DELEGATE_TwoParams(FOnDialogueEnded, EDialogueNodeAction, FString);
 
 UCLASS()
-class GAMEDESIGNSTUDIO_API UDialogueSystemPlayer : public UObject
+class GAMEDESIGNSTUDIO_API UDialogueSystemPlayer : public UObject, public IDialogueExecutionHandler
 {
 	GENERATED_BODY()
 
@@ -53,4 +55,11 @@ private:
 	UTexture2D* DefaultCharacterIcon;
 	
 	FOnDialogueEnded OnDialogueEnded;
+	
+public:
+	virtual void SetDialogueText(FText InText) override;
+	virtual void ClearResponses() override;
+	virtual void AddResponseButton(FText InResponseText, int InOptionIndex) override;
+	virtual void SetupCameraAndSpeaker(FName CameraName, FName InSpeakerName, UTexture2D* Portrait) override;
+	
 };

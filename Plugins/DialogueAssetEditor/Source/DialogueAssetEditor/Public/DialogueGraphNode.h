@@ -3,6 +3,7 @@
 #include "DialogueGraphNodeBase.h"
 #include "EdGraph/EdGraphNode.h"
 #include "DialogueNodeInfo.h"
+#include "DialogueNodePlayLineBehaviour.h"
 #include "DialogueGraphNode.generated.h"
 
 UCLASS()
@@ -25,9 +26,9 @@ public: //UEdGraph interface
 	
 	
 	
-	virtual EDialogueNodeType GetDialogueNodeType() const override
+	virtual FName GetDialogueNodeType() const override
 	{
-		return EDialogueNodeType::DialogueNode;
+		return "DialogueNode";
 	}
 	
 	virtual void OnPropertiesChanged() override
@@ -39,6 +40,7 @@ public: //UEdGraph interface
 public: //Dialogue interface
 	virtual UEdGraphPin* CreateDialoguePin(EEdGraphPinDirection Direction, FName Name) override;
 	void SyncPinsWithResponses();
+	
 	
 	
 	virtual void InitNodeInfo(UObject* Owner) override
@@ -57,9 +59,30 @@ public: //Dialogue interface
 	{
 		return NodeInfo;
 	}
+	
+	virtual void InitNodeBehaviour(UObject* Owner) override
+	{
+		NodeBehaviour = NewObject<UDialoguePlayLineBehaviour>(Owner);
+	}
+	
+	virtual void SetNodeBehaviour(class UDialogueNodeBehaviour* InNodeInfo) override
+	{
+		NodeBehaviour = Cast<UDialoguePlayLineBehaviour>(InNodeInfo);
+	}
+	
+	virtual UDialogueNodeBehaviour* GetNodeBehaviour() const override
+	{
+		return NodeBehaviour;
+	}
+	
+	
 protected:
 	UPROPERTY()
 	class UDialogueNodeInfo* NodeInfo = nullptr;
+	
+	UPROPERTY()
+	class UDialoguePlayLineBehaviour* NodeBehaviour = nullptr;
+	
 private:
 	void HandleAddPin();
 	void HandleDeletePin();

@@ -18,4 +18,5 @@ public:
 	UPROPERTY(EditAnywhere)
 	FName QuestName;
 	
+	
 };

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DialogueNodeInfoBase.h"
+#include "QuestNodeInfo.h"
 #include "QuestProgressNodeInfo.generated.h"
 /**
  * 

@@ -32,9 +32,9 @@ public: //UEdGraph interface
 	
 	
 	
-	virtual EDialogueNodeType GetDialogueNodeType() const override
+	virtual FName GetDialogueNodeType() const override
 	{
-		return EDialogueNodeType::RandomDialogueNode;
+		return "RandomDialogueNode";
 	}
 	
 	virtual void OnPropertiesChanged() override

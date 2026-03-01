@@ -46,9 +46,9 @@ public: // UDialogueGraphNodeBase
 		return NodeInfo;
 	}
 	
-	virtual EDialogueNodeType GetDialogueNodeType() const override
+	virtual FName GetDialogueNodeType() const override
 	{
-		return EDialogueNodeType::EndNode;
+		return "EndNode";
 	}
 	
 	virtual void OnPropertiesChanged() override

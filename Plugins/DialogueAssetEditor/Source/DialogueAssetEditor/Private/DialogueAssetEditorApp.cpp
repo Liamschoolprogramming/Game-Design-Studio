@@ -9,6 +9,8 @@
 #include "DialogueStartGraphNode.h"
 #include "DialogueEndGraphNode.h"
 #include "DialogueGraphSchema.h"
+#include "DialogueAssetEditor.h"
+#include "DialogueGraphNodeFactory.h"
 #include "DialogueNodeInfo.h"
 #include "QuestProgressGraphNode.h"
 #include "RandomDialogueGraphNode.h"
@@ -177,6 +179,7 @@ void FDialogueAssetEditorApp::UpdateWorkingAssetFromGraph()
 	
 		UDialogueGraphNodeBase* UiDialogueNode = Cast<UDialogueGraphNodeBase>(UiNode);
 		RuntimeNode->NodeInfo = DuplicateObject(UiDialogueNode->GetNodeInfo(), RuntimeNode);
+		RuntimeNode->NodeBehaviour = DuplicateObject(UiDialogueNode->GetNodeBehaviour(), RuntimeNode);
 		RuntimeNode->NodeType = UiDialogueNode->GetDialogueNodeType();
 			
 		
@@ -209,41 +212,15 @@ void FDialogueAssetEditorApp::UpdateEditorGraphFromWorkingAsset()
 	
 	for (UDialogueRuntimeNode* RuntimeNode : WorkingAsset->Graph->Nodes)
 	{
-		UDialogueGraphNodeBase* NewNode = nullptr;
-		if (RuntimeNode->NodeType == EDialogueNodeType::StartNode)
+		UDialogueGraphNodeBase* NewNode = FDialogueGraphNodeFactory::CreateNode(RuntimeNode->NodeType, WorkingGraph);
+		if (!NewNode)
 		{
-			NewNode = NewObject<UDialogueStartGraphNode>(WorkingGraph);
-		} else if (RuntimeNode->NodeType == EDialogueNodeType::DialogueNode)
-		{
-			NewNode = NewObject<UDialogueGraphNode>(WorkingGraph);
-		}else if (RuntimeNode->NodeType == EDialogueNodeType::CheckQuestsNode)
-		{
-			NewNode = NewObject<UDialogueCheckQuestGraphNode>(WorkingGraph);
-		}
-		else if (RuntimeNode->NodeType == EDialogueNodeType::CompleteQuestGraphNode)
-		{
-			NewNode = NewObject<UCompleteQuestGraphNode>(WorkingGraph);
-		}
-		else if (RuntimeNode->NodeType == EDialogueNodeType::StartQuestGraphNode)
-		{
-			NewNode = NewObject<UStartQuestGraphNode>(WorkingGraph);
-		}
-		else if (RuntimeNode->NodeType == EDialogueNodeType::QuestProgressGraphNode)
-		{
-			NewNode = NewObject<UQuestProgressGraphNode>(WorkingGraph);
-		}
-		else if (RuntimeNode->NodeType == EDialogueNodeType::RandomDialogueNode)
-		{
-			NewNode = NewObject<URandomDialogueGraphNode>(WorkingGraph);
-		}
-		else if (RuntimeNode->NodeType == EDialogueNodeType::EndNode)
-		{
-			NewNode = NewObject<UDialogueEndGraphNode>(WorkingGraph);
-		} else
-		{
-			UE_LOG(FDialogueAssetEditorAppSub, Fatal, TEXT("FDialogueAssetEditorApp::UpdateEditorGraphFromWorkingAsset: Unknown type"));
+			UE_LOG(FDialogueAssetEditorAppSub, Fatal, TEXT("Unknown node type: %s"), *RuntimeNode->NodeType.ToString());
 			continue;
 		}
+		
+		
+		
 		NewNode->CreateNewGuid();
 		NewNode->NodePosX = RuntimeNode->Position.X;
 		NewNode->NodePosY = RuntimeNode->Position.Y;
@@ -254,6 +231,14 @@ void FDialogueAssetEditorApp::UpdateEditorGraphFromWorkingAsset()
 		} else
 		{
 			NewNode->InitNodeInfo(NewNode);
+			
+		}
+		if (RuntimeNode->NodeBehaviour != nullptr)
+		{
+			NewNode->SetNodeBehaviour(DuplicateObject(RuntimeNode->NodeBehaviour, NewNode));
+		} else
+		{
+			NewNode->InitNodeBehaviour(NewNode);
 		}
 		
 		if (RuntimeNode->InputPin != nullptr)
