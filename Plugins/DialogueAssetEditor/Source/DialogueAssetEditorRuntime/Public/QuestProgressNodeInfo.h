@@ -21,6 +21,10 @@ public:
 	FName SpeakerName;
 	
 	UPROPERTY(EditAnywhere)
+	//Leave empty to use SpeakerName
+	FName CameraName;
+	
+	UPROPERTY(EditAnywhere)
 	// Will replace instances of $total and $current with the actual proper value from the quest manager
 	FString Dialogue; 
 	

@@ -82,6 +82,23 @@ UDialogueSpeakerComponent* UDialogueSystemPlayer::FindSpeakerComponent(UWorld* W
 	return nullptr;
 }
 
+ADialogueCineCamera* UDialogueSystemPlayer::FindCineCamera(UWorld* World, FName InCameraName)
+{
+	if (!World) return nullptr;
+	if (InCameraName == NAME_None) return nullptr;
+	
+	for (TObjectIterator<ADialogueCineCamera> It; It; ++It)
+	{
+		if (It->GetWorld() != World)
+			continue;
+		if (It->CameraName == InCameraName)
+		{
+			return *It;
+		}
+	}
+	return nullptr;
+}
+
 void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 {
 	if (Index >= CurrentNode->OutputPins.Num() || Index < 0)
@@ -121,7 +138,27 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 			
 			OptionIndex++;
 		}
-		if (UDialogueSpeakerComponent* Speaker = FindSpeakerComponent(GetWorld(), NodeInfo->SpeakerName))
+		ADialogueCineCamera* Camera = FindCineCamera(GetWorld(), NodeInfo->CameraName);
+		UDialogueSpeakerComponent* Speaker = FindSpeakerComponent(GetWorld(), NodeInfo->SpeakerName);
+		if (Camera && Speaker)
+		{
+			Camera->ActivateCamera();
+			DialogueWidget->CharacterName->SetText(FText::FromString(NodeInfo->SpeakerName.ToString()));
+			if (NodeInfo->CharacterPortrait)
+			{
+				Speaker->SpeakerImage=NodeInfo->CharacterPortrait;
+			}
+			else
+			{
+				Speaker->SpeakerImage= DefaultCharacterIcon;
+			}
+			if (Speaker->SpeakerImage)
+			{
+				DialogueWidget->CharacterPortrait->SetBrushFromTexture(Speaker->SpeakerImage);
+			}
+			CurrentSpeakerComponent = Speaker;
+		}
+		else if (Speaker)
 		{
 			Speaker->ActivateSpeakerCamera();
 			DialogueWidget->CharacterName->SetText(FText::FromString(Speaker->SpeakerName.ToString()));
@@ -139,6 +176,7 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 			}
 			CurrentSpeakerComponent = Speaker;
 		}
+		
 		
 	}
 	else if (CurrentNode != nullptr && CurrentNode->NodeType == EDialogueNodeType::CheckQuestsNode)

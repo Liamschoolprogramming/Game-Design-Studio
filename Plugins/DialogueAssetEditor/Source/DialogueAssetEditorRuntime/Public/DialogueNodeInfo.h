@@ -22,6 +22,10 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 	FName SpeakerName;
+	
+	UPROPERTY(EditAnywhere)
+	//Leave empty to use SpeakerName for the camera
+	FName CameraName;
 
 	UPROPERTY(EditAnywhere)
 	UTexture2D* CharacterPortrait;

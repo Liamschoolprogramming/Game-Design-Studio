@@ -22,19 +22,39 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Components")
 	USplineComponent* AnimationPath;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Animation")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="CameraSettings|Animation")
 	FName CameraName;
 	
 	UFUNCTION(BlueprintCallable)
 	void StartAnimation();
 	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CameraSettings|Animation")
+	float CameraTransitionTime = .5f;
+	
 	float AnimationTime;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Animation")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="CameraSettings|Animation")
 	float AnimationSpeed = 50.f;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Animation")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="CameraSettings|Animation")
 	float AnimationOffset = 90.f;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CameraSettings|Animation", meta = (ClampMin = "0", ClampMax = "100"))
+	//Percent along the path
+	float AnimationPreview = 0.f;
+	
+	UFUNCTION(BlueprintCallable)
+	void ActivateCamera();
+	
+#if WITH_EDITOR
+	virtual void OnConstruction(const FTransform& Transform) override;
+#endif
+	
+	
+	void InitializeCamera();
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
+	void OnCameraEnabled(const AActor* OldTarget);
 	
 	bool bStartAnimation = false;
 	

@@ -3,7 +3,9 @@
 
 #include "DialogueCineCamera.h"
 
+#include "DialogueMacros.h"
 #include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 
@@ -15,6 +17,8 @@ ADialogueCineCamera::ADialogueCineCamera()
 	
 	AnimationPath = CreateDefaultSubobject<USplineComponent>("AnimationPath");
 	AnimationPath->SetupAttachment(RootComponent);
+	
+	
 }
 
 void ADialogueCineCamera::StartAnimation()
@@ -23,6 +27,39 @@ void ADialogueCineCamera::StartAnimation()
 	
 	bStartAnimation = true;
 }
+
+void ADialogueCineCamera::ActivateCamera()
+{
+
+
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+	if (PC)
+	{
+		OnCameraEnabled(PC->GetViewTarget());
+		PC->SetViewTargetWithBlend(this, CameraTransitionTime);
+		PC->StopMovement();
+		SetAnimationAlongPath(0);
+		
+		DialogueMacros::CreateTimer( this, FName("StartAnimation"), CameraTransitionTime, false);
+		
+	}
+
+
+}
+
+void ADialogueCineCamera::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+	
+	InitializeCamera();
+}
+
+void ADialogueCineCamera::InitializeCamera()
+{
+	SetAnimationAlongPath(AnimationPreview/100.f);
+}
+
 
 void ADialogueCineCamera::SetAnimationAlongPath(const float Percent)
 {

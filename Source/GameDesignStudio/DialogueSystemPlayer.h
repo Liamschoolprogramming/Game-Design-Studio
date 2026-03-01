@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "DialogueCineCamera.h"
 #include "UObject/Object.h"
 #include "DialogueEndNodeInfo.h"
 #include "DialogueSpeakerComponent.h"
@@ -34,6 +35,8 @@ public:
 	void ChooseOptionAtIndex(int Index);
 
 	UDialogueSpeakerComponent* FindSpeakerComponent(UWorld* World, FName SpeakerName);
+	
+	ADialogueCineCamera* FindCineCamera(UWorld* World, FName InCameraName);
 	
 	UDialogueSpeakerComponent* CurrentSpeakerComponent = nullptr;
 
