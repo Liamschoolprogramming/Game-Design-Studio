@@ -3,6 +3,9 @@
 
 #include "DialogueCineCamera.h"
 
+#include "Camera/CameraComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+
 
 // Sets default values
 ADialogueCineCamera::ADialogueCineCamera()
@@ -10,14 +13,48 @@ ADialogueCineCamera::ADialogueCineCamera()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
-	CameraControl = CreateDefaultSubobject<UCameraControlComponent>("CameraControl");
+	AnimationPath = CreateDefaultSubobject<USplineComponent>("AnimationPath");
+	AnimationPath->SetupAttachment(RootComponent);
+}
+
+void ADialogueCineCamera::StartAnimation()
+{
+	AnimationTime = 0;
 	
-	// Attach to root (ACameraActor has a root internally)
-	if (CameraControl && RootComponent)
+	bStartAnimation = true;
+}
+
+void ADialogueCineCamera::SetAnimationAlongPath(const float Percent)
+{
+	
+	
+	if (AnimationPath)
 	{
-		CameraControl->SetupAttachment(RootComponent);
-	}
+		const FVector Pos = AnimationPath->GetLocationAtTime(Percent,ESplineCoordinateSpace::World);
+		const FRotator Rotation = AnimationPath->GetRotationAtTime(Percent,ESplineCoordinateSpace::World);
+		
+		// Convert to quat
+		FQuat BaseQuat = Rotation.Quaternion();
+
+		// Get the forward direction of that rotation
+		FVector Forward = BaseQuat.GetUpVector();
+
+		// Create offset around that forward axis
+		FQuat OffsetQuat(Forward, FMath::DegreesToRadians(AnimationOffset));
+
+		// Apply in local space
+		FQuat FinalQuat = OffsetQuat * BaseQuat;
+
+		FRotator FinalRot = FinalQuat.Rotator();
 	
+		//FRotator ResultRotator = ResultQuat.Rotator();
+		GetCameraComponent()->SetWorldRotation(FinalRot);
+		GetCameraComponent()->SetWorldLocation(Pos);
+	}
+	if (Percent > 1 )
+	{
+		bStartAnimation = false;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -31,5 +68,11 @@ void ADialogueCineCamera::BeginPlay()
 void ADialogueCineCamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (bStartAnimation)
+	{
+		SetAnimationAlongPath(AnimationTime);
+		AnimationTime += (DeltaTime * AnimationSpeed)/100.f;
+	}
 }
 

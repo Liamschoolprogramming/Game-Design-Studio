@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CameraControlComponent.h"
 #include "Camera/CameraActor.h"
+#include "Components/SplineComponent.h"
 #include "GameFramework/Actor.h"
 #include "DialogueCineCamera.generated.h"
 
@@ -17,8 +17,30 @@ public:
 	// Sets default values for this actor's properties
 	ADialogueCineCamera();
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UCameraControlComponent* CameraControl;
+	
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Components")
+	USplineComponent* AnimationPath;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Animation")
+	FName CameraName;
+	
+	UFUNCTION(BlueprintCallable)
+	void StartAnimation();
+	
+	float AnimationTime;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Animation")
+	float AnimationSpeed = 50.f;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Animation")
+	float AnimationOffset = 90.f;
+	
+	bool bStartAnimation = false;
+	
+	void SetAnimationAlongPath(float Percent);
+	
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

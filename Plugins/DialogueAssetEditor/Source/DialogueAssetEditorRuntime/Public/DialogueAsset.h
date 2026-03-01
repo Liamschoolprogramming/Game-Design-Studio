@@ -4,6 +4,8 @@
 #include "CoreMinimal.h"
 #include "DialogueRuntimeGraph.h"
 #include <functional>
+
+#include "DialogueCineCamera.h"
 #include "DialogueAsset.generated.h"
 
 
@@ -14,8 +16,8 @@ class DIALOGUEASSETEDITORRUNTIME_API UDialogueAsset : public UObject
 	GENERATED_BODY()
 	
 public: //properties
-	UPROPERTY(EditAnywhere)
-	FString DialogueName = TEXT("Enter dialogue name here");
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FName> CameraActors;
 	
 	
 	
