@@ -18,7 +18,7 @@ public:
 		}
 		return nullptr;
 	}
-private:
+
 	static TMap<FName, FNodeFactoryFunc>& GetRegistry()
 	{
 		static TMap<FName, FNodeFactoryFunc> Registry;

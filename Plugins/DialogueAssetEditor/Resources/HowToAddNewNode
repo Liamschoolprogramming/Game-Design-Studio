@@ -1,6 +1,7 @@
-﻿add new NodeInfo class based on DialogueNodeInfoBase.h
-edit new NodeType in DialogueNodeType.h EDialogueNodeType
+﻿add new NodeInfo class based on DialogueNodeInfoBase.h if needed
+add new Behaviour class based on DialogueNodeBehaviour.h
 add new GraphNode class based on DialogueGraphNodeBase.h
-edit DialogueAssetEditorApp.cpp at node create object block
+if needed add new functions to DialogueExecutionHandler.h
+edit DialogueAssetEditor.cpp at registration
 edit DialogueGraphSchema.cpp at context menu
-edit the DialogueSystemPlayer.cpp to add logic for when we hit play
+edit the DialogueSystemPlayer.cpp to add any handler functions
