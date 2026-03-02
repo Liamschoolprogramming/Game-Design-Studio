@@ -16,9 +16,9 @@ class DIALOGUEASSETEDITORRUNTIME_API UChangeCameraNodeInfo : public UDialogueNod
 
 public:
 	//Properties go here
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	FName CameraName;
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	float TransitionTime = .5f;
 };

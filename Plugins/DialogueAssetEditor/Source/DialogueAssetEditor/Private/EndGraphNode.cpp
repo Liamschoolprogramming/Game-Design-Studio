@@ -1,31 +1,21 @@
-﻿#include "DialogueEndGraphNode.h"
+﻿#include "EndGraphNode.h"
 
 #include "DialogueGraphNodeFactory.h"
 //Autoregister self
-namespace
-{
-	struct FAutoRegisterDialogueNode
-	{
-		FAutoRegisterDialogueNode()
-		{
-			FDialogueGraphNodeFactory::RegisterNode(
-			{
-				"EndNode",
-				UDialogueEndGraphNode::StaticClass(),
-				FText::FromString(TEXT("Control Nodes")),
-			FText::FromString(TEXT("New End Node")),
-			FText::FromString(TEXT("Makes a new end node")),
-				0
-			});
-		}
-	};
-
-	static FAutoRegisterDialogueNode AutoRegister;
-}
+REGISTER_DIALOGUE_NODE(
+	"EndNode",
+	UEndGraphNode,
+	"Control Nodes",
+	"New End Node",
+	"Makes a new end node. It can run a function on end if needed.",
+	0,
+	true
+);
 
 
 
-FText UDialogueEndGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
+
+FText UEndGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	if (NodeInfo != nullptr && NodeInfo->Action != EDialogueNodeAction::None)
 	{
@@ -45,7 +35,7 @@ FText UDialogueEndGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 }
 
 
-void UDialogueEndGraphNode::HandleDeleteNode()
+void UEndGraphNode::HandleDeleteNode()
 {
 	GetGraph()->RemoveNode(this);
 		
@@ -53,7 +43,7 @@ void UDialogueEndGraphNode::HandleDeleteNode()
 	GetGraph()->Modify();
 }
 
-void UDialogueEndGraphNode::GetNodeContextMenuActions(class UToolMenu* Menu,
+void UEndGraphNode::GetNodeContextMenuActions(class UToolMenu* Menu,
                                                       class UGraphNodeContextMenuContext* Context) const
 {
 	FToolMenuSection& section = Menu->AddSection(TEXT("SectionName"), FText::FromString(TEXT("End Node Actions")));
@@ -64,8 +54,8 @@ void UDialogueEndGraphNode::GetNodeContextMenuActions(class UToolMenu* Menu,
 		FText::FromString(TEXT("Deletes the node")),
 		FSlateIcon(TEXT("DialogueAssetEditorStyle"),TEXT("DialogueAssetEditor.NodeDeleteNodeIcon")),
 		FUIAction(FExecuteAction::CreateUObject(
-			const_cast<UDialogueEndGraphNode*>(this),
-			&UDialogueEndGraphNode::HandleDeleteNode
+			const_cast<UEndGraphNode*>(this),
+			&UEndGraphNode::HandleDeleteNode
 			)
 			 
 			
@@ -73,7 +63,7 @@ void UDialogueEndGraphNode::GetNodeContextMenuActions(class UToolMenu* Menu,
 	);
 }
 
-UEdGraphPin* UDialogueEndGraphNode::CreateDialoguePin(EEdGraphPinDirection Direction, FName Name)
+UEdGraphPin* UEndGraphNode::CreateDialoguePin(EEdGraphPinDirection Direction, FName Name)
 {
 	FName Category = TEXT("Inputs");
 	FName Subcategory = TEXT("EndPin");
@@ -84,7 +74,7 @@ UEdGraphPin* UDialogueEndGraphNode::CreateDialoguePin(EEdGraphPinDirection Direc
 	return Pin;
 }
 
-UEdGraphPin* UDialogueEndGraphNode::CreateDefaultInputPin()
+UEdGraphPin* UEndGraphNode::CreateDefaultInputPin()
 {
 	return CreateDialoguePin(EGPD_Input, FName(TEXT("Finish")));
 }

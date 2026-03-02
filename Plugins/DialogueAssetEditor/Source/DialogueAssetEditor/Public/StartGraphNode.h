@@ -2,10 +2,10 @@
 
 #include "DialogueGraphNodeBase.h"
 #include "EdGraph/EdGraphNode.h"
-#include "DialogueStartGraphNode.generated.h"
+#include "StartGraphNode.generated.h"
 
 UCLASS()
-class UDialogueStartGraphNode : public UDialogueGraphNodeBase
+class UStartGraphNode : public UDialogueGraphNodeBase
 {
 	GENERATED_BODY()
 

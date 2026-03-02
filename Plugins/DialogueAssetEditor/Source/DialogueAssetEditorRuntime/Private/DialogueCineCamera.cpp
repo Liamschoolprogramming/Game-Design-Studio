@@ -60,6 +60,11 @@ void ADialogueCineCamera::InitializeCamera()
 	SetAnimationAlongPath(AnimationPreview/100.f);
 }
 
+void ADialogueCineCamera::EndAnimation()
+{
+	OnFinishAnimation.Broadcast();
+}
+
 
 void ADialogueCineCamera::SetAnimationAlongPath(const float Percent)
 {
@@ -91,6 +96,7 @@ void ADialogueCineCamera::SetAnimationAlongPath(const float Percent)
 	if (Percent > 1 )
 	{
 		bStartAnimation = false;
+		DialogueMacros::CreateTimer( this, FName("EndAnimation"), DelayAfterFinish, false);
 	}
 }
 

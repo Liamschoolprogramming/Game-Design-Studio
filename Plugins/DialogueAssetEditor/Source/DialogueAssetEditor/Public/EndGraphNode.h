@@ -7,11 +7,11 @@
 #include "EndNodeBehaviour.h"
 #include "DialogueNodeInfoBase.h"
 #include "DialogueGraphNodeBase.h"
-#include "DialogueEndGraphNode.generated.h"
+#include "EndGraphNode.generated.h"
 
 
 UCLASS()
-class UDialogueEndGraphNode : public UDialogueGraphNodeBase
+class UEndGraphNode : public UDialogueGraphNodeBase
 {
 	GENERATED_BODY()
 	

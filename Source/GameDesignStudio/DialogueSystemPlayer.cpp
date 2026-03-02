@@ -102,6 +102,12 @@ ADialogueCineCamera* UDialogueSystemPlayer::FindCineCamera(UWorld* World, FName 
 	return nullptr;
 }
 
+void UDialogueSystemPlayer::ChooseFirstOptionAndEnableDialogue()
+{
+	DialogueWidget->SetVisibility(ESlateVisibility::Visible);
+	ChooseOptionAtIndex(0);
+}
+
 void UDialogueSystemPlayer::SetDialogueText(FText InText)
 {
 	if (DialogueWidget)
@@ -157,6 +163,7 @@ void UDialogueSystemPlayer::EndDialogue(EDialogueNodeAction Action, FString Acti
 	if (PlayerController)
 	{
 		PlayerController->SetCanMove(true);
+		
 		if (CurrentSpeakerComponent)
 		{
 			PlayerController->SetViewTargetWithBlend(PlayerController->PlayerReference,CurrentSpeakerComponent->CameraTransitionTime);
@@ -225,12 +232,28 @@ void UDialogueSystemPlayer::CheckQuest(FName QuestKey)
 	}
 }
 
-void UDialogueSystemPlayer::ChangeCamera(FName CameraName, float TransitionTime)
+void UDialogueSystemPlayer::ChangeCamera(FName CameraName, float TransitionTime, bool bReenableDialogueAfterAnimation)
 {
 	if (ADialogueCineCamera* Camera = FindCineCamera(GetWorld(),CameraName))
 	{
 		PlayerController->SetViewTargetWithBlend(Camera, TransitionTime);
+		Camera->ActivateCamera();
+		DialogueWidget->SetVisibility(ESlateVisibility::Hidden);
+		if (bReenableDialogueAfterAnimation)
+		{
+			Camera->OnFinishAnimation.AddUObject(this, &UDialogueSystemPlayer::ChooseFirstOptionAndEnableDialogue);
+		}
+		else
+		{
+			Camera->OnFinishAnimation.AddUObject(this, &UDialogueSystemPlayer::ChooseFirstOption);
+		}
+		
 	}
+}
+
+UObject* UDialogueSystemPlayer::GetCurrentNode()
+{
+	return CurrentNode;
 }
 
 void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)

@@ -6,26 +6,16 @@
 
 #include "DialogueGraphNodeFactory.h"
 //Autoregister self
-namespace
-{
-	struct FAutoRegisterDialogueNode
-	{
-		FAutoRegisterDialogueNode()
-		{
-			FDialogueGraphNodeFactory::RegisterNode(
-			{
-				"QuestProgressGraphNode",
-				UQuestProgressGraphNode::StaticClass(),
-				FText::FromString(TEXT("Quests")),
-			FText::FromString(TEXT("New Quest Progress Node")),
-			FText::FromString(TEXT("Makes a new node that can give information about a quest. Use $total for the total number of items needed.\n Use $current for the current number of items collected.")),
-				0
-			});
-		}
-	};
+REGISTER_DIALOGUE_NODE(
+	"QuestProgressGraphNode",
+	UQuestProgressGraphNode,
+	"Quests",
+	"New Quest Progress Node",
+	"Makes a new node that can give information about a quest. Use $total for the total number of items needed.\n Use $current for the current number of items collected.",
+	0,
+	true
+);
 
-	static FAutoRegisterDialogueNode AutoRegister;
-}
 
 FText UQuestProgressGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {

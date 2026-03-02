@@ -1,6 +1,27 @@
 ﻿#pragma once
 #include "DialogueGraphNodeBase.h"
 
+#define REGISTER_DIALOGUE_NODE(NodeTypeName, NodeClass, Category, MenuName, Tooltip, Priority, bShow) \
+namespace { \
+struct FAutoRegister_##NodeClass \
+{ \
+FAutoRegister_##NodeClass() \
+{ \
+FDialogueGraphNodeFactory::RegisterNode( \
+{ \
+NodeTypeName, \
+NodeClass::StaticClass(), \
+FText::FromString(Category), \
+FText::FromString(MenuName), \
+FText::FromString(Tooltip), \
+Priority, \
+bShow \
+}); \
+} \
+}; \
+static FAutoRegister_##NodeClass AutoRegister_##NodeClass; \
+}
+
 struct FDialogueNodeRegistration
 {
 	FName NodeType;
@@ -14,6 +35,8 @@ struct FDialogueNodeRegistration
 };
 
 using FNodeFactoryFunc = TFunction<UDialogueGraphNodeBase*(UObject* Outer)>;
+
+
 
 class FDialogueGraphNodeFactory
 {

@@ -1,7 +1,7 @@
-﻿add new NodeInfo class based on DialogueNodeInfoBase.h if needed
+﻿add new NodeInfo class based on DialogueNodeInfoBase.h 
 add new Behaviour class based on DialogueNodeBehaviour.h
 add new GraphNode class based on DialogueGraphNodeBase.h
-if needed add new functions to DialogueExecutionHandler.h
-edit DialogueAssetEditor.cpp at registration
-edit DialogueGraphSchema.cpp at context menu
-edit the DialogueSystemPlayer.cpp to add any handler functions
+GraphNode must have a Register section in the cpp
+
+
+if needed add new functions to DialogueExecutionHandler.h and edit the DialogueSystemPlayer.cpp to add any handler functions

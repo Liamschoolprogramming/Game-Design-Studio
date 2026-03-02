@@ -3,27 +3,18 @@
 
 #include "CheckQuestGraphNode.h"
 #include "DialogueGraphNodeFactory.h"
-//Autoregister self
-namespace
-{
-	struct FAutoRegisterDialogueNode
-	{
-		FAutoRegisterDialogueNode()
-		{
-			FDialogueGraphNodeFactory::RegisterNode(
-			{
-				"CheckQuestsNode",
-				UCheckQuestGraphNode::StaticClass(),
-				FText::FromString(TEXT("Quests")),
-			FText::FromString(TEXT("New Complete Quest Node")),
-			FText::FromString(TEXT("Makes a new node that completes a given quest.")),
-				0
-			});
-		}
-	};
 
-	static FAutoRegisterDialogueNode AutoRegister;
-}
+//Autoregister self
+REGISTER_DIALOGUE_NODE(
+	"CheckQuestsNode",
+	UCheckQuestGraphNode,
+	"Quests",
+	"New Check Quest Node",
+	"Makes a new node that checks the status of a given quest.",
+	0,
+	true
+);
+
 
 FText UCheckQuestGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {

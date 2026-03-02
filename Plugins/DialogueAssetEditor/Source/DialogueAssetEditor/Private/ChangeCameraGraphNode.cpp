@@ -1,30 +1,29 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "StartQuestGraphNode.h"
-
-
+#include "ChangeCameraGraphNode.h"
 #include "DialogueGraphNodeFactory.h"
 //Autoregister self
-//Autoregister self
+
+
 REGISTER_DIALOGUE_NODE(
-	"StartQuestGraphNode",
-	UStartQuestGraphNode,
-	"Quests",
-	"New Start Quest Node",
-	"Makes a new node that starts a given quest.",
+	"ChangeCameraGraphNode",
+	UChangeCameraGraphNode,
+	"Camera",
+	"New Change Camera Node",
+	"Makes a new node that plays a camera animation before moving on.",
 	0,
 	true
 );
 
-FText UStartQuestGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
+FText UChangeCameraGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	if (NodeInfo != nullptr)
 	{
-		FString OutputString = TEXT("Start Quest");
-		if (!NodeInfo->QuestName.IsNone())
+		FString OutputString = TEXT("Change Camera");
+		if (!NodeInfo->CameraName.IsNone())
 		{
-			FString ActionData = NodeInfo->QuestName.ToString();
+			FString ActionData = NodeInfo->CameraName.ToString();
 			if (ActionData.Len() > 15)
 			{
 				ActionData = ActionData.Left(15) + TEXT("...");
@@ -33,10 +32,10 @@ FText UStartQuestGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 		}
 		return FText::FromString(OutputString);
 	}
-	return FText::FromString(TEXT("Start Quest"));
+	return FText::FromString(TEXT("Change Camera"));
 }
 
-void UStartQuestGraphNode::GetNodeContextMenuActions(class UToolMenu* Menu,
+void UChangeCameraGraphNode::GetNodeContextMenuActions(class UToolMenu* Menu,
 	class UGraphNodeContextMenuContext* Context) const
 {
 	FToolMenuSection& section = Menu->AddSection(TEXT("SectionName"), FText::FromString(TEXT("Dialogue Node Actions")));
@@ -49,8 +48,8 @@ void UStartQuestGraphNode::GetNodeContextMenuActions(class UToolMenu* Menu,
 		FText::FromString(TEXT("Deletes the node")),
 		FSlateIcon(TEXT("DialogueAssetEditorStyle"),TEXT("DialogueAssetEditor.NodeDeleteNodeIcon")),
 		FUIAction(FExecuteAction::CreateUObject(
-			const_cast<UStartQuestGraphNode*>(this),
-			&UStartQuestGraphNode::HandleDeleteNode
+			const_cast<UChangeCameraGraphNode*>(this),
+			&UChangeCameraGraphNode::HandleDeleteNode
 			)
 			 
 			
@@ -58,23 +57,22 @@ void UStartQuestGraphNode::GetNodeContextMenuActions(class UToolMenu* Menu,
 	);
 }
 
-UEdGraphPin* UStartQuestGraphNode::CreateDefaultInputPin()
+UEdGraphPin* UChangeCameraGraphNode::CreateDefaultInputPin()
 {
 	return CreateDialoguePin(EGPD_Input, TEXT("FlowInput"));
 }
 
-void UStartQuestGraphNode::CreateDefaultOutputPins()
+void UChangeCameraGraphNode::CreateDefaultOutputPins()
 {
-	FString defaultPositive = TEXT("Started");
-
+	FString defaultPositive = TEXT("On Complete");
+	
 	CreateDialoguePin(EGPD_Output, FName(defaultPositive));
-
 }
 
-UEdGraphPin* UStartQuestGraphNode::CreateDialoguePin(EEdGraphPinDirection Direction, FName Name)
+UEdGraphPin* UChangeCameraGraphNode::CreateDialoguePin(EEdGraphPinDirection Direction, FName Name)
 {
 	FName Category = (Direction == EGPD_Input) ? TEXT("Input") : TEXT("Output");
-	FName SubCategory = TEXT("Quest");
+	FName SubCategory = TEXT("Camera");
 	
 	UEdGraphPin* Pin = CreatePin(
 		Direction,
@@ -85,7 +83,7 @@ UEdGraphPin* UStartQuestGraphNode::CreateDialoguePin(EEdGraphPinDirection Direct
 	return Pin;
 }
 
-void UStartQuestGraphNode::HandleDeleteNode()
+void UChangeCameraGraphNode::HandleDeleteNode()
 {
 	GetGraph()->RemoveNode(this);
 }

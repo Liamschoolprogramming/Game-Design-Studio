@@ -59,6 +59,14 @@ private:
 	
 	FOnDialogueEnded OnDialogueEnded;
 	
+	UFUNCTION()
+	void ChooseFirstOption()
+	{
+		ChooseOptionAtIndex(0);
+	}
+	UFUNCTION()
+	void ChooseFirstOptionAndEnableDialogue();
+	
 public:
 	virtual void SetDialogueText(FText InText) override;
 	virtual void ClearResponses() override;
@@ -69,5 +77,6 @@ public:
 	virtual void StartQuest(FName QuestKey) override;
 	virtual void CompleteQuest(FName QuestKey) override;
 	virtual void CheckQuest(FName QuestKey) override;
-	virtual void ChangeCamera(FName CameraName, float TransitionTime) override;
+	virtual void ChangeCamera(FName CameraName, float TransitionTime, bool bReenableDialogueAfterAnimation) override;
+	virtual UObject* GetCurrentNode() override;
 };

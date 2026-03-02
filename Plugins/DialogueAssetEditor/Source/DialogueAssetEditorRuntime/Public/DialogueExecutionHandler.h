@@ -34,5 +34,6 @@ public:
 	virtual void StartQuest(FName QuestKey) = 0;
 	virtual void CompleteQuest(FName QuestKey) = 0;
 	virtual void CheckQuest(FName QuestKey) = 0;
-	virtual void ChangeCamera(FName CameraName, float TransitionTime) = 0;
+	virtual void ChangeCamera(FName CameraName, float TransitionTime, bool bReenableDialogueAfterAnimation) = 0;
+	virtual UObject* GetCurrentNode() = 0;
 };

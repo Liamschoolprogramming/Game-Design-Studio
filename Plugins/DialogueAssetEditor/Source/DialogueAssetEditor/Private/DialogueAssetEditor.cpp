@@ -6,11 +6,11 @@
 #include "AssetToolsModule.h"
 #include "CompleteQuestGraphNode.h"
 #include "CheckQuestGraphNode.h"
-#include "DialogueEndGraphNode.h"
+#include "EndGraphNode.h"
 #include "DialogueGraphNode.h"
 #include "DialogueGraphNodeBase.h"
 #include "DialogueGraphNodeFactory.h"
-#include "DialogueStartGraphNode.h"
+#include "StartGraphNode.h"
 #include "Styling/SlateStyleRegistry.h"
 #include "EdGraphUtilities.h"
 #include "QuestProgressGraphNode.h"
@@ -106,6 +106,26 @@ protected:
 	}
 };
 
+
+class SCameraGraphPin :public SGraphPin
+{
+public:
+	SLATE_BEGIN_ARGS(SDialogueGraphPin){}
+		
+	SLATE_END_ARGS()
+	
+	void Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
+	{
+		SGraphPin::Construct(SGraphPin::FArguments(), InGraphPinObj);
+	}
+	
+protected:
+	virtual FSlateColor GetPinColor() const override
+	{
+		return FSlateColor(FLinearColor(0.941, 0.792, 1));
+	}
+};
+
 /**
  * Defines the pin factory for the custom pins
  */
@@ -127,6 +147,10 @@ struct FDialoguePinFactory : public FGraphPanelPinFactory
 		} else if(FName(TEXT("EndPin")) == Pin->PinType.PinSubCategory)
 		{
 			return SNew(SDialogueStartGraphPin, Pin);
+		}
+		else if (FName(TEXT("Camera")) == Pin->PinType.PinSubCategory)
+		{
+			return SNew(SCameraGraphPin, Pin);
 		}
 		return nullptr;
 	}

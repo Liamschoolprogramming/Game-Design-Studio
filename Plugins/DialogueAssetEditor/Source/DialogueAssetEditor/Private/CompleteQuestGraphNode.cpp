@@ -6,27 +6,18 @@
 
 #include "CompleteQuestGraphNode.h"
 #include "DialogueGraphNodeFactory.h"
-//Autoregister self
-namespace
-{
-	struct FAutoRegisterDialogueNode
-	{
-		FAutoRegisterDialogueNode()
-		{
-			FDialogueGraphNodeFactory::RegisterNode(
-			{
-				"CompleteQuestGraphNode",
-				UCompleteQuestGraphNode::StaticClass(),
-				FText::FromString(TEXT("Quests")),
-			FText::FromString(TEXT("New Complete Quest Node")),
-			FText::FromString(TEXT("Makes a new node that completes a given quest.")),
-				0
-			});
-		}
-	};
 
-	static FAutoRegisterDialogueNode AutoRegister;
-}
+//Autoregister self
+REGISTER_DIALOGUE_NODE(
+	"CompleteQuestGraphNode",
+	UCompleteQuestGraphNode,
+	"Quests",
+	"New Complete Quest Node",
+	"Makes a new node that completes a given quest.",
+	0,
+	true
+);
+
 
 
 

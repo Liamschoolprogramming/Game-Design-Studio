@@ -7,7 +7,7 @@
 #include "Components/SplineComponent.h"
 #include "GameFramework/Actor.h"
 #include "DialogueCineCamera.generated.h"
-
+DECLARE_MULTICAST_DELEGATE(FOnFinishAnimation);
 UCLASS()
 class DIALOGUEASSETEDITORRUNTIME_API ADialogueCineCamera : public ACameraActor
 {
@@ -17,6 +17,7 @@ public:
 	// Sets default values for this actor's properties
 	ADialogueCineCamera();
 
+	FOnFinishAnimation OnFinishAnimation;
 	
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Components")
@@ -43,6 +44,9 @@ public:
 	//Percent along the path
 	float AnimationPreview = 0.f;
 	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="CameraSettings|Animation")
+	float DelayAfterFinish = .1f;
+	
 	UFUNCTION(BlueprintCallable)
 	void ActivateCamera();
 	
@@ -55,6 +59,9 @@ public:
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
 	void OnCameraEnabled(const AActor* OldTarget);
+	
+	UFUNCTION()
+	void EndAnimation();
 	
 	bool bStartAnimation = false;
 	

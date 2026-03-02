@@ -8,29 +8,18 @@
 
 #include "DialogueGraphNodeFactory.h"
 //Autoregister self
-namespace
-{
-	struct FAutoRegisterDialogueNode
-	{
-		FAutoRegisterDialogueNode()
-		{
-			FDialogueGraphNodeFactory::RegisterNode(
-			{
-				"DialogueNode",
-				UDialogueGraphNode::StaticClass(),
-				FText::FromString(TEXT("Dialogue")),
-			FText::FromString(TEXT("New Line Node")),
-			FText::FromString(TEXT("Makes a new dialogue node that can play lines")),
-				0
-			});
-		}
-	};
+REGISTER_DIALOGUE_NODE(
+	"DialogueNode",
+	UDialogueGraphNode,
+	"Dialogue",
+	"New Line Node",
+	"Makes a new dialogue node that can play lines and change the camera.",
+	0,
+	true
+);
 
-	static FAutoRegisterDialogueNode AutoRegister;
-}
 
 //this defines the actual node
-
 FText UDialogueGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	UDialogueNodeInfo* DialogueNodeInfo = Cast<UDialogueNodeInfo>(NodeInfo);
