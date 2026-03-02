@@ -4,7 +4,7 @@
 #include "DialogueAssetAppMode.h"
 #include "DialogueAssetAppMode.h"
 #include "DialogueAsset.h"
-#include "DialogueCheckQuestGraphNode.h"
+#include "CheckQuestGraphNode.h"
 #include "DialogueGraphNode.h"
 #include "DialogueStartGraphNode.h"
 #include "DialogueEndGraphNode.h"

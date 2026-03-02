@@ -4,6 +4,31 @@
 #include "Framework/Commands/UIAction.h"
 #include "ToolMenu.h"
 
+
+
+#include "DialogueGraphNodeFactory.h"
+//Autoregister self
+namespace
+{
+	struct FAutoRegisterDialogueNode
+	{
+		FAutoRegisterDialogueNode()
+		{
+			FDialogueGraphNodeFactory::RegisterNode(
+			{
+				"DialogueNode",
+				UDialogueGraphNode::StaticClass(),
+				FText::FromString(TEXT("Dialogue")),
+			FText::FromString(TEXT("New Line Node")),
+			FText::FromString(TEXT("Makes a new dialogue node that can play lines")),
+				0
+			});
+		}
+	};
+
+	static FAutoRegisterDialogueNode AutoRegister;
+}
+
 //this defines the actual node
 
 FText UDialogueGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const

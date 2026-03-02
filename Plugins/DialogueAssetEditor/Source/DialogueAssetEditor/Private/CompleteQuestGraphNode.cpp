@@ -1,7 +1,34 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+
+
+
 #include "CompleteQuestGraphNode.h"
+#include "DialogueGraphNodeFactory.h"
+//Autoregister self
+namespace
+{
+	struct FAutoRegisterDialogueNode
+	{
+		FAutoRegisterDialogueNode()
+		{
+			FDialogueGraphNodeFactory::RegisterNode(
+			{
+				"CompleteQuestGraphNode",
+				UCompleteQuestGraphNode::StaticClass(),
+				FText::FromString(TEXT("Quests")),
+			FText::FromString(TEXT("New Complete Quest Node")),
+			FText::FromString(TEXT("Makes a new node that completes a given quest.")),
+				0
+			});
+		}
+	};
+
+	static FAutoRegisterDialogueNode AutoRegister;
+}
+
+
 
 FText UCompleteQuestGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {

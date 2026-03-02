@@ -3,6 +3,30 @@
 
 #include "StartQuestGraphNode.h"
 
+
+#include "DialogueGraphNodeFactory.h"
+//Autoregister self
+namespace
+{
+	struct FAutoRegisterDialogueNode
+	{
+		FAutoRegisterDialogueNode()
+		{
+			FDialogueGraphNodeFactory::RegisterNode(
+			{
+				"StartQuestGraphNode",
+				UStartQuestGraphNode::StaticClass(),
+			FText::FromString(TEXT("Quests")),
+			FText::FromString(TEXT("New Start Quest Node")),
+			FText::FromString(TEXT("Makes a new node that starts a given quest.")),
+				0
+			});
+		}
+	};
+
+	static FAutoRegisterDialogueNode AutoRegister;
+}
+
 FText UStartQuestGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	if (NodeInfo != nullptr)

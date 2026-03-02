@@ -7,13 +7,13 @@
 #include "DialogueGraphNodeBase.h"
 
 #include "QuestNodeInfo.h"
-#include "DialogueCheckQuestGraphNode.generated.h"
+#include "CheckQuestGraphNode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DIALOGUEASSETEDITOR_API UDialogueCheckQuestGraphNode : public UDialogueGraphNodeBase
+class DIALOGUEASSETEDITOR_API UCheckQuestGraphNode : public UDialogueGraphNodeBase
 {
 	GENERATED_BODY()
 	

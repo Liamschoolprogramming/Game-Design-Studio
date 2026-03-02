@@ -1,5 +1,29 @@
 ﻿#include "DialogueEndGraphNode.h"
 
+#include "DialogueGraphNodeFactory.h"
+//Autoregister self
+namespace
+{
+	struct FAutoRegisterDialogueNode
+	{
+		FAutoRegisterDialogueNode()
+		{
+			FDialogueGraphNodeFactory::RegisterNode(
+			{
+				"EndNode",
+				UDialogueEndGraphNode::StaticClass(),
+				FText::FromString(TEXT("Control Nodes")),
+			FText::FromString(TEXT("New End Node")),
+			FText::FromString(TEXT("Makes a new end node")),
+				0
+			});
+		}
+	};
+
+	static FAutoRegisterDialogueNode AutoRegister;
+}
+
+
 
 FText UDialogueEndGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {

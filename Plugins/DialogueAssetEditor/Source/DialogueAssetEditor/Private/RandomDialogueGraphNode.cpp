@@ -2,9 +2,28 @@
 
 
 #include "RandomDialogueGraphNode.h"
+#include "DialogueGraphNodeFactory.h"
+//Autoregister self
+namespace
+{
+	struct FAutoRegisterDialogueNode
+	{
+		FAutoRegisterDialogueNode()
+		{
+			FDialogueGraphNodeFactory::RegisterNode(
+			{
+				"RandomDialogueNode",
+				URandomDialogueGraphNode::StaticClass(),
+				FText::FromString(TEXT("Dialogue")),
+			FText::FromString(TEXT("New Random Dialogue Node")),
+			FText::FromString(TEXT("Makes a new random dialogue node")),
+				0
+			});
+		}
+	};
 
-#include <string>
-
+	static FAutoRegisterDialogueNode AutoRegister;
+}
 
 FText URandomDialogueGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {

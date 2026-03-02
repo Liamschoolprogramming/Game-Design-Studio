@@ -2,7 +2,6 @@
 
 #include "DialogueNodeBehaviour.h"
 #include "EdGraph/EdGraphNode.h"
-#include "DialogueNodeType.h"
 #include "DialogueNodeInfoBase.h"
 #include "DialogueGraphNodeBase.generated.h"
 

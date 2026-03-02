@@ -5,7 +5,6 @@
 #include "DialogueNodeInfoBase.h"
 #include "DialogueNodeBehaviour.h"
 #include "UObject/NameTypes.h"
-#include "DialogueNodeType.h"
 #include "DialogueRuntimeGraph.generated.h"
 
 

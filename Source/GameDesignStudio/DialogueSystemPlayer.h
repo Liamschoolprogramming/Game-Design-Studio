@@ -69,4 +69,5 @@ public:
 	virtual void StartQuest(FName QuestKey) override;
 	virtual void CompleteQuest(FName QuestKey) override;
 	virtual void CheckQuest(FName QuestKey) override;
+	virtual void ChangeCamera(FName CameraName, float TransitionTime) override;
 };

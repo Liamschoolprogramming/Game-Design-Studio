@@ -1,9 +1,10 @@
 ﻿#include "DialogueGraphSchema.h"
 
 #include "CompleteQuestGraphNode.h"
-#include "DialogueCheckQuestGraphNode.h"
+#include "CheckQuestGraphNode.h"
 #include "DialogueEndGraphNode.h"
 #include "DialogueGraphNode.h"
+#include "DialogueGraphNodeFactory.h"
 #include "DialogueStartGraphNode.h"
 #include "DialogueNodeInfo.h"
 #include "QuestProgressGraphNode.h"
@@ -14,6 +15,25 @@
 
 void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
+	
+	for (const FDialogueNodeRegistration& Node : FDialogueGraphNodeFactory::GetAllNodes())
+	{
+		if (!Node.bShowInContextMenu)
+		{
+			continue;
+		}
+		TSharedPtr<FNewNodeAction> NewNodeAction =
+			MakeShared<FNewNodeAction>(
+				Node.GraphNodeClass,
+				Node.Category,
+				Node.MenuName,
+				Node.Tooltip,
+				Node.Priority
+			);
+
+		ContextMenuBuilder.AddAction(NewNodeAction);
+	}
+	/**
 	TSharedPtr<FNewNodeAction> NewDialogueNodeAction(
 		new FNewNodeAction(
 			UDialogueGraphNode::StaticClass(),
@@ -78,7 +98,7 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 	ContextMenuBuilder.AddAction(NewCompleteQuestNodeAction);
 	ContextMenuBuilder.AddAction(NewStartQuestNodeAction);
 	ContextMenuBuilder.AddAction(NewQuestProgressNodeAction);
-	ContextMenuBuilder.AddAction(NewRandomDialogueNodeAction);
+	ContextMenuBuilder.AddAction(NewRandomDialogueNodeAction);*/
 }
 
 const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const

@@ -4,7 +4,6 @@
 
 #include "DialogueEndNodeInfo.h"
 #include "EdGraph/EdGraphNode.h"
-#include "DialogueNodeType.h"
 #include "EndNodeBehaviour.h"
 #include "DialogueNodeInfoBase.h"
 #include "DialogueGraphNodeBase.h"

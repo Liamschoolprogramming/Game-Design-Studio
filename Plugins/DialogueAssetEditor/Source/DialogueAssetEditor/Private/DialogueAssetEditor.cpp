@@ -5,7 +5,7 @@
 #include "IAssetTools.h"
 #include "AssetToolsModule.h"
 #include "CompleteQuestGraphNode.h"
-#include "DialogueCheckQuestGraphNode.h"
+#include "CheckQuestGraphNode.h"
 #include "DialogueEndGraphNode.h"
 #include "DialogueGraphNode.h"
 #include "DialogueGraphNodeBase.h"
@@ -166,14 +166,7 @@ void FDialogueAssetEditorModule::StartupModule()
 	FEdGraphUtilities::RegisterVisualPinFactory(DialoguePinFactory);
 	
 	
-	FDialogueGraphNodeFactory::RegisterNodeType("StartNode", [](UObject* Outer) { return NewObject<UDialogueStartGraphNode>(Outer); });
-	FDialogueGraphNodeFactory::RegisterNodeType("DialogueNode", [](UObject* Outer) { return NewObject<UDialogueGraphNode>(Outer); });
-	FDialogueGraphNodeFactory::RegisterNodeType("CheckQuestsNode", [](UObject* Outer) { return NewObject<UDialogueCheckQuestGraphNode>(Outer); });
-	FDialogueGraphNodeFactory::RegisterNodeType("CompleteQuestGraphNode", [](UObject* Outer) { return NewObject<UCompleteQuestGraphNode>(Outer); });
-	FDialogueGraphNodeFactory::RegisterNodeType("StartQuestGraphNode", [](UObject* Outer) { return NewObject<UStartQuestGraphNode>(Outer); });
-	FDialogueGraphNodeFactory::RegisterNodeType("QuestProgressGraphNode", [](UObject* Outer) { return NewObject<UQuestProgressGraphNode>(Outer); });
-	FDialogueGraphNodeFactory::RegisterNodeType("RandomDialogueNode", [](UObject* Outer) { return NewObject<URandomDialogueGraphNode>(Outer); });
-	FDialogueGraphNodeFactory::RegisterNodeType("EndNode", [](UObject* Outer) { return NewObject<UDialogueEndGraphNode>(Outer); });
+	
 	
 }
 

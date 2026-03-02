@@ -225,6 +225,14 @@ void UDialogueSystemPlayer::CheckQuest(FName QuestKey)
 	}
 }
 
+void UDialogueSystemPlayer::ChangeCamera(FName CameraName, float TransitionTime)
+{
+	if (ADialogueCineCamera* Camera = FindCineCamera(GetWorld(),CameraName))
+	{
+		PlayerController->SetViewTargetWithBlend(Camera, TransitionTime);
+	}
+}
+
 void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 {
 	if (Index >= CurrentNode->OutputPins.Num() || Index < 0)
