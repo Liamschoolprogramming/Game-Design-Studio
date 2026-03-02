@@ -5,6 +5,7 @@
 #include "DialogueEndNodeInfo.h"
 #include "EdGraph/EdGraphNode.h"
 #include "DialogueNodeType.h"
+#include "EndNodeBehaviour.h"
 #include "DialogueNodeInfoBase.h"
 #include "DialogueGraphNodeBase.h"
 #include "DialogueEndGraphNode.generated.h"
@@ -55,6 +56,24 @@ public: // UDialogueGraphNodeBase
 	{
 		Modify();
 	}
+	
+	virtual void InitNodeBehaviour(UObject* Owner) override
+	{
+		NodeBehaviour = NewObject<UEndNodeBehaviour>(Owner);
+	}
+	
+	virtual void SetNodeBehaviour(class UDialogueNodeBehaviour* InNodeInfo) override
+	{
+		NodeBehaviour = Cast<UEndNodeBehaviour>(InNodeInfo);
+	}
+	
+	virtual UDialogueNodeBehaviour* GetNodeBehaviour() const override
+	{
+		return NodeBehaviour;
+	}
+protected:
+	UPROPERTY()
+	class UEndNodeBehaviour* NodeBehaviour = nullptr;
 	
 protected:
 	UPROPERTY()

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DialogueGraphNodeBase.h"
+#include "QuestProgressBehaviour.h"
 #include "QuestProgressNodeInfo.h"
 #include "QuestProgressGraphNode.generated.h"
 
@@ -60,6 +61,24 @@ public: //UEdGraph interface
 		return NodeInfo;
 	}
 
+	
+	virtual void InitNodeBehaviour(UObject* Owner) override
+	{
+		NodeBehaviour = NewObject<UQuestProgressBehaviour>(Owner);
+	}
+	
+	virtual void SetNodeBehaviour(class UDialogueNodeBehaviour* InNodeInfo) override
+	{
+		NodeBehaviour = Cast<UQuestProgressBehaviour>(InNodeInfo);
+	}
+	
+	virtual UDialogueNodeBehaviour* GetNodeBehaviour() const override
+	{
+		return NodeBehaviour;
+	}
+protected:
+	UPROPERTY()
+	class UQuestProgressBehaviour* NodeBehaviour = nullptr;
 protected:
 	UPROPERTY()
 	class UQuestProgressNodeInfo* NodeInfo = nullptr;

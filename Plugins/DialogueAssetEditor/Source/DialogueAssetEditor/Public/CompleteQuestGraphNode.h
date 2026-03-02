@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CompleteQuestBehaviour.h"
 #include "QuestNodeInfo.h"
 #include "DialogueGraphNodeBase.h"
 #include "UObject/Object.h"
@@ -59,9 +60,28 @@ public: //Dialogue interface
 	{
 		return NodeInfo;
 	}
+	
+	virtual void InitNodeBehaviour(UObject* Owner) override
+	{
+		NodeBehaviour = NewObject<UCompleteQuestBehaviour>(Owner);
+	}
+	
+	virtual void SetNodeBehaviour(class UDialogueNodeBehaviour* InNodeInfo) override
+	{
+		NodeBehaviour = Cast<UCompleteQuestBehaviour>(InNodeInfo);
+	}
+	
+	virtual UDialogueNodeBehaviour* GetNodeBehaviour() const override
+	{
+		return NodeBehaviour;
+	}
+	
 protected:
 	UPROPERTY()
 	class UQuestNodeInfo* NodeInfo = nullptr;
+	UPROPERTY()
+	class UCompleteQuestBehaviour* NodeBehaviour = nullptr;
+	
 private:
 	void HandleDeleteNode();
 };

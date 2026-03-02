@@ -11,6 +11,8 @@
 #include "Components/VerticalBox.h"
 
 #include "DialogueResponseButtonController.h"
+#include "Macros.h"
+#include "PlayerControllerBase.h"
 #include "QuestDialogueUIController.h"
 #include "QuestProgressNodeInfo.h"
 #include "RandomDialogueNodeInfo.h"
@@ -37,8 +39,9 @@ UDialogueSystemPlayer::UDialogueSystemPlayer()
 void UDialogueSystemPlayer::PlayDialogue(class UDialogueAsset* InDialogueAsset, APlayerController* InPlayerController,
                                          FOnDialogueEnded InOnDialogueEnded)
 {
+	PlayerController = Cast<APlayerControllerBase>(InPlayerController);
 	
-	
+	PlayerController->SetCanMove(false);
 	OnDialogueEnded = InOnDialogueEnded;
 	UDialogueRuntimeGraph* RuntimeGraph = InDialogueAsset->Graph;
 	
@@ -147,6 +150,81 @@ void UDialogueSystemPlayer::SetupCameraAndSpeaker(FName CameraName, FName InSpea
 	}
 }
 
+void UDialogueSystemPlayer::EndDialogue(EDialogueNodeAction Action, FString ActionData)
+{
+	DialogueWidget->RemoveFromParent();
+	DialogueWidget = nullptr;
+	if (PlayerController)
+	{
+		PlayerController->SetCanMove(true);
+		if (CurrentSpeakerComponent)
+		{
+			PlayerController->SetViewTargetWithBlend(PlayerController->PlayerReference,CurrentSpeakerComponent->CameraTransitionTime);
+		}
+		else
+		{
+			PlayerController->SetViewTargetWithBlend(PlayerController->PlayerReference,.5f);
+		}
+		
+	}
+	CurrentSpeakerComponent = nullptr;
+	OnDialogueEnded.ExecuteIfBound(Action, ActionData);
+}
+
+TArray<int> UDialogueSystemPlayer::GetQuestProgress(FName QuestKey)
+{
+	if (UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager())
+	{
+		
+			return QuestManager->GetQuestProgress(QuestKey);
+	}			
+	return {-1, -1};
+}
+
+void UDialogueSystemPlayer::StartQuest(FName QuestKey)
+{
+	
+	if (UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager())
+	{
+		QuestManager->ActivateQuestForItem(QuestKey);
+		ChooseOptionAtIndex(0);
+	}
+
+}
+
+void UDialogueSystemPlayer::CompleteQuest(FName QuestKey)
+{
+	if (UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager())
+	{
+		if (QuestManager->CompleteQuest(QuestKey))
+		{
+			ChooseOptionAtIndex(0);
+		}
+		else
+		{
+			ChooseOptionAtIndex(1);
+		}
+	}
+}
+
+void UDialogueSystemPlayer::CheckQuest(FName QuestKey)
+{
+	if (UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager())
+	{
+		switch (QuestManager->GetQuestState(QuestKey))
+		{
+		case EQuestState::ACTIVE:
+			ChooseOptionAtIndex(0);
+		case EQuestState::INACTIVE:
+			ChooseOptionAtIndex(1);
+		case EQuestState::COMPLETED:
+			ChooseOptionAtIndex(2);
+		}
+
+					
+	}
+}
+
 void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 {
 	if (Index >= CurrentNode->OutputPins.Num() || Index < 0)
@@ -154,9 +232,8 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 		UE_LOG(DialoguePlayerSub, Error, TEXT("Invalid response option at index %d"), Index);	
 		return ;
 	}
-	
-	UDialogueeRuntimePin* OutputPin = CurrentNode->OutputPins[Index];
-	if (OutputPin->Connection != nullptr)
+
+	if (UDialogueeRuntimePin* OutputPin = CurrentNode->OutputPins[Index]; OutputPin->Connection != nullptr)
 	{
 		CurrentNode = OutputPin->Connection->Parent;
 	}
@@ -165,7 +242,7 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 		//no connection so we assume it's an end node
 		CurrentNode = nullptr;
 	}
-	if (CurrentNode != nullptr && CurrentNode->NodeType == "DialogueNode")
+	if (CurrentNode != nullptr)
 	{
 		if (CurrentNode->NodeBehaviour)
 		{
@@ -173,178 +250,13 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 		}
 		else
 		{
-			UE_LOG(DialoguePlayerSub, Fatal, TEXT("Current Node has no behaviour"))
-		}
-		
-	}
-	else if (CurrentNode != nullptr && CurrentNode->NodeType == "CheckQuestsNode")
-	{
-		if (const UQuestNodeInfo* NodeInfo = Cast<UQuestNodeInfo>(CurrentNode->NodeInfo))
-		{
-			if (UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager())
-			{
-				switch (QuestManager->GetQuestState(NodeInfo->QuestName))
-				{
-					case EQuestState::ACTIVE:
-						ChooseOptionAtIndex(0);
-					case EQuestState::INACTIVE:
-						ChooseOptionAtIndex(1);
-					case EQuestState::COMPLETED:
-						ChooseOptionAtIndex(2);
-					
-				}
-
-					
-			}
-			
-		}
-		
-	}
-	else if (CurrentNode != nullptr && CurrentNode->NodeType == "CompleteQuestGraphNode")
-	{
-		if ( UQuestNodeInfo* NodeInfo = Cast<UQuestNodeInfo>(CurrentNode->NodeInfo))
-		{
-			if (UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager())
-			{
-				if (QuestManager->CompleteQuest(NodeInfo->QuestName))
-				{
-					ChooseOptionAtIndex(0);
-				}
-				else
-				{
-					ChooseOptionAtIndex(1);
-				}
-			}
+			UE_LOG(DialoguePlayerSub, Error, TEXT("Current Node %s has no behaviour"), *CurrentNode->NodeType.ToString())
 		}
 	}
-	else if (CurrentNode != nullptr && CurrentNode->NodeType == "StartQuestGraphNode")
+	else if (CurrentNode == nullptr)
 	{
-		if ( UQuestNodeInfo* NodeInfo = Cast<UQuestNodeInfo>(CurrentNode->NodeInfo))
-		{
-			if (UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager())
-			{
-				QuestManager->ActivateQuestForItem(NodeInfo->QuestName);
-				ChooseOptionAtIndex(0);
-			}
-		}
-	}
-	else if (CurrentNode != nullptr && CurrentNode->NodeType == "QuestProgressGraphNode")
-	{
-		if (UQuestProgressNodeInfo* NodeInfo = Cast<UQuestProgressNodeInfo>(CurrentNode->NodeInfo))
-		{
-			if (UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager())
-			{
-				FString DialogueText;
-				if (NodeInfo->Dialogue != TEXT(""))
-				{
-					DialogueText = NodeInfo->Dialogue;
-					TArray<int> Progress = QuestManager->GetQuestProgress(NodeInfo->QuestName);
-					
-					DialogueText = DialogueText.Replace(TEXT("$total"), *FString::FromInt(Progress[1]));
-					DialogueText = DialogueText.Replace(TEXT("$current"), *FString::FromInt(Progress[0]));
-
-					
-				}
-				
-				DialogueWidget->DialogueText->SetText(FText::FromString((DialogueText)));
+		EndDialogue(EDialogueNodeAction::None, "");
 		
-				DialogueWidget->ResponseBox->ClearChildren();
-				
-					UDialogueResponseButtonController* Button = UDialogueResponseButtonController::CreateInstance(DialogueWidget->GetOwningPlayer());
-					Button->SetClickHandler(0, [this](int OptionIndex)
-					{
-						ChooseOptionAtIndex(OptionIndex);
-					});
-					Button->ResponseButtonText->SetText(FText::FromString(TEXT("Continue")));
-					UVerticalBoxSlot* Slot = DialogueWidget->ResponseBox->AddChildToVerticalBox(Button);
-					Slot->SetPadding(FMargin(10));
-			
-					
-				}
-				if (UDialogueSpeakerComponent* Speaker = FindSpeakerComponent(GetWorld(), NodeInfo->SpeakerName))
-				{
-					Speaker->ActivateSpeakerCamera();
-					DialogueWidget->CharacterName->SetText(FText::FromString(Speaker->SpeakerName.ToString()));
-					if (NodeInfo->CharacterPortrait)
-					{
-						Speaker->SpeakerImage=NodeInfo->CharacterPortrait;
-					}
-					else
-					{
-						Speaker->SpeakerImage= DefaultCharacterIcon;
-					}
-					if (Speaker->SpeakerImage)
-					{
-						DialogueWidget->CharacterPortrait->SetBrushFromTexture(Speaker->SpeakerImage);
-					}
-					CurrentSpeakerComponent = Speaker;
-				}
-			}
-		}
-	else if (CurrentNode != nullptr && CurrentNode->NodeType == "RandomDialogueNode")
-	{
-		URandomDialogueNodeInfo* NodeInfo = Cast<URandomDialogueNodeInfo>(CurrentNode->NodeInfo);
-		
-		//pick a random line from responses
-		FText DialogueText;
-		if (NodeInfo->DialogueOptions.Num() > 0)
-		{
-			int32 RandomIndex = FMath::RandRange(0, NodeInfo->DialogueOptions.Num() - 1);
-			
-			DialogueText = NodeInfo->DialogueOptions[RandomIndex];
-		}
-		
-		
-		DialogueWidget->DialogueText->SetText(DialogueText);
-		
-		DialogueWidget->ResponseBox->ClearChildren();
-		int OptionIndex = 0;
-		for (FText response : NodeInfo->DialogueResponses)
-		{
-			UDialogueResponseButtonController* Button = UDialogueResponseButtonController::CreateInstance(DialogueWidget->GetOwningPlayer());
-			Button->SetClickHandler(OptionIndex, [this](int OptionIndex)
-			{
-				ChooseOptionAtIndex(OptionIndex);
-			});
-			Button->ResponseButtonText->SetText(response);
-			UVerticalBoxSlot* Slot = DialogueWidget->ResponseBox->AddChildToVerticalBox(Button);
-			Slot->SetPadding(FMargin(10));
-			
-			OptionIndex++;
-		}
-		if (UDialogueSpeakerComponent* Speaker = FindSpeakerComponent(GetWorld(), NodeInfo->SpeakerName))
-		{
-			Speaker->ActivateSpeakerCamera();
-			DialogueWidget->CharacterName->SetText(FText::FromString(Speaker->SpeakerName.ToString()));
-			if (NodeInfo->CharacterPortrait)
-			{
-				Speaker->SpeakerImage=NodeInfo->CharacterPortrait;
-			}
-			else
-			{
-				Speaker->SpeakerImage= DefaultCharacterIcon;
-			}
-			if (Speaker->SpeakerImage)
-			{
-				DialogueWidget->CharacterPortrait->SetBrushFromTexture(Speaker->SpeakerImage);
-			}
-			CurrentSpeakerComponent = Speaker;
-		}
-	}
-	else if (CurrentNode == nullptr || CurrentNode->NodeType == "EndNode")
-	{
-		
-		DialogueWidget->RemoveFromParent();
-		DialogueWidget = nullptr;
-		
-		EDialogueNodeAction Action = EDialogueNodeAction::None;
-		FString ActionData = TEXT("");
-		if (CurrentNode != nullptr)
-		{
-			UDialogueEndNodeInfo* EndNodeInfo = Cast<UDialogueEndNodeInfo>(CurrentNode->NodeInfo);
-			Action = EndNodeInfo->Action;
-			ActionData = EndNodeInfo->ActionData;
-		}
-		OnDialogueEnded.ExecuteIfBound(Action, ActionData);
+		Debug::PrintToScreen("No end node but no further connection, closing the dialogue.", FColor::Red);
 	}
 }

@@ -8,7 +8,7 @@ FText UDialogueCheckQuestGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType)
 	
 	if (NodeInfo != nullptr)
 	{
-		FString OutputString = TEXT("Complete Quest");
+		FString OutputString = TEXT("Check Quest");
 		if (!NodeInfo->QuestName.IsNone())
 		{
 			FString ActionData = NodeInfo->QuestName.ToString();

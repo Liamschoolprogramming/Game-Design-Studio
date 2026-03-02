@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "DialogueNodeBehaviour.h"
+
+#include "DialogueExecutionHandler.h"
 #include "DialogueNodeInfo.h"
 #include "DialogueNodePlayLineBehaviour.generated.h"
 

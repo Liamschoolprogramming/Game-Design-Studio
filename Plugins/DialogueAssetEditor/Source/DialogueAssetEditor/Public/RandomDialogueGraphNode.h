@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DialogueGraphNode.h"
+#include "RandomDialogueBehaviour.h"
 #include "UObject/Object.h"
 #include "RandomDialogueNodeInfo.h"
 #include "RandomDialogueGraphNode.generated.h"
@@ -64,6 +65,25 @@ public: //Dialogue interface
 	{
 		return NodeInfo;
 	}
+	
+	virtual void InitNodeBehaviour(UObject* Owner) override
+	{
+		NodeBehaviour = NewObject<URandomDialogueBehaviour>(Owner);
+	}
+	
+	virtual void SetNodeBehaviour(class UDialogueNodeBehaviour* InNodeInfo) override
+	{
+		NodeBehaviour = Cast<URandomDialogueBehaviour>(InNodeInfo);
+	}
+	
+	virtual UDialogueNodeBehaviour* GetNodeBehaviour() const override
+	{
+		return NodeBehaviour;
+	}
+protected:
+	UPROPERTY()
+	class URandomDialogueBehaviour* NodeBehaviour = nullptr;
+	
 protected:
 	UPROPERTY()
 	class URandomDialogueNodeInfo* NodeInfo = nullptr;

@@ -178,8 +178,15 @@ void FDialogueAssetEditorApp::UpdateWorkingAssetFromGraph()
 		
 	
 		UDialogueGraphNodeBase* UiDialogueNode = Cast<UDialogueGraphNodeBase>(UiNode);
-		RuntimeNode->NodeInfo = DuplicateObject(UiDialogueNode->GetNodeInfo(), RuntimeNode);
+
+		// Ensure NodeBehaviour exists
+		if (UiDialogueNode->GetNodeBehaviour() == nullptr)
+		{
+			UiDialogueNode->InitNodeBehaviour(UiDialogueNode);
+		}
+
 		RuntimeNode->NodeBehaviour = DuplicateObject(UiDialogueNode->GetNodeBehaviour(), RuntimeNode);
+		RuntimeNode->NodeInfo = DuplicateObject(UiDialogueNode->GetNodeInfo(), RuntimeNode);
 		RuntimeNode->NodeType = UiDialogueNode->GetDialogueNodeType();
 			
 		

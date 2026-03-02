@@ -14,6 +14,7 @@
 
 #include "DialogueSystemPlayer.generated.h"
 
+class APlayerControllerBase;
 // Forward declarations of any UObjects you reference in UPROPERTYs
 class UDialogueAsset;
 class UDialogueRuntimeNode;
@@ -54,6 +55,8 @@ private:
 
 	UTexture2D* DefaultCharacterIcon;
 	
+	APlayerControllerBase* PlayerController;
+	
 	FOnDialogueEnded OnDialogueEnded;
 	
 public:
@@ -61,5 +64,9 @@ public:
 	virtual void ClearResponses() override;
 	virtual void AddResponseButton(FText InResponseText, int InOptionIndex) override;
 	virtual void SetupCameraAndSpeaker(FName CameraName, FName InSpeakerName, UTexture2D* Portrait) override;
-	
+	virtual void EndDialogue(EDialogueNodeAction Action, FString ActionData) override;
+	virtual TArray<int> GetQuestProgress(FName QuestKey) override;
+	virtual void StartQuest(FName QuestKey) override;
+	virtual void CompleteQuest(FName QuestKey) override;
+	virtual void CheckQuest(FName QuestKey) override;
 };

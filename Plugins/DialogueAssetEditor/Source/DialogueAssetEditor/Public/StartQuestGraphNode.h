@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "QuestNodeInfo.h"
 #include "DialogueGraphNodeBase.h"
+#include "StartQuestBehaviour.h"
 #include "StartQuestGraphNode.generated.h"
 
 /**
@@ -59,6 +60,25 @@ public: //Dialogue interface
 	{
 		return NodeInfo;
 	}
+	
+	virtual void InitNodeBehaviour(UObject* Owner) override
+	{
+		NodeBehaviour = NewObject<UStartQuestBehaviour>(Owner);
+	}
+	
+	virtual void SetNodeBehaviour(class UDialogueNodeBehaviour* InNodeInfo) override
+	{
+		NodeBehaviour = Cast<UStartQuestBehaviour>(InNodeInfo);
+	}
+	
+	virtual UDialogueNodeBehaviour* GetNodeBehaviour() const override
+	{
+		return NodeBehaviour;
+	}
+protected:
+	UPROPERTY()
+	class UStartQuestBehaviour* NodeBehaviour = nullptr;
+	
 protected:
 	UPROPERTY()
 	class UQuestNodeInfo* NodeInfo = nullptr;
