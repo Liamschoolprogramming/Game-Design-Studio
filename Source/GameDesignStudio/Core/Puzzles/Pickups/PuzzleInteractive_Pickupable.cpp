@@ -10,7 +10,7 @@ void APuzzleInteractive_Pickupable::Tick(float DeltaTime)
 {
 	if (!bPushable && bBeingCarried && CarryingCharacter != nullptr)
 	{
-		this->SetActorLocation(CarryingCharacter->GetActorLocation() + CarryingCharacter->GetActorForwardVector() * 200);
+		//this->SetActorLocation(CarryingCharacter->GetActorLocation() + CarryingCharacter->GetActorForwardVector() * 200);
 		
 	}
 	
@@ -25,8 +25,7 @@ void APuzzleInteractive_Pickupable::Interact(APlayerCharacter* PlayerCharacter)
 {
 	if (bBeingCarried)
 	{
-		bBeingCarried = false;
-		CarryingCharacter = nullptr;
+		Drop();
 		
 	}
 	else
@@ -47,9 +46,13 @@ void APuzzleInteractive_Pickupable::Interact(APlayerCharacter* PlayerCharacter)
 				bBeingCarried = true;
 				SetActorEnableCollision(false);
 				
+				AttachPickupAble(true);
+				
 				FTimerDelegate TimerDelegate;
 				TimerDelegate.BindUFunction(this, FName("ResetCollision"));
 				GetWorld()->GetTimerManager().SetTimerForNextTick(TimerDelegate);
+				
+				
 				
 			}
 		}
@@ -61,5 +64,10 @@ void APuzzleInteractive_Pickupable::Drop()
 	bBeingCarried = false;
 	CarryingCharacter = nullptr;
 	SetActorEnableCollision(true);
+	AttachPickupAble(false);
+}
+
+void APuzzleInteractive_Pickupable::AttachPickupAble_Implementation(bool Attach)
+{
 	
 }
