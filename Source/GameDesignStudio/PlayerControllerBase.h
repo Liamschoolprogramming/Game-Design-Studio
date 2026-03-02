@@ -68,9 +68,6 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category="Possession")
 	void AddPossessableToHotbar();
 	
-	// TODO REMOVE:
-	void CyclePossession();
-	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
 	float ControllerSensitivity = 0.2f;
 	
@@ -165,7 +162,7 @@ public:
 	FRotator PawnDesiredRotation;
 	bool bPawnHasMovementInput = false;
 	
-	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Possession")
 	TArray<APossessableEntity*> ClosestPossessableEntities;
 	
 	//void SortClosestPossessableEntitiesByDistance();

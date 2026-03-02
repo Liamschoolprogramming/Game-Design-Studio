@@ -196,22 +196,9 @@ void APlayerControllerBase::StopMove(const FInputActionValue& Value)
 	bIsMoving = false;
 }
 
-// void APlayerControllerBase::SortClosestPossessableEntitiesByDistance()
-// {
-// 	FVector ReferenceLocation = GetPawn()->GetActorLocation();
-// 	
-// 	ClosestPossessableEntities.Sort([&](const APossessableEntity& A, const APossessableEntity& B)
-// 	{
-// 		
-// 	return FVector::DistSquared(A.GetActorLocation(), ReferenceLocation)
-// 		 < FVector::DistSquared(B.GetActorLocation(), ReferenceLocation);
-// 	});
-// 	
-// }
-
 void APlayerControllerBase::CyclePossessionUp()
 {
-	//SortClosestPossessableEntitiesByDistance();
+	Debug::PrintToScreen("Cycling up!");
 	if (IndexForPossessables + 1 >= ClosestPossessableEntities.Num())
 	{
 		IndexForPossessables = -1;
@@ -225,14 +212,11 @@ void APlayerControllerBase::CyclePossessionUp()
 
 void APlayerControllerBase::CyclePossessionDown()
 {
-	//SortClosestPossessableEntitiesByDistance();
-	bool bCanCycle = false;
 	if (IndexForPossessables - 1 < -1)
 	{
 		if (CanWeCyclePossessableEntity(ClosestPossessableEntities.Num() - 1))
 		{
 			IndexForPossessables = ClosestPossessableEntities.Num()-1;
-			bCanCycle = true;
 		}
 	}
 	else
@@ -240,7 +224,6 @@ void APlayerControllerBase::CyclePossessionDown()
 		if (CanWeCyclePossessableEntity(IndexForPossessables - 1))
 		{
 			IndexForPossessables--;
-			bCanCycle = true;
 		}
 	}
 	OnCyclePossessionTarget();
@@ -309,7 +292,7 @@ void APlayerControllerBase::ConfirmPossession()
 	}
 }
 
-void APlayerControllerBase::CyclePossession()
+/* void APlayerControllerBase::CyclePossession()
 {
 	if (ClosestPossessableEntities.IsEmpty()) return;
 	
@@ -407,7 +390,7 @@ void APlayerControllerBase::CyclePossession()
 		}
 		
 	}
-}
+} */
 
 void APlayerControllerBase::LookGate(const FInputActionValue& Value)
 {
