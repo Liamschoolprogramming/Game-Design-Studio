@@ -5,7 +5,7 @@
 REGISTER_DIALOGUE_NODE(
 	"EndNode",
 	UEndGraphNode,
-	"Control Nodes",
+	"Tools",
 	"New End Node",
 	"Makes a new end node. It can run a function on end if needed.",
 	0,
@@ -66,7 +66,7 @@ void UEndGraphNode::GetNodeContextMenuActions(class UToolMenu* Menu,
 UEdGraphPin* UEndGraphNode::CreateDialoguePin(EEdGraphPinDirection Direction, FName Name)
 {
 	FName Category = TEXT("Inputs");
-	FName Subcategory = TEXT("EndPin");
+	FName Subcategory = TEXT("Tools");
 	
 	UEdGraphPin* Pin = CreatePin(Direction, Category, Name);
 	Pin->PinType.PinSubCategory = Subcategory;

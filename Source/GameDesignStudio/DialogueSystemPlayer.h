@@ -79,4 +79,5 @@ public:
 	virtual void CheckQuest(FName QuestKey) override;
 	virtual void ChangeCamera(FName CameraName, float TransitionTime, bool bReenableDialogueAfterAnimation) override;
 	virtual UObject* GetCurrentNode() override;
+	virtual void CallCustomFunction(FString FunctionName) override;
 };

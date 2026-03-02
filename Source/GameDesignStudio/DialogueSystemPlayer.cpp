@@ -256,6 +256,12 @@ UObject* UDialogueSystemPlayer::GetCurrentNode()
 	return CurrentNode;
 }
 
+void UDialogueSystemPlayer::CallCustomFunction(FString FunctionName)
+{
+	OnDialogueEnded.ExecuteIfBound(EDialogueNodeAction::BPFunction, FunctionName);
+	ChooseOptionAtIndex(0);
+}
+
 void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 {
 	if (Index >= CurrentNode->OutputPins.Num() || Index < 0)

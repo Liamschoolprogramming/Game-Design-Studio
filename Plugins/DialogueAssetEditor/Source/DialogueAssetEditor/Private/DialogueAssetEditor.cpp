@@ -144,7 +144,7 @@ struct FDialoguePinFactory : public FGraphPanelPinFactory
 		} else if(FName(TEXT("Quest")) == Pin->PinType.PinSubCategory)
 		{
 			return SNew(SDialogueCheckQuestGraphPin, Pin);
-		} else if(FName(TEXT("EndPin")) == Pin->PinType.PinSubCategory)
+		} else if(FName(TEXT("Tools")) == Pin->PinType.PinSubCategory)
 		{
 			return SNew(SDialogueStartGraphPin, Pin);
 		}
