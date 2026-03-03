@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DialogueAsset.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ActorComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -31,6 +32,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
 	float CameraTransitionTime = 0.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+	UDialogueAsset* DialogueAsset = nullptr;
 	
 	UFUNCTION(BlueprintCallable, Category = "Dialogue")
 	void ActivateSpeakerCamera();
