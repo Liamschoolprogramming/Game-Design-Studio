@@ -235,6 +235,23 @@ void APlayerControllerBase::ConfirmPossession()
 		
 		if (!ClosestPossessableEntities.IsValidIndex(IndexForPossessables)) return;
 		if (PossessionTimerHandle.IsValid()) return; // don't stack handle
+		
+		// if we pawn is already a PossessableEntity, switch immediately w/o timer
+		if ((GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass())))
+		{
+			if (Macros::CanActorSeeActor(PlayerReference, ClosestPossessableEntities[IndexForPossessables]))
+			{
+				APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
+				if (PossessableEntity && ClosestPossessableEntities[IndexForPossessables] != PossessableEntity)
+				{
+					TargetPawn = ClosestPossessableEntities[IndexForPossessables];
+					PossessTargetPawn();
+					PossessableEntity->SetPossessed(false);
+					ClosestPossessableEntities[IndexForPossessables]->OnPossessedStart();
+				}
+			}
+			return;
+		}
 
 		const FPlayerStats PlayerStats = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPlayerStatManager()->GetPlayerStats();
 		
