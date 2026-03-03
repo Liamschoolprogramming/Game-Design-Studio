@@ -8,11 +8,27 @@ void UPlayerStatManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 	Super::Initialize(InstanceOwner);
 	
 	PlayerStats = FPlayerStats();
+	AbilityTags = {};
 }
 
 FPlayerStats UPlayerStatManager::GetPlayerStats()
 {
 	return PlayerStats;
+}
+
+void UPlayerStatManager::AddAbilityTag(FName AbilityName)
+{
+	AbilityTags.Add(AbilityName);
+}
+
+void UPlayerStatManager::RemoveAbilityTag(FName AbilityName)
+{
+	AbilityTags.RemoveSingle(AbilityName);
+}
+
+bool UPlayerStatManager::HasAbilityTag(FName AbilityName)
+{
+	return AbilityTags.Contains(AbilityName);
 }
 
 void UPlayerStatManager::BoostPlayerStat(EPlayerBoostableStat StatToBoost, double Amount)

@@ -114,6 +114,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SaveLastLocation();
 	
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void PlayerDeath();
+	
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void PlayerRespawn();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Other")
+	bool IsPlayerDead;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Other")
 	FVector SafeLocation;
 

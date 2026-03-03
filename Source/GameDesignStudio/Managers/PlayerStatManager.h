@@ -63,8 +63,20 @@ class GAMEDESIGNSTUDIO_API UPlayerStatManager : public UGameManagerBase
 	virtual void Initialize(UGameManagerSubsystem* InstanceOwner) override;
 
 public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<FName> AbilityTags;
+	
 	UFUNCTION(BlueprintCallable)
 	void BoostPlayerStat(EPlayerBoostableStat StatToBoost, double Amount);
+	
+	UFUNCTION(BlueprintCallable)
+	void AddAbilityTag(FName AbilityName);
+	
+	UFUNCTION(BlueprintCallable)
+	void RemoveAbilityTag(FName AbilityName);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool HasAbilityTag(FName AbilityName);
 	
 	UFUNCTION(BlueprintCallable)
 	FPlayerStats GetPlayerStats();
