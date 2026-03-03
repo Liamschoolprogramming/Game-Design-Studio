@@ -4,7 +4,7 @@
 #include "PlayerCharacterData.generated.h"
 
 USTRUCT(BlueprintType)
-struct FPlayerCharacterTypeIcon
+struct FPlayerCharacterTypeIcon : public FTableRowBase
 {
 	GENERATED_BODY()
 	
@@ -12,7 +12,7 @@ struct FPlayerCharacterTypeIcon
 	EPlayerCharacterType PlayerCharacterType;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UTexture2D* Icon;
+	TSoftObjectPtr<UTexture2D> Icon;
 	
 	FPlayerCharacterTypeIcon()
 	{
@@ -20,7 +20,7 @@ struct FPlayerCharacterTypeIcon
 		Icon = nullptr;
 	}
 	
-	FPlayerCharacterTypeIcon(EPlayerCharacterType CharacterType, UTexture2D* CharacterIcon)
+	FPlayerCharacterTypeIcon(EPlayerCharacterType CharacterType, TSoftObjectPtr<UTexture2D> CharacterIcon)
 	{
 		PlayerCharacterType = CharacterType;
 		Icon = CharacterIcon;
