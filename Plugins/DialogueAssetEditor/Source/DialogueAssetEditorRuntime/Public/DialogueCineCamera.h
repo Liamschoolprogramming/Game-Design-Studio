@@ -19,33 +19,49 @@ public:
 
 	FOnFinishAnimation OnFinishAnimation;
 	
+	UPROPERTY()
+	USplineComponent* InternalAnimationPath;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Components")
 	USplineComponent* AnimationPath;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="CameraSettings|Animation")
 	FName CameraName;
+
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CameraSettings|Animation")
+	//Blend time when moving to this camera
+	float CameraTransitionTime = .5f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="CameraSettings|Animation")
+	//If we have a move animation for this camera (uses a spline)
+	bool bHasAnimation = true;
 	
 	UFUNCTION(BlueprintCallable)
 	void StartAnimation();
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CameraSettings|Animation")
-	float CameraTransitionTime = .5f;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CameraSettings|Animation",meta = (EditCondition = "!bHasAnimation", EditConditionHides))
+	//Used if bHasAnimation is false to determine how long we stay on this camera
+	float CameraDuration = 1.f;
 	
 	float AnimationTime;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="CameraSettings|Animation")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="CameraSettings|Animation",meta = (EditCondition = "bHasAnimation", EditConditionHides))
+	//How fast do we move along the line
 	float AnimationSpeed = 50.f;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="CameraSettings|Animation")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="CameraSettings|Animation",meta = (EditCondition = "bHasAnimation", EditConditionHides))
+	//Angle offset around the up axis as rotation for the camera
 	float AnimationOffset = 90.f;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CameraSettings|Animation", meta = (ClampMin = "0", ClampMax = "100"))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CameraSettings|Animation", meta = (ClampMin = "0", ClampMax = "100"),meta = (EditCondition = "bHasAnimation", EditConditionHides))
 	//Percent along the path
 	float AnimationPreview = 0.f;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="CameraSettings|Animation")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="CameraSettings|Animation",meta = (EditCondition = "bHasAnimation", EditConditionHides))
+	//after the animation finishes, how long do we wait before moving on.
 	float DelayAfterFinish = .1f;
+	
 	
 	UFUNCTION(BlueprintCallable)
 	void ActivateCamera();

@@ -9,14 +9,15 @@
 #include "Kismet/KismetMathLibrary.h"
 
 
+DEFINE_LOG_CATEGORY_STATIC(FDialogueCineCameraSub, Log, All)
+
 // Sets default values
 ADialogueCineCamera::ADialogueCineCamera()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
-	AnimationPath = CreateDefaultSubobject<USplineComponent>("AnimationPath");
-	AnimationPath->SetupAttachment(RootComponent);
+	
 	
 	
 }
@@ -39,9 +40,16 @@ void ADialogueCineCamera::ActivateCamera()
 		OnCameraEnabled(PC->GetViewTarget());
 		PC->SetViewTargetWithBlend(this, CameraTransitionTime);
 		PC->StopMovement();
-		SetAnimationAlongPath(0);
+		if (bHasAnimation)
+		{
+			SetAnimationAlongPath(0);
 		
-		DialogueMacros::CreateTimer( this, FName("StartAnimation"), CameraTransitionTime, false);
+			DialogueMacros::CreateTimer( this, FName("StartAnimation"), CameraTransitionTime, false);
+		}
+		else
+		{
+			DialogueMacros::CreateTimer( this, FName("EndAnimation"), CameraTransitionTime + CameraDuration, false);
+		}
 		
 	}
 
@@ -51,8 +59,32 @@ void ADialogueCineCamera::ActivateCamera()
 void ADialogueCineCamera::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
+
+	if (bHasAnimation)
+	{
+		//UE_LOG(FDialogueCineCameraSub, Error, TEXT("True"));
+		InitializeCamera();
+		if (!InternalAnimationPath)
+		{
+			InternalAnimationPath = NewObject<USplineComponent>(this, TEXT("GeneratedSpline"));
+			InternalAnimationPath->SetupAttachment(RootComponent);
+			InternalAnimationPath->RegisterComponent();
+			AnimationPath = InternalAnimationPath;
+		}
+	}
+	else
+	{
+		//UE_LOG(FDialogueCineCameraSub, Error, TEXT("False"));
+		GetCameraComponent()->SetWorldLocation(GetActorLocation());
+		if (InternalAnimationPath)
+		{
+			InternalAnimationPath->DestroyComponent();
+			InternalAnimationPath = nullptr;
+			AnimationPath = nullptr;
+			
+		}
+	}
 	
-	InitializeCamera();
 }
 
 void ADialogueCineCamera::InitializeCamera()
