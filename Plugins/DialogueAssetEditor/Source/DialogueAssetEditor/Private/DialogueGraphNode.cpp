@@ -25,9 +25,10 @@ FText UDialogueGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 	UDialogueNodeInfo* DialogueNodeInfo = Cast<UDialogueNodeInfo>(NodeInfo);
 	if (DialogueNodeInfo->Title.IsEmpty())
 	{
-		FString DialogueTextString = DialogueNodeInfo->DialogueText.ToString();
+		FString DialogueTextString = DialogueNodeInfo->SpeakerName.ToString() + TEXT(": ") + DialogueNodeInfo->DialogueText.ToString();
 		if (DialogueTextString.Len() > 15)
 		{
+			
 			DialogueTextString = DialogueTextString.Left(15) + TEXT("...");
 		}
 		return FText::FromString(DialogueTextString);
