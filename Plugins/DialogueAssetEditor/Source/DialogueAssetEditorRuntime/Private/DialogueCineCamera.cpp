@@ -48,7 +48,9 @@ void ADialogueCineCamera::ActivateCamera()
 		}
 		else
 		{
-			DialogueMacros::CreateTimer( this, FName("EndAnimation"), CameraTransitionTime + CameraDuration, false);
+			float Temp = CameraTransitionTime + CameraDuration;
+			UE_LOG(LogTemp, Display, TEXT("Sitting until end animation"));
+			DialogueMacros::CreateTimer( this, FName("EndAnimation"), Temp, false);
 		}
 		
 	}

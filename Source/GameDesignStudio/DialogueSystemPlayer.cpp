@@ -56,7 +56,7 @@ void UDialogueSystemPlayer::PlayDialogue(class UDialogueAsset* InDialogueAsset, 
 	}
 	if (CurrentNode == nullptr)
 	{
-		UE_LOG(DialoguePlayerSub, Error, TEXT("No start node"));
+		UE_LOG(DialoguePlayerSub, Fatal, TEXT("No start node in graph. How did you do this?"));
 		return;
 	}
 	//create and display dialogue UI
@@ -81,7 +81,7 @@ UDialogueSpeakerComponent* UDialogueSystemPlayer::FindSpeakerComponent(UWorld* W
 			return *It;
 		}
 	}
-
+	UE_LOG(LogTemp, Error, TEXT("No speaker found with name %s, make sure you set it in the node properties and the speaker component"), *SpeakerName.ToString());
 	return nullptr;
 }
 
@@ -99,12 +99,18 @@ ADialogueCineCamera* UDialogueSystemPlayer::FindCineCamera(UWorld* World, FName 
 			return *It;
 		}
 	}
+	UE_LOG(LogTemp, Error, TEXT("No Camera found with name %s, make sure you set it in the node properties and the speaker component"), *InCameraName.ToString());
 	return nullptr;
 }
 
 void UDialogueSystemPlayer::ChooseFirstOptionAndEnableDialogue()
 {
-	DialogueWidget->SetVisibility(ESlateVisibility::Visible);
+	if (DialogueWidget)
+	{
+		DialogueWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+	
+	
 	ChooseOptionAtIndex(0);
 }
 
@@ -234,6 +240,7 @@ void UDialogueSystemPlayer::CheckQuest(FName QuestKey)
 
 void UDialogueSystemPlayer::ChangeCamera(FName CameraName, float TransitionTime, bool bReenableDialogueAfterAnimation)
 {
+	UE_LOG(LogTemp, Display, TEXT("Finding Camera"));
 	if (ADialogueCineCamera* Camera = FindCineCamera(GetWorld(),CameraName))
 	{
 		PlayerController->SetViewTargetWithBlend(Camera, TransitionTime);
@@ -241,6 +248,7 @@ void UDialogueSystemPlayer::ChangeCamera(FName CameraName, float TransitionTime,
 		DialogueWidget->SetVisibility(ESlateVisibility::Hidden);
 		if (bReenableDialogueAfterAnimation)
 		{
+			UE_LOG(LogTemp, Display, TEXT("ChooseFirstOption and enable dialogue"));
 			Camera->OnFinishAnimation.AddUObject(this, &UDialogueSystemPlayer::ChooseFirstOptionAndEnableDialogue);
 		}
 		else
@@ -248,6 +256,10 @@ void UDialogueSystemPlayer::ChangeCamera(FName CameraName, float TransitionTime,
 			Camera->OnFinishAnimation.AddUObject(this, &UDialogueSystemPlayer::ChooseFirstOption);
 		}
 		
+	}else
+	{
+		
+		ChooseFirstOption();
 	}
 }
 
