@@ -24,7 +24,7 @@ bool Macros::CanActorSeeActor(const AActor* CheckingActor, const AActor* ActorTo
 	FHitResult HitResult;
 		
 	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(CheckingActor);            // Ignore self
+	Params.AddIgnoredActor(CheckingActor); // Ignore self
 	Params.AddIgnoredActor(ActorToCheck); //ignore the one we are checking
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(CheckingActor->GetWorld(), ARefractingPrism::StaticClass(), ActorsToIgnore);
@@ -48,7 +48,8 @@ bool Macros::CanActorSeeActor(const AActor* CheckingActor, const AActor* ActorTo
 		if (HitResult.GetActor())
 		{
 			//Debug::PrintToScreen(HitResult.GetActor()->GetName(), 10.f, FColor::Purple);
-		}else
+		}
+		else
 		{
 			//Debug::PrintToScreen(HitResult.ImpactPoint, 10.f, FColor::Purple);
 #if !UE_BUILD_SHIPPING
