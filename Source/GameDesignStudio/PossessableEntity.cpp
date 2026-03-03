@@ -45,38 +45,3 @@ void APossessableEntity::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-
-void APossessableEntity::OnTogglePossession()
-{
-	if (bPossessed)
-	{
-		PlayerController->Possess(PlayerCharacter);
-		bPossessed = false;
-		PlayerController->SetCanMove(true);
-	}
-	else
-	{
-		PlayerController->Possess(this);
-		bPossessed = true;
-		if (!bCanMove)
-		{
-			PlayerController->SetCanMove(false);
-		}
-		else
-		{
-			PlayerController->SetCanMove(true);
-		}
-	}
-}
-
-void APossessableEntity::OnPossess()
-{
-	PlayerController->Possess(this);
-	bPossessed = true;
-}
-
-void APossessableEntity::OnCancelPossess()
-{
-	PlayerController->Possess(PlayerCharacter);
-	bPossessed = false;
-}

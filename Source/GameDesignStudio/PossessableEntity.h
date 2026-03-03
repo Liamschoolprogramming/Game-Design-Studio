@@ -49,13 +49,4 @@ protected:
 	
 	bool bPossessed = false;
 	bool bSettingDestination = false;
-	
-	UFUNCTION(BlueprintCallable)
-	void OnTogglePossession();
-	
-	UFUNCTION(BlueprintCallable)
-	void OnPossess();
-	
-	UFUNCTION(BlueprintCallable)
-	void OnCancelPossess();
 };
