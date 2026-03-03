@@ -98,16 +98,14 @@ bool APlayerControllerBase::CanWeCyclePossessableEntity(int IndexToCheck)
 	
 	if (IndexToCheck >= 0)
 	{
-		Debug::PrintToScreen("CHECKING??");
+
 		if (!ClosestPossessableEntities.IsValidIndex(IndexToCheck)) return false;
 
-		Debug::PrintToScreen("HERE??");
 		if (!Macros::CanActorSeeActor(PlayerReference, ClosestPossessableEntities[IndexToCheck])) return false;
 		if (GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()) &&
 			GetPawn()->GetClass()->GetSuperClass() == APossessableEntity::StaticClass())
 		{
 			APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
-			Debug::PrintToScreen("HERE 2??");
 			if (ClosestPossessableEntities[IndexToCheck] != PossessableEntity) return true;
 		}
 		else
@@ -173,7 +171,6 @@ void APlayerControllerBase::StopMove(const FInputActionValue& Value)
 
 void APlayerControllerBase::CyclePossessionUp()
 {
-	Debug::PrintToScreen("Cycling up!");
 	if (IndexForPossessables + 1 >= ClosestPossessableEntities.Num())
 	{
 		IndexForPossessables = -1;
@@ -215,7 +212,6 @@ void APlayerControllerBase::PossessIndex(int IndexToPossess)
 
 void APlayerControllerBase::ConfirmPossession()
 {
-	Debug::PrintToScreen("Confirming possession...");
 	if (IndexForPossessables == -1)
 	{
 		// if we are already the player, do nothing
@@ -235,27 +231,23 @@ void APlayerControllerBase::ConfirmPossession()
 	}
 	else if (IndexForPossessables >= 0)
 	{
-		Debug::PrintToScreen("at least 0");
 		if (!CanWeCyclePossessableEntity(IndexForPossessables)) return;
 		
 		if (!ClosestPossessableEntities.IsValidIndex(IndexForPossessables)) return;
 		if (PossessionTimerHandle.IsValid()) return; // don't stack handle
-		
-		Debug::PrintToScreen("case 1");
+
 		const FPlayerStats PlayerStats = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPlayerStatManager()->GetPlayerStats();
 		
 		PlayerStats.MindPoints >= 5 ? CastTime = 3.f : 6.f;
 		
 		if (!Macros::CanActorSeeActor(PlayerReference, ClosestPossessableEntities[IndexForPossessables])) 
 		{
-			Debug::PrintToScreen("CANT see..");
 			FTimerDelegate CycleTimerDelegate;
 			CycleTimerDelegate.BindUFunction(this, FName("CyclePossessionUp"));
 			GetWorld()->GetTimerManager().SetTimerForNextTick(CycleTimerDelegate);
 			return;
 		}
 		
-		Debug::PrintToScreen("Can see");
 		APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
 		if (PossessableEntity)
 		{
@@ -273,111 +265,12 @@ void APlayerControllerBase::ConfirmPossession()
 				UUserWidget* PossessTimeWidget = CreateWidget(this, PossessionWidget);
 				PossessTimeWidget->AddToViewport();
 			}
+
 			ClosestPossessableEntities[IndexForPossessables]->OnPossessedStart();
 				
 		}
 	}
 }
-
-/* void APlayerControllerBase::CyclePossession()
-{
-	if (ClosestPossessableEntities.IsEmpty()) return;
-	
-	if (IndexForPossessables == -1)
-	{
-		APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
-		if (PossessableEntity && PlayerReference)
-		{
-			PossessableEntity->SetPossessed(false);
-			CameraReference->SetActorRotation(PlayerReference->GetActorRotation());
-			CameraReference->ResetCameraRotation(PlayerReference->GetActorRotation());
-			TargetPawn = nullptr;
-			Possess(PlayerReference);
-			
-			PossessionTimerHandle.Invalidate();
-			
-		}
-	}
-	else if (IndexForPossessables >= 0)
-	{
-		
-		if (!ClosestPossessableEntities.IsValidIndex(IndexForPossessables)) return;
-		if (PossessionTimerHandle.IsValid()) return; // don't stack handle
-		
-		const FPlayerStats PlayerStats = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPlayerStatManager()->GetPlayerStats();
-		
-		PlayerStats.MindPoints >= 5 ? CastTime = 3.f : 6.f;
-		
-		if (!Macros::CanActorSeeActor(PlayerReference, ClosestPossessableEntities[IndexForPossessables])) 
-		{
-			FTimerDelegate CycleTimerDelegate;
-			CycleTimerDelegate.BindUFunction(this, FName("CyclePossessionUp"));
-			GetWorld()->GetTimerManager().SetTimerForNextTick(CycleTimerDelegate);
-			return;
-		}
-		if (GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()) &&
-	GetPawn()->GetClass()->GetSuperClass() == APossessableEntity::StaticClass())
-		{
-			
-			if (CanSwitchToOthersWhilePossessed)
-			{
-				APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
-				if (PossessableEntity)
-				{
-					PossessableEntity->SetPossessed(false);
-				}
-			
-				if (ClosestPossessableEntities[IndexForPossessables] != PossessableEntity)
-				{
-					TargetPawn = ClosestPossessableEntities[IndexForPossessables];
-					FTimerDelegate TimerDelegate;
-					TimerDelegate.BindUFunction(this, FName("PossessTargetPawn"));
-					GetWorld()->GetTimerManager().SetTimer(PossessionTimerHandle, TimerDelegate, CastTime, false);
-					if (PossessionWidget)
-					{
-						UUserWidget* PossessTimeWidget = CreateWidget(this, PossessionWidget);
-						PossessTimeWidget->AddToViewport();
-					}
-					ClosestPossessableEntities[IndexForPossessables]->OnPossessedStart();
-				
-				}
-			}
-			else
-			{
-				APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
-				if (PossessableEntity && PlayerReference)
-				{
-					PossessableEntity->SetPossessed(false);
-					CameraReference->SetActorRotation(PlayerReference->GetActorRotation());
-					CameraReference->ResetCameraRotation(PlayerReference->GetActorRotation());
-					TargetPawn = nullptr;
-					Possess(PlayerReference);
-			
-					PossessionTimerHandle.Invalidate();
-			
-				}
-			}
-			
-		}
-		else
-		{
-			if (ClosestPossessableEntities[IndexForPossessables] != nullptr)
-			{
-				TargetPawn = ClosestPossessableEntities[IndexForPossessables];
-				FTimerDelegate TimerDelegate;
-				TimerDelegate.BindUFunction(this, FName("PossessTargetPawn"));
-				GetWorld()->GetTimerManager().SetTimer(PossessionTimerHandle, TimerDelegate, CastTime, false);
-				if (PossessionWidget)
-				{
-					UUserWidget* PossessTimeWidget = CreateWidget(this, PossessionWidget);
-					PossessTimeWidget->AddToViewport();
-				}
-				ClosestPossessableEntities[IndexForPossessables]->OnPossessedStart();
-			}
-		}
-		
-	}
-} */
 
 void APlayerControllerBase::LookGate(const FInputActionValue& Value)
 {

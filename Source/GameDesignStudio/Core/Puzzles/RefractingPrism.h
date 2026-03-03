@@ -1,7 +1,14 @@
 #pragma once
 
-class RefractingPrism
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "RefractingPrism.generated.h"
+
+UCLASS()
+class GAMEDESIGNSTUDIO_API ARefractingPrism : public AActor
 {
-public:
+	GENERATED_BODY()
 	
+public:
+	ARefractingPrism();
 };

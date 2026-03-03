@@ -3,6 +3,9 @@
 
 #include "Macros.h"
 
+#include "Core/Puzzles/RefractingPrism.h"
+#include "Kismet/GameplayStatics.h"
+
 void Debug::PrintToScreen(const FString& Msg, float Time, FColor Color)
 {
 	if (GEngine)
@@ -18,14 +21,14 @@ bool Macros::CanActorSeeActor(const AActor* CheckingActor, const AActor* ActorTo
 	if (!CheckingActor) return false;
 	const FVector Start =CheckingActor->GetActorLocation();
 	const FVector End = ActorToCheck->GetActorLocation();
-	
-	
-	
 	FHitResult HitResult;
 		
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(CheckingActor);            // Ignore self
 	Params.AddIgnoredActor(ActorToCheck); //ignore the one we are checking
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(CheckingActor->GetWorld(), ARefractingPrism::StaticClass(), ActorsToIgnore);
+	
 	if (!ActorsToIgnore.IsEmpty())
 	{
 		for (AActor* ActorToIgnore : ActorsToIgnore)
