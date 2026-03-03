@@ -41,7 +41,7 @@ UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHi
 		if (PlayerCharacter != nullptr && (PlayerCharacter->PlayerCharacterType == PlayerToKill || KillAnyPlayer)
 			&& OtherComp->ComponentHasTag("PlayerHitBox"))
 		{
-			PlayerCharacter->SetActorLocation(PlayerCharacter->SafeLocation);
+			PlayerCharacter->PlayerDeath();
 		}
 	}
 }
