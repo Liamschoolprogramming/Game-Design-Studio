@@ -8,6 +8,7 @@
 #include "Managers/PuzzleRiverManager.h"
 #include "Managers/PuzzleGriefManager.h"
 #include "Managers/QuestManager.h"
+#include "Managers/GearManager.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "GameManagerSubsystem.generated.h"
 
@@ -57,6 +58,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UInventoryManager* GetInventoryManager() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Managers")
+	UGearManager* GetGearManager() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UPlayerStatManager* GetPlayerStatManager() const;
