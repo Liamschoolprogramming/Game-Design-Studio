@@ -109,6 +109,11 @@ void UGearManager::ApplyGearStats(FPlayerInventoryItem Gear)
 	PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Health, HealthBoost);
 	PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Stamina, StaminaBoost);
 	PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Mind, MindBoost);
+
+	for (FName AbilityName : Gear.GearInfo.AbilityTags)
+	{
+		PlayerStatManager->AddAbilityTag(AbilityName);
+	}
 }
 
 /**
@@ -126,5 +131,10 @@ void UGearManager::RemoveGearStats(FPlayerInventoryItem Gear)
 	PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Health, -HealthBoost);
 	PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Stamina, -StaminaBoost);
 	PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Mind, -MindBoost);
+	
+	for (FName AbilityName : Gear.GearInfo.AbilityTags)
+	{
+		PlayerStatManager->RemoveAbilityTag(AbilityName);
+	}
 }
 

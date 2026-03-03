@@ -64,7 +64,7 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 			TSoftObjectPtr<UTexture2D>(
 				FSoftObjectPath(TEXT("/Engine/EngineResources/AICON-Red.AICON-Red"))
 			),
-			"A charm given to you by Verdan.",
+			"A charm given to you by Verdan. Nullifies one instance of damage taken per life.",
 			0, 1, 
 			FGearInfo({{"Health",  5}}, {"DamageNullification"}, EGearType::Head)
 			)
@@ -74,9 +74,9 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 			TSoftObjectPtr<UTexture2D>(
 				FSoftObjectPath(TEXT("/Engine/EditorResources/Ai_Spawnpoint.Ai_Spawnpoint"))
 			),
-			"Sandals that you found in a chest.",
+			"Sandals that you found in a chest. Grants +5 Stamina",
 			0, 1, 
-			FGearInfo({{"Stamina", 5}}, {}, EGearType::Head)
+			FGearInfo({{"Stamina", 5}}, {}, EGearType::Legs)
 			)
 		},
 	};
