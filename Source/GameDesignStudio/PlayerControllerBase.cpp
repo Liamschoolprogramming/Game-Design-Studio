@@ -78,18 +78,7 @@ void APlayerControllerBase::AddPossessableEntity(APossessableEntity* Entity)
 //This removes a possessable entity from our array only if the Entity given is not a null pointer. 
 void APlayerControllerBase::RemovePossessableEntity(APossessableEntity* Entity)
 {
-	
-	
-	if (Entity == GetPawn() && PlayerReference)
-	{
-		/*This bit was for switching back to player however we probably want to instead do nothing
-		 *Entity->SetPossessed(false);
-		Possess(PlayerReference);
-		ClosestPossessableEntities.Remove(Entity);
-		IndexForPossessables = -1;*/
-		
-	}
-	else if (Entity)
+	if (Entity)
 	{
 		int IndexToRemove = ClosestPossessableEntities.Find(Entity);
 		RemovePossessableFromHotbar(IndexToRemove);

@@ -30,7 +30,7 @@ struct FPlayerStats
 	
 	FPlayerStats()
 	{
-		PossessRange = 1000.0;
+		PossessRange = 1800.0;
 		InteractRange = 500.0;
 		HealthPoints = 3.0;
 		StaminaPoints = 100.0;
