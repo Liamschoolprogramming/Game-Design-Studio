@@ -205,7 +205,10 @@ public:
 	UFUNCTION()
 	void CyclePossessionUp();
 	void CyclePossessionDown();
+	UFUNCTION(BlueprintCallable, Category="Possession")
 	void ConfirmPossession();
+	UFUNCTION(BlueprintCallable, Category="Possession")
+	void PossessIndex(int IndexToPossess);
 	
 	void LookGate(const FInputActionValue& Value);
 	void LookGateStart();
