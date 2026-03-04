@@ -21,13 +21,13 @@ void UPuzzleWorldSubsystem::RegisterPuzzleActor(APuzzle* Actor)
 	
 	UGameManagerSubsystem* Subsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>();
 	
-	if (!RuntimeActors.Contains(Actor->GetActorGuid()))
+	if (!RuntimeActors.Contains(Actor->PuzzleActorGuid))
 	{
 		// Registering actor references with the PuzzleWorldSubsystem
-		RuntimeActors.Add(Actor->GetActorGuid(), Actor);
+		RuntimeActors.Add(Actor->PuzzleActorGuid, Actor);
 		
 		// Registering actor with the manager set in the editor and storing initial data
-		Subsystem->RegisterActorToManager(Actor->OwningManager, Actor->GetActorGuid(), Actor->ActorValues);
+		Subsystem->RegisterActorToManager(Actor->OwningManager, Actor->PuzzleActorGuid, Actor->ActorValues);
 		UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Registered %d"), RuntimeActors.Num());
 	
 	}

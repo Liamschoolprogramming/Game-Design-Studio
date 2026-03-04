@@ -14,7 +14,7 @@ void APuzzleEmitter::EmitGreenSignal()
 	if (LinkedReceiver != nullptr)
 	{
 		APuzzleReceiver* Receiver = static_cast<APuzzleReceiver*>(LinkedReceiver);
-		Receiver->ReceiveGreenSignal(this->GetActorGuid());
+		Receiver->ReceiveGreenSignal(this->PuzzleActorGuid);
 	}
 }
 
@@ -23,6 +23,6 @@ void APuzzleEmitter::EmitRedSignal()
 	if (LinkedReceiver != nullptr)
 	{
 		APuzzleReceiver* Receiver = static_cast<APuzzleReceiver*>(LinkedReceiver);
-		Receiver->ReceiveRedSignal(this->GetActorGuid());
+		Receiver->ReceiveRedSignal(this->PuzzleActorGuid);
 	}
 }
