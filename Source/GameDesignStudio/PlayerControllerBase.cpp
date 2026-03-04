@@ -454,7 +454,8 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 				Dir.Normalize();
 				FVector DeltaMove = pos + (Dir * PawnMovementSpeed * GetWorld()->GetDeltaSeconds());
 				PawnVelocity = Dir * PawnMovementSpeed;
-				OurPawn->SetActorLocation(DeltaMove);
+				FHitResult* Hit = new FHitResult();
+				OurPawn->SetActorLocation(DeltaMove, true, Hit);
 				
 				//Smoothly rotate to new direction
 				
