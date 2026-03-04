@@ -124,10 +124,6 @@ void UQuestManager::UpdateQuestProgress(FName ItemName)
 		return;
 	}
 	
-	if (CanCompleteQuest)
-	{
-		CompleteQuest(ItemName);
-	}
 	IQuestInterface::Execute_OnQuestProgressChanged(QuestMenu, ItemName);
 }
 
