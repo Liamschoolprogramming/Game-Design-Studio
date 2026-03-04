@@ -49,12 +49,26 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 			"Owl Child",
 			FQuest(
 				"Whistlebranch's Missing Children",
-				"Whistlebranch can't seem to find her children. Help her find them.",
+				"Whistlebranch can't seem to find her children. Help her find all 4 of them.",
 				"Owl Child",
 				4,
 				EPlayerBoostableStat::Stamina,
-				3,
+				5,
 				"None"
+			)
+		},
+		
+		//Lehan Quest - Verdan
+		{
+			"Berry",
+			FQuest(
+				"Verdan's Request",
+				"Verdan wants you to collect 10 berries to help the local wildlife.",
+				"Berry",
+				10,
+				EPlayerBoostableStat::Stamina,
+				0,
+				"Aegis Charm"
 			)
 		},
 	};
@@ -199,8 +213,12 @@ void UQuestManager::ProvideReward(FName ItemName)
 	
 	if (Quest->GearReward != "None")
 	{
-		//UInventoryManager* InventoryManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetInventoryManager();
-		//add gear here
+		UInventoryManager* InventoryManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetInventoryManager();
+		
+		if (InventoryManager->AllItems.Find(Quest->GearReward))
+		{
+			InventoryManager->AddToInventory(Quest->GearReward, 1);
+		}
 	}
 }
 

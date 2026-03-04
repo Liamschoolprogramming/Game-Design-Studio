@@ -5,11 +5,13 @@
 #include "CoreMinimal.h"
 #include "CustomCamera.h"
 
+
 #include "GameFramework/PlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "PossessableEntity.h"
+#include "RewardSpawnZone.h"
 #include "Core/Puzzles/PuzzleInteractive.h"
 #include "PlayerControllerBase.generated.h"
 
@@ -59,8 +61,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Possession")
 	TSubclassOf<UUserWidget> PossessionWidget;
 	
+	UFUNCTION(BlueprintNativeEvent, Category="Possession")
+	void OnCyclePossessionTarget();
 	
-	void CyclePossession();
+	UFUNCTION(BlueprintNativeEvent, Category="Possession")
+	void RemovePossessableFromHotbar(int IndexToRemove);
+	
+	UFUNCTION(BlueprintNativeEvent, Category="Possession")
+	void AddPossessableToHotbar();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
 	float ControllerSensitivity = 0.2f;
@@ -121,6 +129,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	UInputAction* CyclePossessionDownAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* ConfirmPossessionAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	UInputAction* InteractAction;
@@ -153,18 +164,16 @@ public:
 	FRotator PawnDesiredRotation;
 	bool bPawnHasMovementInput = false;
 	
-	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Possession")
 	TArray<APossessableEntity*> ClosestPossessableEntities;
 	
-	
-	void SortClosestPossessableEntitiesByDistance();
-	
+	//void SortClosestPossessableEntitiesByDistance();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement")
 	FVector PawnVelocity;
 	
-	//-1 will be the index for the player character
-	int IndexForPossessables = -1;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Possession")
+	int IndexForPossessables = -1; //-1 will be the index for the player character
 	
 	UFUNCTION(BlueprintCallable, Category="Possession")
 	void AddPossessableEntity(APossessableEntity* Entity);
@@ -191,6 +200,10 @@ public:
 	void StartClick(const FInputActionValue& Value);
 	void StopClick(const FInputActionValue& Value);
 	
+	UFUNCTION(BlueprintCallable, Category="Camera")
+	void ResetCameraFromDialogue(float TransitionTime);
+	
+	
 	void StopMove(const FInputActionValue& Value);
 
 	void InteractWithClosestObject();
@@ -198,6 +211,10 @@ public:
 	UFUNCTION()
 	void CyclePossessionUp();
 	void CyclePossessionDown();
+	UFUNCTION(BlueprintCallable, Category="Possession")
+	void ConfirmPossession();
+	UFUNCTION(BlueprintCallable, Category="Possession")
+	void PossessIndex(int IndexToPossess);
 	
 	void LookGate(const FInputActionValue& Value);
 	void LookGateStart();
@@ -219,6 +236,24 @@ private:
 public:
 	virtual void SetupInputComponent() override;
 	
+	//Dialogue System
+public:
+	
+	UFUNCTION(BlueprintCallable, Category = "Dialogue")
+	void StartDialogue(class UDialogueAsset* InDialogueAsset = nullptr);
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
+	void DialogueBPFunction(const FString& ActionData);
+	
+	UFUNCTION(BlueprintCallable, Category = "Dialogue")
+	ARewardSpawnZone* FindFirstRewardSpawnZone();
+	
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+	class UDialogueAsset* DialogueAsset = nullptr;
+	
+	UPROPERTY()
+	class UDialogueSystemPlayer* DialoguePlayer = nullptr;
 };
 
 

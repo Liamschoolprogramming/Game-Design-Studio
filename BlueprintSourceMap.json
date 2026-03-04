@@ -1,0 +1,20 @@
+{
+	"blueprintSourceMap":
+	{
+		"/Game/GameDesignStudio/UI/Dialogue/WBP_DialogueResponseButton.WBP_DialogueResponseButton":
+		{
+			"headerPath": "Source/GameDesignStudio/DialogueResponseButtonController.h",
+			"cppPath": "Source/GameDesignStudio/DialogueResponseButtonController.cpp"
+		},
+		"/Game/GameDesignStudio/UI/Dialogue/WBP_Dialogue.WBP_Dialogue":
+		{
+			"headerPath": "Source/GameDesignStudio/UI/DialogueUIController.h",
+			"cppPath": "Source/GameDesignStudio/UI/DialogueUIController.cpp"
+		},
+		"/Game/GameDesignStudio/UI/Dialogue/WBP_QuestDialogueUI.WBP_QuestDialogueUI":
+		{
+			"headerPath": "Source/GameDesignStudio/QuestDialogueUIController.h",
+			"cppPath": "Source/GameDesignStudio/QuestDialogueUIController.cpp"
+		}
+	}
+}
