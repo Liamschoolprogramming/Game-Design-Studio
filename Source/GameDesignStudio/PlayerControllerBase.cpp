@@ -2,6 +2,9 @@
 
 
 #include "PlayerControllerBase.h"
+
+#include "DialogueEndNodeInfo.h"
+
 #include "GameFramework/InputDeviceSubsystem.h"
 #include "EnhancedInputSubsystems.h"
 #include "Macros.h"
@@ -10,9 +13,10 @@
 #include "Components/SplineComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraComponent.h"
+#include "Core/Debug/DebugUtils.h"
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
-
+#include "DialogueSystemPlayer.h"
 
 DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
 
@@ -163,6 +167,7 @@ void APlayerControllerBase::StartClick(const FInputActionValue& Value)
 void APlayerControllerBase::StopClick(const FInputActionValue& Value)
 {
 }
+
 
 void APlayerControllerBase::StopMove(const FInputActionValue& Value)
 {
@@ -654,4 +659,73 @@ void APlayerControllerBase::SetupInputComponent()
 		}
 		
 	}
+}
+void APlayerControllerBase::ResetCameraFromDialogue(float TransitionTime)
+{
+	if (CameraReference)
+	{
+		SetViewTargetWithBlend(CameraReference, TransitionTime);
+		SetCanMove(true);
+	}
+}
+
+
+void APlayerControllerBase::StartDialogue(UDialogueAsset* InDialogueAsset)
+{
+	
+	if (!DialogueAsset && !InDialogueAsset)
+	{
+		DEBUG_TO_SCREEN(FColor::Red, "No dialogue asset selected");
+		return;
+	}
+	if (InDialogueAsset)
+	{
+		DialogueAsset = InDialogueAsset;
+	}
+
+	DialoguePlayer = NewObject<UDialogueSystemPlayer>(this);
+	DialoguePlayer->PlayDialogue(DialogueAsset, this, FOnDialogueEnded::CreateLambda(
+		[this](EDialogueNodeAction Action, FString ActionData)
+		{
+			if (Action == EDialogueNodeAction::StartQuest && ActionData != FString(""))
+			{
+				UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager();
+				QuestManager->ActivateQuestForItem(FName(ActionData));
+			}else if (Action == EDialogueNodeAction::BPFunction && ActionData != FString(""))
+			{
+				DialogueBPFunction(FString(ActionData));
+				
+			}
+			if (DialoguePlayer->CurrentSpeakerComponent)
+			{
+				ResetCameraFromDialogue(DialoguePlayer->CurrentSpeakerComponent->CameraTransitionTime);
+			}
+			else
+			{
+				ResetCameraFromDialogue(0.5f);
+			}
+		}
+		)
+		);
+
+
+}
+
+ARewardSpawnZone* APlayerControllerBase::FindFirstRewardSpawnZone()
+{
+	UWorld* World = GetWorld();
+	if (!World) return nullptr;
+	//some goofy search
+	for (TObjectIterator<ARewardSpawnZone> It; It; ++It)
+	{
+		if (It->GetWorld() != World)
+			continue;
+
+		if (It)
+		{
+			return *It;
+		}
+	}
+	return nullptr;
+
 }

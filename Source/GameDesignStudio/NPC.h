@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DialogueActorComponent.h"
 #include "PlayerCharacter.h"
 #include "NPC.generated.h"
 
@@ -19,9 +18,7 @@ class GAMEDESIGNSTUDIO_API ANPC : public APlayerCharacter
 public:
 	ANPC();
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Components")
-	UDialogueActorComponent* DialogueActorComponent;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Dialogue")
-	FText NPCName = FText::FromString(TEXT("Deafult NPC Name"));
+	
+	
 };

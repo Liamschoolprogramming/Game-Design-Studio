@@ -11,13 +11,13 @@ public class GameDesignStudio : ModuleRules
 	
 		PublicIncludePaths.Add("GameDesignStudio");
 		
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" , "UMG"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" , "UMG", "DialogueAssetEditorRuntime"});
+		
 
-		if (Target.bBuildEditor)
-		{
+		if(Target.bBuildEditor){
+			PublicDependencyModuleNames.AddRange(new string[] { "DialogueAssetEditor"});
 			PrivateDependencyModuleNames.Add("UnrealEd");
 		}
-
 		
 
 		// Uncomment if you are using Slate UI

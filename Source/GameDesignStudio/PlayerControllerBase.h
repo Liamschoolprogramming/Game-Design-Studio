@@ -5,11 +5,13 @@
 #include "CoreMinimal.h"
 #include "CustomCamera.h"
 
+
 #include "GameFramework/PlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "PossessableEntity.h"
+#include "RewardSpawnZone.h"
 #include "Core/Puzzles/PuzzleInteractive.h"
 #include "PlayerControllerBase.generated.h"
 
@@ -198,6 +200,10 @@ public:
 	void StartClick(const FInputActionValue& Value);
 	void StopClick(const FInputActionValue& Value);
 	
+	UFUNCTION(BlueprintCallable, Category="Camera")
+	void ResetCameraFromDialogue(float TransitionTime);
+	
+	
 	void StopMove(const FInputActionValue& Value);
 
 	void InteractWithClosestObject();
@@ -230,6 +236,24 @@ private:
 public:
 	virtual void SetupInputComponent() override;
 	
+	//Dialogue System
+public:
+	
+	UFUNCTION(BlueprintCallable, Category = "Dialogue")
+	void StartDialogue(class UDialogueAsset* InDialogueAsset = nullptr);
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
+	void DialogueBPFunction(const FString& ActionData);
+	
+	UFUNCTION(BlueprintCallable, Category = "Dialogue")
+	ARewardSpawnZone* FindFirstRewardSpawnZone();
+	
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+	class UDialogueAsset* DialogueAsset = nullptr;
+	
+	UPROPERTY()
+	class UDialogueSystemPlayer* DialoguePlayer = nullptr;
 };
 
 

@@ -9,11 +9,7 @@ ANPC::ANPC()
 {
 	
 	
-	DialogueActorComponent = CreateDefaultSubobject<UDialogueActorComponent>(TEXT("DialogueActorComponent"));
-	if (DialogueActorComponent)
-	{
-		DialogueActorComponent->NPCName = NPCName;
-	}
+	
 	
 	GetCapsuleComponent()->ComponentTags.Empty();
 	GetCapsuleComponent()->ComponentTags.Add("HitBox");
