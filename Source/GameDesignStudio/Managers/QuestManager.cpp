@@ -11,7 +11,9 @@
 #include "Core/Subsystems/GameManagerSubsystem.h"
 #include "Managers/QuestInterface.h"
 #include "Blueprint/UserWidget.h"
+#include "Core/Puzzles/Pickups/PuzzleInteractive_QuestItem.h"
 #include "Engine/RendererSettings.h"
+#include "Kismet/GameplayStatics.h"
 
 void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 {
@@ -89,6 +91,18 @@ void UQuestManager::ActivateQuestForItem(FName ItemName)
 			IQuestInterface::Execute_OnQuestStarted(QuestMenu, ItemName);
 		}
 		
+		TArray<AActor*> FoundQuestItems; 
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APuzzleInteractive_QuestItem::StaticClass(), FoundQuestItems);
+		for (int i = 0; i < FoundQuestItems.Num(); i++)
+		{
+			
+			APuzzleInteractive_QuestItem* FoundQuestItem = Cast<APuzzleInteractive_QuestItem>(FoundQuestItems[i]);
+			if (FoundQuestItem && FoundQuestItem->ItemName == ItemName)
+			{
+				FoundQuestItem->SetQuestItemActive(true);
+			}
+		}
+		
 		UpdateQuestProgress(ItemName);
 	}
 }
@@ -110,6 +124,10 @@ void UQuestManager::UpdateQuestProgress(FName ItemName)
 		return;
 	}
 	
+	if (CanCompleteQuest)
+	{
+		CompleteQuest(ItemName);
+	}
 	IQuestInterface::Execute_OnQuestProgressChanged(QuestMenu, ItemName);
 }
 
