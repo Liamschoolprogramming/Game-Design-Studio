@@ -35,13 +35,18 @@ void APlayerControllerBase::SetCanMove(bool CanMove)
 void APlayerControllerBase::Jump(const FInputActionValue& Value)
 {
 	//Get the pawn we are possessing, if it is a character we can just call Jump, if not, add custom jump logic
-	ACharacter* OurCharacter = Cast<ACharacter>(GetPawn());
+	APlayerCharacter* OurCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (OurCharacter)
 	{
-		OurCharacter->Jump();
-		
+		if (OurCharacter->PlayerCharacterType == EPlayerCharacterType::Beetle)
+		{
+			Cast<APossessableEntity>(GetPawn())->RotatePrism();
+		}
+		else
+		{
+			OurCharacter->Jump();
+		}
 	}
-	
 }
 
 void APlayerControllerBase::StopJumping(const FInputActionValue& Value)
@@ -384,6 +389,17 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 	{
 		return;
 	}
+	
+	// do not move possessable turrets
+	APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
+	if (PossessableEntity)
+	{
+		if (PossessableEntity->PlayerCharacterType == EPlayerCharacterType::Turret)
+		{
+			return;
+		}
+	}
+	
 	//move the camera if we have a reference to it
 	if (CameraReference)
 	{
