@@ -32,7 +32,7 @@ void APuzzle::BeginPlay()
 	
 	if (LinkedReceiver != nullptr)
 	{
-		LinkedReceiver->Signals.Add(this->GetActorGuid(), false);
+		LinkedReceiver->Signals.Add(this->PuzzleActorGuid, false);
 	}
 }
 

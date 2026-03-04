@@ -185,6 +185,6 @@ void UGameManagerSubsystem::SnapshotActorValues(APuzzle* Actor)
 	
 	else if (Actor->OwningManager != nullptr)
 	{
-		this->GetManager(Actor->OwningManager)->Snapshot(Actor->GetActorGuid(), Actor->ActorValues);
+		this->GetManager(Actor->OwningManager)->Snapshot(Actor->PuzzleActorGuid, Actor->ActorValues);
 	}
 }

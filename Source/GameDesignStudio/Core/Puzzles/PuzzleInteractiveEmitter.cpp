@@ -16,7 +16,7 @@ void APuzzleInteractiveEmitter::EmitGreenSignal()
 	if (LinkedReceiver != nullptr)
 	{
 		APuzzleReceiver* Receiver = static_cast<APuzzleReceiver*>(LinkedReceiver);
-		Receiver->ReceiveGreenSignal(this->GetActorGuid());
+		Receiver->ReceiveGreenSignal(this->PuzzleActorGuid);
 	}
 	SetActivatedState(true);
 }
@@ -26,7 +26,7 @@ void APuzzleInteractiveEmitter::EmitRedSignal()
 	if (LinkedReceiver != nullptr)
 	{
 		APuzzleReceiver* Receiver = static_cast<APuzzleReceiver*>(LinkedReceiver);
-		Receiver->ReceiveRedSignal(this->GetActorGuid());
+		Receiver->ReceiveRedSignal(this->PuzzleActorGuid);
 	}
 	SetActivatedState(false);
 }
