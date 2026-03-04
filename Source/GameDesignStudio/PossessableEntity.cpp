@@ -45,3 +45,5 @@ void APossessableEntity::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
+void APossessableEntity::RotatePrism_Implementation() { }
