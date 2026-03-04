@@ -389,6 +389,17 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 	{
 		return;
 	}
+	
+	// do not move possessable turrets
+	APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
+	if (PossessableEntity)
+	{
+		if (PossessableEntity->PlayerCharacterType == EPlayerCharacterType::Turret)
+		{
+			return;
+		}
+	}
+	
 	//move the camera if we have a reference to it
 	if (CameraReference)
 	{
