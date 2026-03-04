@@ -9,6 +9,9 @@
 #include "DialogueExecutionHandler.h"
 #include "QuestProgressBehaviour.generated.h"
 
+
+
+
 /**
  * 
  */
@@ -30,9 +33,9 @@ class DIALOGUEASSETEDITORRUNTIME_API UQuestProgressBehaviour : public UDialogueN
 			DialogueText = NodeInfo->Dialogue;
 			
 					
-			DialogueText = DialogueText.Replace(TEXT("$total"), *FString::FromInt(Progress[1]));
-			DialogueText = DialogueText.Replace(TEXT("$current"), *FString::FromInt(Progress[0]));
-			DialogueText = DialogueText.Replace(TEXT("$remaining"), *FString::FromInt(Progress[1] - Progress[0]));
+			DialogueText = DialogueText.Replace(TEXT("$total"), *NameForNumber(Progress[1]));
+			DialogueText = DialogueText.Replace(TEXT("$current"), *NameForNumber(Progress[0]));
+			DialogueText = DialogueText.Replace(TEXT("$remaining"), *NameForNumber(Progress[1] - Progress[0]));
 					
 		}
 		
@@ -44,4 +47,42 @@ class DIALOGUEASSETEDITORRUNTIME_API UQuestProgressBehaviour : public UDialogueN
 			
 				
 	}
+	
+private:
+	FString DigitName(int digit);
+	FString TeenName(int number);
+	FString TensName(int number);
+	FString IntName(int number);
+
+	TArray<FString> ones {"","one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
+	TArray<FString> teens {"ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen","sixteen", "seventeen", "eighteen", "nineteen"};
+	TArray<FString> tens {"", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"};
+
+	/**
+	 * 
+	 * @param Number 
+	 * @return the number turned into a string
+	 * 
+	 * this code comes from https://stackoverflow.com/questions/40252753/c-converting-number-to-words
+	 * 
+	 */
+	FString NameForNumber (long Number) {
+		if (Number < 10) {
+			return ones[Number];
+		} else if (Number < 20) {
+			return teens [Number - 10];
+		} else if (Number < 100) {
+			return tens[Number / 10] + ((Number % 10 != 0) ? " " + NameForNumber(Number % 10) : "");
+		} else if (Number < 1000) {
+			return NameForNumber(Number / 100) + " hundred" + ((Number % 100 != 0) ? " " + NameForNumber(Number % 100) : "");
+		} else if (Number < 1000000) {
+			return NameForNumber(Number / 1000) + " thousand" + ((Number % 1000 != 0) ? " " + NameForNumber(Number % 1000) : "");
+		} else if (Number < 1000000000) {
+			return NameForNumber(Number / 1000000) + " million" + ((Number % 1000000 != 0) ? " " + NameForNumber(Number % 1000000) : "");
+		} else if (Number < 1000000000000) {
+			return NameForNumber(Number / 1000000000) + " billion" + ((Number % 1000000000 != 0) ? " " + NameForNumber(Number % 1000000000) : "");
+		}
+		return "";
+	}
+
 };
