@@ -6,7 +6,7 @@ public class GameDesignStudio : ModuleRules
 {
 	public GameDesignStudio(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "Niagara" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "Niagara", "AITestSuite" });
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		PublicIncludePaths.Add("GameDesignStudio");

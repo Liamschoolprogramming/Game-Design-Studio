@@ -54,6 +54,7 @@ void UGameManagerSubsystem::RegisterManagers()
 	RegisterManager<UPuzzleRiverManager>();
 	RegisterManager<UPuzzleGriefManager>();
 	RegisterManager<UInventoryManager>();
+	RegisterManager<UGearManager>();
 	RegisterManager<UQuestManager>();
 	RegisterManager<UPlayerStatManager>();
 }
@@ -109,6 +110,16 @@ UInventoryManager* UGameManagerSubsystem::GetInventoryManager() const
 	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UInventoryManager::StaticClass()))
 	{
 		return Cast<UInventoryManager>(Found->Get());
+	}
+	
+	return nullptr;
+}
+
+UGearManager* UGameManagerSubsystem::GetGearManager() const
+{
+	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UGearManager::StaticClass()))
+	{
+		return Cast<UGearManager>(Found->Get());
 	}
 	
 	return nullptr;

@@ -61,8 +61,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Possession")
 	TSubclassOf<UUserWidget> PossessionWidget;
 	
+	UFUNCTION(BlueprintNativeEvent, Category="Possession")
+	void OnCyclePossessionTarget();
 	
-	void CyclePossession();
+	UFUNCTION(BlueprintNativeEvent, Category="Possession")
+	void RemovePossessableFromHotbar(int IndexToRemove);
+	
+	UFUNCTION(BlueprintNativeEvent, Category="Possession")
+	void AddPossessableToHotbar();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
 	float ControllerSensitivity = 0.2f;
@@ -123,6 +129,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	UInputAction* CyclePossessionDownAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* ConfirmPossessionAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	UInputAction* InteractAction;
@@ -155,18 +164,16 @@ public:
 	FRotator PawnDesiredRotation;
 	bool bPawnHasMovementInput = false;
 	
-	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Possession")
 	TArray<APossessableEntity*> ClosestPossessableEntities;
 	
-	
-	void SortClosestPossessableEntitiesByDistance();
-	
+	//void SortClosestPossessableEntitiesByDistance();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement")
 	FVector PawnVelocity;
 	
-	//-1 will be the index for the player character
-	int IndexForPossessables = -1;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Possession")
+	int IndexForPossessables = -1; //-1 will be the index for the player character
 	
 	UFUNCTION(BlueprintCallable, Category="Possession")
 	void AddPossessableEntity(APossessableEntity* Entity);
@@ -204,6 +211,10 @@ public:
 	UFUNCTION()
 	void CyclePossessionUp();
 	void CyclePossessionDown();
+	UFUNCTION(BlueprintCallable, Category="Possession")
+	void ConfirmPossession();
+	UFUNCTION(BlueprintCallable, Category="Possession")
+	void PossessIndex(int IndexToPossess);
 	
 	void LookGate(const FInputActionValue& Value);
 	void LookGateStart();
