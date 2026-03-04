@@ -57,6 +57,7 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 				"None"
 			)
 		},
+		//Lehan Quest - Verdan
 	};
 }
 

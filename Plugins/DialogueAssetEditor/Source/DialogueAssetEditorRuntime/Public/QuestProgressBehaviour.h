@@ -32,7 +32,7 @@ class DIALOGUEASSETEDITORRUNTIME_API UQuestProgressBehaviour : public UDialogueN
 					
 			DialogueText = DialogueText.Replace(TEXT("$total"), *FString::FromInt(Progress[1]));
 			DialogueText = DialogueText.Replace(TEXT("$current"), *FString::FromInt(Progress[0]));
-
+			DialogueText = DialogueText.Replace(TEXT("$remaining"), *FString::FromInt(Progress[1] - Progress[0]));
 					
 		}
 		
