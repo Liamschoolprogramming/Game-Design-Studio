@@ -61,7 +61,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Possession")
 	TSubclassOf<UUserWidget> PossessionWidget;
 	
-	UFUNCTION(BlueprintNativeEvent, Category="Possession")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Possession")
 	void OnCyclePossessionTarget();
 	
 	UFUNCTION(BlueprintNativeEvent, Category="Possession")

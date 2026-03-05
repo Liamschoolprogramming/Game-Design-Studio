@@ -220,7 +220,7 @@ void APlayerControllerBase::OnCyclePossessionTarget_Implementation() { }
 void APlayerControllerBase::PossessIndex(int IndexToPossess)
 {
 	IndexForPossessables = IndexToPossess;
-	//OnCyclePossessionTarget();
+	
 	ConfirmPossession();
 }
 
