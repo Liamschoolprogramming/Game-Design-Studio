@@ -12,7 +12,7 @@ APuzzle::APuzzle()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	PuzzleActorGuid = *(new FGuid());
 }
 
 // Called when the game starts or when spawned
@@ -32,7 +32,7 @@ void APuzzle::BeginPlay()
 	
 	if (LinkedReceiver != nullptr)
 	{
-		LinkedReceiver->Signals.Add(this->GetActorGuid(), false);
+		LinkedReceiver->Signals.Add(this->PuzzleActorGuid, false);
 	}
 }
 

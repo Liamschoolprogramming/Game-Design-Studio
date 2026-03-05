@@ -44,6 +44,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPossessedStart();
 	
+	UFUNCTION(BlueprintNativeEvent)
+	void RotatePrism();
+	
 protected:
 	virtual void BeginPlay() override;
 	
