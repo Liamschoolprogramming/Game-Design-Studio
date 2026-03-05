@@ -19,10 +19,15 @@ class DIALOGUEASSETEDITORRUNTIME_API UStateBranchNodeInfo : public UDialogueNode
 public:
 	//Properties go here
 	UPROPERTY(EditAnywhere, DisplayName= "States")
+	//Uses the tag property in the state, looks for exactly the tag. If we can't find the tag in the save
 	TArray<FText> EditableStatesResponses;
+
+	
 	
 	UPROPERTY()
-	FText StartState = FText::FromString(TEXT("FirstTime"));
+	FText StartState = FText::FromString(TEXT("Not Started"));
+	UPROPERTY()
+	FText EndState = FText::FromString(TEXT("Finished"));
 	
 	
 };

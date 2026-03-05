@@ -58,6 +58,8 @@ private:
 	APlayerControllerBase* PlayerController;
 	
 	FOnDialogueEnded OnDialogueEnded;
+
+	UDialogueAsset* DialogueAsset;
 	
 	UFUNCTION()
 	void ChooseFirstOption()
@@ -66,6 +68,8 @@ private:
 	}
 	UFUNCTION()
 	void ChooseFirstOptionAndEnableDialogue();
+
+	
 	
 public:
 	virtual void SetDialogueText(FText InText) override;
@@ -80,4 +84,8 @@ public:
 	virtual void ChangeCamera(FName CameraName, float TransitionTime, bool bReenableDialogueAfterAnimation) override;
 	virtual UObject* GetCurrentNode() override;
 	virtual void CallCustomFunction(FString FunctionName) override;
+	virtual UDialogueAsset* GetAsset() override;
+	virtual void ChooseOption(int IndexToChoose) override;
+	virtual UWorld* GetWorldFromPlayer() override;
+	virtual void CheckDialogueState() override;
 };

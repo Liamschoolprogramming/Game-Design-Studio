@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "DialogueEndNodeInfo.h"
-#include "DialogueNodeInfoBase.h"
 #include "UObject/Interface.h"
 
 #include "DialogueExecutionHandler.generated.h"
@@ -37,4 +36,8 @@ public:
 	virtual void ChangeCamera(FName CameraName, float TransitionTime, bool bReenableDialogueAfterAnimation) = 0;
 	virtual UObject* GetCurrentNode() = 0;
 	virtual void CallCustomFunction(FString FunctionName) = 0;
+	virtual class UDialogueAsset* GetAsset() = 0;
+	virtual void ChooseOption(int IndexToChoose) = 0;
+	virtual UWorld* GetWorldFromPlayer() = 0;
+	virtual void CheckDialogueState() = 0;
 };

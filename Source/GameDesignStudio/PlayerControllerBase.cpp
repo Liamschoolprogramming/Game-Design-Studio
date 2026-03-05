@@ -518,6 +518,12 @@ void APlayerControllerBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+
+	UDialogueSubsystem* DialogueSubsystem =  GetWorld()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>();
+	if (DialogueSubsystem)
+	{
+		DialogueSubsystem->LoadDialogue();
+	}
 	//spawn camera
 	if (CameraReferenceClass)
 	{
