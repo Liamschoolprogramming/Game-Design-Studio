@@ -53,6 +53,7 @@ void UGameManagerSubsystem::RegisterManagers()
 {
 	RegisterManager<UPuzzleRiverManager>();
 	RegisterManager<UPuzzleGriefManager>();
+	RegisterManager<UPuzzleTutorialGriefManager>();
 	RegisterManager<UInventoryManager>();
 	RegisterManager<UGearManager>();
 	RegisterManager<UQuestManager>();
@@ -100,6 +101,18 @@ UPuzzleGriefManager* UGameManagerSubsystem::GetPuzzleGriefManager() const
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Found Grief Manager!"));
 		return Cast<UPuzzleGriefManager>(Found->Get());
+	}
+	
+	return nullptr;
+}
+
+UPuzzleGriefManager* UGameManagerSubsystem::GetPuzzleTutorialGriefManager() const
+{
+	UE_LOG(LogTemp, Warning, TEXT("Trying to find Grief Manager..."));
+	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UPuzzleTutorialGriefManager::StaticClass()))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found Grief Manager!"));
+		return Cast<UPuzzleTutorialGriefManager>(Found->Get());
 	}
 	
 	return nullptr;
