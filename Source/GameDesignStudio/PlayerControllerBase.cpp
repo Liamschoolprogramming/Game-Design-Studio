@@ -40,7 +40,7 @@ void APlayerControllerBase::Jump(const FInputActionValue& Value)
 	{
 		if (OurCharacter->PlayerCharacterType == EPlayerCharacterType::Beetle)
 		{
-			Cast<APossessableEntity>(GetPawn())->RotatePrism();
+			Cast<APossessableEntity>(GetPawn())->SetRotationMode(true);
 		}
 		else
 		{
@@ -52,7 +52,11 @@ void APlayerControllerBase::Jump(const FInputActionValue& Value)
 void APlayerControllerBase::StopJumping(const FInputActionValue& Value)
 {
 	//Get the pawn we are possessing, if it is a character we can just call Jump, if not, add custom jump logic
-	ACharacter* OurCharacter = Cast<ACharacter>(GetPawn());
+	APlayerCharacter* OurCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (OurCharacter->PlayerCharacterType == EPlayerCharacterType::Beetle)
+	{
+		Cast<APossessableEntity>(GetPawn())->SetRotationMode(false);
+	}
 	if (OurCharacter)
 	{
 		OurCharacter->StopJumping();
@@ -396,6 +400,12 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 	{
 		if (PossessableEntity->PlayerCharacterType == EPlayerCharacterType::Turret)
 		{
+			return;
+		}
+		if (PossessableEntity->PlayerCharacterType == EPlayerCharacterType::Beetle && !(PossessableEntity->bCanMove))
+		{
+			Debug::PrintToScreen("rotating!");
+			PossessableEntity->RotatePrism(Value.Get<FVector2D>());
 			return;
 		}
 	}

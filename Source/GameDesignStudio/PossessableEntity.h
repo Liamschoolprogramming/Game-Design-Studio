@@ -45,7 +45,9 @@ public:
 	void OnPossessedStart();
 	
 	UFUNCTION(BlueprintNativeEvent)
-	void RotatePrism();
+	void RotatePrism(FVector2D InputValue);
+	
+	void SetRotationMode(bool RotationModeActive);
 	
 protected:
 	virtual void BeginPlay() override;

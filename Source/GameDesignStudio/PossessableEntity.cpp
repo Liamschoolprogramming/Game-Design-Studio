@@ -3,6 +3,7 @@
 
 #include "PossessableEntity.h"
 
+#include "Macros.h"
 #include "NiagaraComponent.h"
 #include "PlayerCharacter.h"
 #include "PlayerControllerBase.h"
@@ -46,4 +47,11 @@ void APossessableEntity::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void APossessableEntity::RotatePrism_Implementation() { }
+void APossessableEntity::RotatePrism_Implementation(FVector2D InputValue) { }
+
+void APossessableEntity::SetRotationMode(bool RotationModeActive)
+{
+	Debug::PrintToScreen("rotation mode");
+	Debug::PrintToScreen(RotationModeActive);
+	bCanMove = !RotationModeActive;
+}
