@@ -21,8 +21,11 @@ void AGriefObject::BeginPlay()
 	// this is very poor implementation. I will fix it later.
 	// for now though, this does work. the function "RegisterGriefActor" can also be called in Blueprint
 	// if for some reason that is necessary (it likely will because I am not very familiar with c++ unfortunately)
-	UPuzzleGriefManager* CurGriefManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPuzzleGriefManager();
-	CurGriefManager->RegisterGriefActor(this);
+	
+	// this is commented out because i have decided i will just do it in blueprint. it is easier that way
+	//UPuzzleGriefManager* CurGriefManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPuzzleGriefManager();
+	//CurGriefManager->RegisterGriefActor(this);
+	//OwningManager->GetDefaultObject<UPuzzleGriefManager>()->RegisterGriefActor(this);
 }
 
 void AGriefObject::DisableParticlesInBlueprint()
