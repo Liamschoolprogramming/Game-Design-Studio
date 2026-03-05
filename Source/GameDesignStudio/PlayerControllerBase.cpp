@@ -404,7 +404,6 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 		}
 		if (PossessableEntity->PlayerCharacterType == EPlayerCharacterType::Beetle && !(PossessableEntity->bCanMove))
 		{
-			Debug::PrintToScreen("rotating!");
 			PossessableEntity->RotatePrism(Value.Get<FVector2D>());
 			return;
 		}

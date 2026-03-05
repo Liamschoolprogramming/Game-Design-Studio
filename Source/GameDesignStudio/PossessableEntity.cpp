@@ -3,7 +3,6 @@
 
 #include "PossessableEntity.h"
 
-#include "Macros.h"
 #include "NiagaraComponent.h"
 #include "PlayerCharacter.h"
 #include "PlayerControllerBase.h"
@@ -29,6 +28,10 @@ APossessableEntity::APossessableEntity()
 void APossessableEntity::SetPossessed(bool NewPossessed)
 {
 	bPossessed = NewPossessed;
+	if (NewPossessed)
+	{
+		OnPossessedFinish();
+	}
 	if(GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("SetPossessed"));
 }
@@ -51,7 +54,5 @@ void APossessableEntity::RotatePrism_Implementation(FVector2D InputValue) { }
 
 void APossessableEntity::SetRotationMode(bool RotationModeActive)
 {
-	Debug::PrintToScreen("rotation mode");
-	Debug::PrintToScreen(RotationModeActive);
 	bCanMove = !RotationModeActive;
 }
