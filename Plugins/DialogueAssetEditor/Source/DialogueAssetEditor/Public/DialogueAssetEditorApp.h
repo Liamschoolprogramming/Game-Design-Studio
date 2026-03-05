@@ -24,22 +24,14 @@ public:
 	void OnGraphSelectionChanged(const FGraphPanelSelectionSet& Selections);
 
 public: //FAssetEditorToolkit interface
-	virtual FText GetToolkitName() const override
-	{
-		return FText::FromString(TEXT("DialogueAssetEditorApp"));
-	}
-	virtual FName GetToolkitFName() const override
-	{
-		return FName(TEXT("DialogueAssetEditorApp"));
-	}
-	virtual FText GetBaseToolkitName() const override
-	{
-		return FText::FromString(TEXT("DialogueAssetEditorApp"));
-	}
-	virtual FString GetWorldCentricTabPrefix() const override
-	{
-		return TEXT("DialogueAssetEditorApp");
-	}
+	virtual FText GetToolkitName() const override;
+	
+	virtual FName GetToolkitFName() const override;
+	
+	virtual FText GetBaseToolkitName() const override;
+	
+	virtual FString GetWorldCentricTabPrefix() const override;
+	
 	virtual FLinearColor GetWorldCentricTabColorScale() const override
 	{
 		return FLinearColor(0.3f, 0.2f, 0.5f, 0.5f);
