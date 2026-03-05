@@ -19,22 +19,37 @@
 
 void UPuzzleGriefManager::DisableAllGriefObjects()
 {
+	solved = true;
 	UE_LOG(LogTemp, Warning, TEXT("Attempting to disable all Grief Objects..."));
 	for(int i = 0; i < GriefObjects.Num(); i++)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Disabling Grief Object..."));
-		GriefObjects[i]->DisableParticlesInBlueprint();
+		AGriefObject* GriefObjectCasted = Cast<AGriefObject>(GriefObjects[i]);
+		GriefObjectCasted->DisableParticlesInBlueprint();
 	}
 }
 
-void UPuzzleGriefManager::RegisterGriefActor(AGriefObject* GriefObject)
+void UPuzzleGriefManager::EnableAllGriefObjects()
+{
+	solved = false;
+	UE_LOG(LogTemp, Warning, TEXT("Attempting to enable all Grief Objects..."));
+	for(int i = 0; i < GriefObjects.Num(); i++)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Enabling Grief Object..."));
+		AGriefObject* GriefObjectCasted = Cast<AGriefObject>(GriefObjects[i]);
+		GriefObjectCasted->EnableParticlesInBlueprint();
+	}
+}
+
+void UPuzzleGriefManager::RegisterGriefActor(AActor* GriefObject)
 {
 	if (GriefObject)
 	{
 		GriefObjects.Add(GriefObject);
 		if (solved)
 		{
-			GriefObject->DisableParticlesInBlueprint();
+			AGriefObject* GriefObjectCasted = Cast<AGriefObject>(GriefObject);
+			GriefObjectCasted->DisableParticlesInBlueprint();
 		}
 	}
 }

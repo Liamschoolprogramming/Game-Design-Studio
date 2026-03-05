@@ -7,6 +7,7 @@
 #include "Managers/PlayerStatManager.h"
 #include "Managers/PuzzleRiverManager.h"
 #include "Managers/PuzzleGriefManager.h"
+#include "Managers/GriefManagers/PuzzleTutorialGriefManager.h"
 #include "Managers/QuestManager.h"
 #include "Managers/GearManager.h"
 #include "Subsystems/GameInstanceSubsystem.h"
@@ -55,6 +56,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UPuzzleGriefManager* GetPuzzleGriefManager() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Managers")
+	UPuzzleGriefManager* GetPuzzleTutorialGriefManager() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UInventoryManager* GetInventoryManager() const;

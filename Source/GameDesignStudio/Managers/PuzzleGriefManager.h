@@ -17,15 +17,18 @@ class GAMEDESIGNSTUDIO_API UPuzzleGriefManager : public UGameManagerBase
 	GENERATED_BODY()
 
 	UPROPERTY()
-	TArray<AGriefObject*> GriefObjects;
+	TArray<AActor*> GriefObjects;
 	
 public:
 
 	UFUNCTION(BlueprintCallable)
-	void RegisterGriefActor(AGriefObject* GriefObject);
+	void RegisterGriefActor(AActor* GriefObject);
 	
 	UFUNCTION(BlueprintCallable)
 	void DisableAllGriefObjects();
+	
+	UFUNCTION(BlueprintCallable)
+	void EnableAllGriefObjects();
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
     bool solved;
