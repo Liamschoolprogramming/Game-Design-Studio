@@ -707,6 +707,7 @@ void APlayerControllerBase::StartDialogue(UDialogueAsset* InDialogueAsset)
 	}
 
 	DialoguePlayer = NewObject<UDialogueSystemPlayer>(this);
+	//DialoguePlayer->OnCustomFunctionParam.AddUFunction(this,"CustomFunctionParam");
 	DialoguePlayer->PlayDialogue(DialogueAsset, this, FOnDialogueEnded::CreateLambda(
 		[this](EDialogueNodeAction Action, FString ActionData)
 		{

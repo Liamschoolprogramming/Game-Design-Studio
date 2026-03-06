@@ -134,7 +134,6 @@ void NodeClass::HandleDeleteNode()\
 GetGraph()->RemoveNode(this);\
 }\
 
-
 #define GET_CONTEXT_ACTION_MULTI(NodeClass,NodeInfoClass, ResponseVariable)\
 void NodeClass::GetNodeContextMenuActions(class UToolMenu* Menu,\
 class UGraphNodeContextMenuContext* Context) const\
@@ -285,7 +284,7 @@ public:
 	{
 		for (const FDialogueNodeRegistration& Node : GetAllNodes())
 		{
-			if (Node.NodeType == NodeType)
+			if (Node.NodeType.IsEqual( NodeType))
 			{
 				return NewObject<UDialogueGraphNodeBase>(
 					Outer,
