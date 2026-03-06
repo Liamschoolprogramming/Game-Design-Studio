@@ -7,6 +7,39 @@
 #include "UObject/Interface.h"
 
 #include "DialogueExecutionHandler.generated.h"
+UENUM(BlueprintType)
+enum class EDialogueParamType : uint8
+{
+	Int,
+	Float,
+	String,
+	Bool
+};
+USTRUCT(BlueprintType)
+struct FDialogueParameters
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadWrite)
+	FName Name;
+	
+	UPROPERTY(BlueprintReadWrite)
+	EDialogueParamType Type;
+
+	UPROPERTY(BlueprintReadWrite)
+	int32 IntValue;
+
+	UPROPERTY(BlueprintReadWrite)
+	float FloatValue;
+
+	UPROPERTY(BlueprintReadWrite)
+	FString StringValue;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool BoolValue;
+	
+};
+
 
 // This class does not need to be modified.
 UINTERFACE()
@@ -40,4 +73,5 @@ public:
 	virtual void ChooseOption(int IndexToChoose) = 0;
 	virtual UWorld* GetWorldFromPlayer() = 0;
 	virtual void CheckDialogueState() = 0;
+	virtual void CallCustomFunctionWithParams(FString FunctionName, const FDialogueParameters& Parameters) = 0;
 };

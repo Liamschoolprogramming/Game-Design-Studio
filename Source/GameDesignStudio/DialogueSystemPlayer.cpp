@@ -24,7 +24,6 @@
 #include "Managers/QuestManager.h"
 
 DEFINE_LOG_CATEGORY_STATIC(DialoguePlayerSub, Log, All);
-
 UDialogueSystemPlayer::UDialogueSystemPlayer()
 {
 	
@@ -339,6 +338,13 @@ void UDialogueSystemPlayer::CheckDialogueState()
 		UE_LOG(DialoguePlayerSub, Error, TEXT("Could not load pointer"));
 		ChooseOptionAtIndex(0);
 	}
+}
+
+void UDialogueSystemPlayer::CallCustomFunctionWithParams(FString FunctionName, const FDialogueParameters& Parameters)
+{
+	
+	OnCustomFunctionParam.Broadcast(FunctionName, Parameters);
+	ChooseOptionAtIndex(0);
 }
 
 void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)

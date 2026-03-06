@@ -20,8 +20,14 @@ class UDialogueAsset;
 class UDialogueRuntimeNode;
 class UQuestDialogueUIController;
 
+
+
+
+
 // Unreal-style delegate instead of std::function
 DECLARE_DELEGATE_TwoParams(FOnDialogueEnded, EDialogueNodeAction, FString);
+
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnCustomFunctionParam, FString, FDialogueParameters)
 
 UCLASS()
 class GAMEDESIGNSTUDIO_API UDialogueSystemPlayer : public UObject, public IDialogueExecutionHandler
@@ -43,6 +49,7 @@ public:
 	
 	UDialogueSpeakerComponent* CurrentSpeakerComponent = nullptr;
 
+	FOnCustomFunctionParam OnCustomFunctionParam;
 private:
 	UPROPERTY()
 	UDialogueAsset* PlayingDialogueAsset = nullptr;
@@ -58,6 +65,7 @@ private:
 	APlayerControllerBase* PlayerController;
 	
 	FOnDialogueEnded OnDialogueEnded;
+	
 
 	UDialogueAsset* DialogueAsset;
 	
@@ -88,4 +96,5 @@ public:
 	virtual void ChooseOption(int IndexToChoose) override;
 	virtual UWorld* GetWorldFromPlayer() override;
 	virtual void CheckDialogueState() override;
+	virtual void CallCustomFunctionWithParams(FString FunctionName, const FDialogueParameters& Parameters) override;
 };

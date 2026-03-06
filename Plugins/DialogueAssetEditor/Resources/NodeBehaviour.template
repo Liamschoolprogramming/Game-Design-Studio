@@ -1,0 +1,27 @@
+$COPYRIGHT_LINE$
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "DialogueNodeBehaviour.h"
+#include "DialogueExecutionHandler.h"
+#include "DialogueNodeInfoBase.h"
+#include "$UNPREFIXED_CLASS_NAME$.generated.h"
+
+/**
+ * $END$
+ */
+UCLASS()
+class $CLASS_MODULE_API_MACRO$$PREFIX$$UNPREFIXED_CLASS_NAME$ : public $PREFIXED_BASE_CLASS_NAME$
+{
+	GENERATED_BODY()
+	
+	
+	virtual void Execute(UDialogueNodeInfoBase* NodeInfoBase, IDialogueExecutionHandler* Handler) override
+	{
+		UNodeInfo* NodeInfo = Cast<UStateBranchNodeInfo>(NodeInfoBase);
+		
+	}
+	
+	
+};

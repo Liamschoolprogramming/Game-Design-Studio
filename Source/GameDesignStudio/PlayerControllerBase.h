@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CustomCamera.h"
+#include "DialogueSystemPlayer.h"
 
 
 #include "GameFramework/PlayerController.h"
@@ -130,6 +131,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	UInputAction* CyclePossessionDownAction;
 	
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	UInputAction* ConfirmPossessionAction;
 
@@ -244,6 +246,10 @@ public:
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
 	void DialogueBPFunction(const FString& ActionData);
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
+	void DialogueCustomFunctionParam(const FString& FunctionName, const FDialogueParameters& Parameters);
+	
 	
 	UFUNCTION(BlueprintCallable, Category = "Dialogue")
 	ARewardSpawnZone* FindFirstRewardSpawnZone();
