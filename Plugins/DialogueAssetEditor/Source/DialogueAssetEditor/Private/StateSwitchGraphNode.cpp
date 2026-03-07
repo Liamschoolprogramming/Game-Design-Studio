@@ -12,7 +12,7 @@ REGISTER_DIALOGUE_NODE(
 	0,
 	true
 );
-NODE_TITLE(UStateSwitchGraphNode, "State Switch", EditableStatesResponses.Num())
+NODE_TITLE(UStateSwitchGraphNode, "State Switch Tags", EditableStatesResponses.Num())
 GET_CONTEXT_ACTION_MULTI(UStateSwitchGraphNode, UStateBranchNodeInfo, EditableStatesResponses)
 
 

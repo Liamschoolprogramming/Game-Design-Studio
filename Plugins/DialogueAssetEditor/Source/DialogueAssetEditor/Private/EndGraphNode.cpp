@@ -17,19 +17,38 @@ REGISTER_DIALOGUE_NODE(
 
 FText UEndGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	if (NodeInfo != nullptr && NodeInfo->Action != EDialogueNodeAction::None)
+	if (NodeInfo != nullptr)
 	{
-		FString OutputString = UEnum::GetDisplayValueAsText(NodeInfo->Action).ToString();
-		if (!NodeInfo->ActionData.IsEmpty())
+		
+		if (NodeInfo->Action != EDialogueNodeAction::None)
 		{
-			FString ActionData = NodeInfo->ActionData;
-			if (ActionData.Len() > 15)
+			FString OutputString = UEnum::GetDisplayValueAsText(NodeInfo->Action).ToString();
+			if (!NodeInfo->ActionData.IsEmpty())
 			{
-				ActionData = ActionData.Left(15) + TEXT("...");
+				FString ActionData = NodeInfo->ActionData;
+				if (ActionData.Len() > 15)
+				{
+					ActionData = ActionData.Left(15) + TEXT("...");
+				}
+				OutputString += TEXT(" - ") + ActionData;
 			}
-			OutputString += TEXT(" - ") + ActionData;
+		
+			return FText::FromString(OutputString);
 		}
-		return FText::FromString(OutputString);
+		else
+		{
+			FString OutputString = TEXT("End State: ") + UEnum::GetDisplayValueAsText(NodeInfo->EndState).ToString();
+			if (!NodeInfo->EndStateTag.IsEmpty())
+			{
+				FString ActionData = NodeInfo->EndStateTag;
+				if (ActionData.Len() > 15)
+				{
+					ActionData = ActionData.Left(15) + TEXT("...");
+				}
+				OutputString += TEXT(" - ") + ActionData;
+			}
+			return FText::FromString(OutputString);
+		}
 	}
 	return FText::FromString(TEXT("End"));
 }

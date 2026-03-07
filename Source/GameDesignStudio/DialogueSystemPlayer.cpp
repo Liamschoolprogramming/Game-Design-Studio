@@ -347,12 +347,6 @@ void UDialogueSystemPlayer::CallCustomFunctionWithParams(FString FunctionName, c
 	ChooseOptionAtIndex(0);
 }*/
 
-void UDialogueSystemPlayer::CallCustomFunctionWithParams(FString FunctionName, const FDialogueParameters& Parameters)
-{
-	
-	OnCustomFunctionParam.Broadcast(FunctionName, Parameters);
-	ChooseOptionAtIndex(0);
-}
 
 void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 {
