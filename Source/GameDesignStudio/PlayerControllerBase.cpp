@@ -444,7 +444,6 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 
 				
 				
-				
 
 				//Move
 				FVector Dir = CameraForward + CameraRight;
@@ -568,7 +567,7 @@ void APlayerControllerBase::BeginPlay()
 	
 	
 	//setup cursor 
-	bShowMouseCursor = true;
+	bShowMouseCursor = false;
 	bEnableClickEvents = true;
 	
 	
