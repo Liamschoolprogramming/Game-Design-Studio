@@ -6,6 +6,7 @@
 #include "DialogueNodeBehaviour.h"
 #include "DialogueExecutionHandler.h"
 #include "DialogueNodeInfo.h"
+#include "StateBranchNodeInfo.h"
 #include "StateSwitchNodeBehaviour.generated.h"
 
 
@@ -20,33 +21,16 @@ class DIALOGUEASSETEDITORRUNTIME_API UStateSwitchNodeBehaviour : public UDialogu
 
 	virtual void Execute(UDialogueNodeInfoBase* NodeInfoBase, IDialogueExecutionHandler* Handler) override
 	{
-		//Behaviour here
-		
-		//TODO Box only
-		/**
-		 * We want to check a Dialogue Subsystem here
-		 * need to store states as a asset reference mapped to Enum of states (NotStarted, Finished, FinishedWithTag) as wll as a Tag tied to the asset
-		 * Probably a struct
-		 * 
-		 * struct 
-		* 
-		* 
-UENUM()
-enum EStates
-{
-	NotStarted,
-	Finished,
-	FinishedWithTag
-};
-		* 
-USTRUCT()
-struct FStateData
-{
-	EStates State;
-	
-	FText Tag;
-	
-};
-		 */
+		UStateBranchNodeInfo* NodeInfo = Cast<UStateBranchNodeInfo>(NodeInfoBase);
+		UE_LOG(LogTemp, Error, TEXT("Checking Asset"));
+		if (UDialogueAsset* Asset =Handler->GetAsset())
+		{
+			UE_LOG(LogTemp, Error, TEXT("Checking Subsystem"));
+			if (UDialogueSubsystem* DialogueSubsystem =  Handler->GetWorldFromPlayer()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>())
+			{
+				
+				Handler->CheckDialogueState();
+			}
+		}
 	}
 };
