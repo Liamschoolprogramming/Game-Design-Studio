@@ -17,6 +17,7 @@
 #include "QuestProgressNodeInfo.h"
 #include "RandomDialogueNodeInfo.h"
 #include "StateBranchNodeInfo.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/Image.h"
 
 #include "Components/VerticalBoxSlot.h"
@@ -42,6 +43,8 @@ void UDialogueSystemPlayer::PlayDialogue(class UDialogueAsset* InDialogueAsset, 
 	PlayerController = Cast<APlayerControllerBase>(InPlayerController);
 	
 	PlayerController->SetCanMove(false);
+	UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PlayerController,nullptr);
+	PlayerController->SetShowMouseCursor(true);
 	OnDialogueEnded = InOnDialogueEnded;
 	UDialogueRuntimeGraph* RuntimeGraph = InDialogueAsset->Graph;
 	DialogueAsset = InDialogueAsset;
@@ -170,6 +173,8 @@ void UDialogueSystemPlayer::EndDialogue(EDialogueNodeAction Action, FString Acti
 	if (PlayerController)
 	{
 		PlayerController->SetCanMove(true);
+		UWidgetBlueprintLibrary::SetInputMode_GameOnly(PlayerController);
+		PlayerController->SetShowMouseCursor(false);
 		
 		if (CurrentSpeakerComponent)
 		{
