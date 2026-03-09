@@ -17,6 +17,7 @@
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "DialogueSystemPlayer.h"
+#include "Kismet/KismetStringLibrary.h"
 
 DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
 
@@ -181,6 +182,19 @@ void APlayerControllerBase::StopClick(const FInputActionValue& Value)
 void APlayerControllerBase::StopMove(const FInputActionValue& Value)
 {
 	bIsMoving = false;
+}
+
+void APlayerControllerBase::SetPossessIndexByNumber(FString NewIndex)
+{
+	int ParsedIndex = UKismetStringLibrary::Conv_StringToInt(NewIndex);
+	if (ParsedIndex == 1)
+	{
+		IndexForPossessables = -1;
+	} else if (ClosestPossessableEntities.Num() >= ParsedIndex - 1)
+	{
+		IndexForPossessables = ParsedIndex - 2;
+	}
+	OnCyclePossessionTarget();
 }
 
 void APlayerControllerBase::CyclePossessionUp()
