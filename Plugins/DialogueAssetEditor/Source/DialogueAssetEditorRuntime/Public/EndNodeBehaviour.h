@@ -22,6 +22,21 @@ class DIALOGUEASSETEDITORRUNTIME_API UEndNodeBehaviour : public UDialogueNodeBeh
 	{
 		UDialogueEndNodeInfo* EndNodeInfo = Cast<UDialogueEndNodeInfo>(NodeInfoBase);
 		if (!EndNodeInfo) return;
+
+		
+		if (UDialogueSubsystem* DialogueSubsystem =  Handler->GetWorldFromPlayer()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>())
+		{
+			const TSoftObjectPtr<UDialogueAsset> AssetPtr = Handler->GetAsset();
+			if (AssetPtr.IsValid())
+			{
+				UE_LOG(LogTemp, Display, TEXT("Valid"));
+			}else
+			{
+				UE_LOG(LogTemp, Display, TEXT("Invalid"));
+			}
+			const FStateData Data = FStateData(EndNodeInfo->EndState, EndNodeInfo->EndStateTag);
+			DialogueSubsystem->RegisterStateData(AssetPtr, Data);
+		}
 		
 		
 		Handler->EndDialogue(EndNodeInfo->Action, EndNodeInfo->ActionData);

@@ -97,6 +97,51 @@ void FDialogueAssetEditorApp::OnGraphSelectionChanged(const FGraphPanelSelection
 	}
 }
 
+FText FDialogueAssetEditorApp::GetToolkitName() const
+{
+	if (WorkingAsset)
+	{
+		return FText::FromString(WorkingAsset->GetName());
+	}
+	else
+	{
+		return FText::FromString(TEXT("DialogueAssetEditor"));
+	}
+}
+
+FName FDialogueAssetEditorApp::GetToolkitFName() const
+{
+	if (WorkingAsset)
+	{
+		return FName(WorkingAsset->GetName());
+	}else
+	{
+		return FName(TEXT("DialogueAssetEditor"));
+	}
+}
+
+FText FDialogueAssetEditorApp::GetBaseToolkitName() const
+{
+	if (WorkingAsset)
+	{
+		return FText::FromString(WorkingAsset->GetName());
+	}else
+	{
+		return FText::FromString(TEXT("DialogueAssetEditor"));
+	}
+}
+
+FString FDialogueAssetEditorApp::GetWorldCentricTabPrefix() const
+{
+	if (WorkingAsset)
+	{
+		return WorkingAsset->GetName();
+	}else
+	{
+		return TEXT("DialogueAssetEditor");
+	}
+}
+
 void FDialogueAssetEditorApp::OnNodeDetailViewPropertiesUpdated(const FPropertyChangedEvent& ChangedEvent)
 {
 	if (WorkingGraphUI != nullptr)

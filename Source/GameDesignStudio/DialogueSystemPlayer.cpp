@@ -16,6 +16,8 @@
 #include "QuestDialogueUIController.h"
 #include "QuestProgressNodeInfo.h"
 #include "RandomDialogueNodeInfo.h"
+#include "StateBranchNodeInfo.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/Image.h"
 
 #include "Components/VerticalBoxSlot.h"
@@ -23,7 +25,6 @@
 #include "Managers/QuestManager.h"
 
 DEFINE_LOG_CATEGORY_STATIC(DialoguePlayerSub, Log, All);
-
 UDialogueSystemPlayer::UDialogueSystemPlayer()
 {
 	
@@ -42,8 +43,11 @@ void UDialogueSystemPlayer::PlayDialogue(class UDialogueAsset* InDialogueAsset, 
 	PlayerController = Cast<APlayerControllerBase>(InPlayerController);
 	
 	PlayerController->SetCanMove(false);
+	UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PlayerController,nullptr);
+	PlayerController->SetShowMouseCursor(true);
 	OnDialogueEnded = InOnDialogueEnded;
 	UDialogueRuntimeGraph* RuntimeGraph = InDialogueAsset->Graph;
+	DialogueAsset = InDialogueAsset;
 	
 	//get start node
 	for (UDialogueRuntimeNode* Node : RuntimeGraph->Nodes)
@@ -169,6 +173,8 @@ void UDialogueSystemPlayer::EndDialogue(EDialogueNodeAction Action, FString Acti
 	if (PlayerController)
 	{
 		PlayerController->SetCanMove(true);
+		UWidgetBlueprintLibrary::SetInputMode_GameOnly(PlayerController);
+		PlayerController->SetShowMouseCursor(false);
 		
 		if (CurrentSpeakerComponent)
 		{
@@ -273,6 +279,79 @@ void UDialogueSystemPlayer::CallCustomFunction(FString FunctionName)
 	OnDialogueEnded.ExecuteIfBound(EDialogueNodeAction::BPFunction, FunctionName);
 	ChooseOptionAtIndex(0);
 }
+
+UDialogueAsset* UDialogueSystemPlayer::GetAsset()
+{
+	UE_LOG(LogTemp, Display, TEXT("GetAsset"));
+	return DialogueAsset;
+}
+
+void UDialogueSystemPlayer::ChooseOption(int IndexToChoose)
+{
+	ChooseOptionAtIndex(IndexToChoose);
+}
+
+UWorld* UDialogueSystemPlayer::GetWorldFromPlayer()
+{
+	return GetWorld();
+}
+
+void UDialogueSystemPlayer::CheckDialogueState()
+{
+	UStateBranchNodeInfo* NodeInfo = Cast<UStateBranchNodeInfo>(CurrentNode->NodeInfo);
+	if (!NodeInfo) return;
+	UDialogueSubsystem* DialogueSubsystem =  GetWorld()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>();
+	if (DialogueSubsystem->GetStateDataByTree(DialogueAsset).first)
+	{
+		FStateData Data = DialogueSubsystem->GetStateDataByTree(DialogueAsset).second;
+		if (Data.State == EStates::NotStarted)
+		{
+			UE_LOG(LogTemp, Display, TEXT("Dialogue is not started"));
+			ChooseOptionAtIndex(0);
+		}
+		else if (Data.State == EStates::Finished)
+		{
+			UE_LOG(LogTemp, Display, TEXT("Dialogue is completed"));
+			ChooseOptionAtIndex(1);
+		}
+		else if (Data.State == EStates::FinishedWithTag)
+		{
+			UE_LOG(LogTemp, Display, TEXT("Dialogue is completed with tag"));
+			int index = 2;
+			bool bFoundtag =false;
+			for (FText Option : NodeInfo->EditableStatesResponses)
+			{
+				FString Text = Option.ToString();
+				UE_LOG(DialoguePlayerSub, Error, TEXT("Checking %s against %s"), *Option.ToString(), *Data.Tag)
+				if (Text.Equals(Data.Tag))
+				{
+					bFoundtag = true;
+					ChooseOptionAtIndex(index);
+				}
+				index++;
+			}
+			if (!bFoundtag)
+			{
+				UE_LOG(DialoguePlayerSub, Error, TEXT("Cannot find the tag %s"),*Data.Tag);
+				ChooseOptionAtIndex(0);
+			}
+			
+		}
+	}
+	else
+	{
+		UE_LOG(DialoguePlayerSub, Error, TEXT("Could not load pointer"));
+		ChooseOptionAtIndex(0);
+	}
+}
+/*
+void UDialogueSystemPlayer::CallCustomFunctionWithParams(FString FunctionName, const FDialogueParameters& Parameters)
+{
+	
+	OnCustomFunctionParam.Broadcast(FunctionName, Parameters);
+	ChooseOptionAtIndex(0);
+}*/
+
 
 void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 {

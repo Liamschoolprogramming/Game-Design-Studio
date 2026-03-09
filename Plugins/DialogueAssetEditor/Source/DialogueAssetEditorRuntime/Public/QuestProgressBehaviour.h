@@ -67,7 +67,11 @@ private:
 	 * 
 	 */
 	FString NameForNumber (long Number) {
-		if (Number < 10) {
+		if (Number == 0)
+		{
+			return TEXT("zero");
+		}
+		else if (Number < 10) {
 			return ones[Number];
 		} else if (Number < 20) {
 			return teens [Number - 10];

@@ -3,6 +3,7 @@
 
 #include "DialogueAssetAppMode.h"
 
+#include "DialogueAsset.h"
 #include "DialogueAssetEditorApp.h"
 #include "DialogueAssetPrimaryTabFactory.h"
 #include "DialogueAssetPropertiesTabFactory.h"
@@ -17,6 +18,7 @@ FDialogueAssetAppMode::FDialogueAssetAppMode(TSharedPtr<class FDialogueAssetEdit
 	App = InApp;
 	Tabs.RegisterFactory(MakeShareable(new FDialogueAssetPrimaryTabFactory(InApp)));
 	Tabs.RegisterFactory(MakeShareable(new FDialogueAssetPropertiesTabFactory(InApp)));
+
 	
 
 	TabLayout = FTabManager::NewLayout("DialogueAssetAppMode_Layout_v1")
@@ -25,6 +27,7 @@ FDialogueAssetAppMode::FDialogueAssetAppMode(TSharedPtr<class FDialogueAssetEdit
 		
 		FTabManager::NewPrimaryArea()
 			->SetOrientation(Orient_Vertical)
+			
 			->Split //add child
 			(
 				FTabManager::NewSplitter()

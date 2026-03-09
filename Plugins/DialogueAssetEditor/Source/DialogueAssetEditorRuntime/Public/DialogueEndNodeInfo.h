@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "DialogueNodeInfoBase.h"
+#include "DialogueSubsystem.h"
 #include "DialogueEndNodeInfo.generated.h"
 
 UENUM(BlueprintType)
@@ -23,4 +24,11 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 	FString ActionData = TEXT("");
+
+	UPROPERTY(EditAnywhere)
+	EStates EndState = EStates::Finished;
+
+	UPROPERTY(EditAnywhere)
+	FString EndStateTag = TEXT("");
+	
 };
