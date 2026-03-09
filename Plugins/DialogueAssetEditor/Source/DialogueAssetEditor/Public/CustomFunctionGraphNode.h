@@ -6,6 +6,7 @@
 #include "CustomFunctionNodeBehaviour.h"
 #include "CustomFunctionNodeInfo.h"
 #include "DialogueGraphNodeBase.h"
+#include "DialogueGraphNodeFactory.h"
 
 #include "CustomFunctionGraphNode.generated.h"
 
@@ -17,6 +18,9 @@ class DIALOGUEASSETEDITOR_API UCustomFunctionGraphNode : public UDialogueGraphNo
 {
 	GENERATED_BODY()
 
+	CREATE_GRAPH_NODE(FLinearColor::Blue,"CustomFunctionGraphNode", UCustomFunctionNodeInfo, UCustomFunctionNodeBehaviour, false)
+
+/*
 public: //UEdGraph interface
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 
@@ -27,8 +31,7 @@ public: //UEdGraph interface
 
 	virtual bool CanUserDeleteNode() const override { return true; }
 
-	virtual void
-	GetNodeContextMenuActions(class UToolMenu* Menu, class UGraphNodeContextMenuContext* Context) const override;
+	virtual void GetNodeContextMenuActions(class UToolMenu* Menu, class UGraphNodeContextMenuContext* Context) const override;
 
 	virtual UEdGraphPin* CreateDefaultInputPin() override;
 	virtual void CreateDefaultOutputPins() override;
@@ -67,12 +70,10 @@ public: //Dialogue interface
 	{
 		NodeBehaviour = NewObject<UCustomFunctionNodeBehaviour>(Owner);
 	}
-
 	virtual void SetNodeBehaviour(class UDialogueNodeBehaviour* InNodeInfo) override
 	{
 		NodeBehaviour = Cast<UCustomFunctionNodeBehaviour>(InNodeInfo);
 	}
-
 	virtual UDialogueNodeBehaviour* GetNodeBehaviour() const override
 	{
 		return NodeBehaviour;
@@ -88,5 +89,5 @@ protected:
 
 private:
 	void HandleDeleteNode();
-	//add other interfaces
+	//add other interfaces*/
 };

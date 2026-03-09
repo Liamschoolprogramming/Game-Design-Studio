@@ -526,6 +526,12 @@ void APlayerControllerBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+
+	UDialogueSubsystem* DialogueSubsystem =  GetWorld()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>();
+	if (DialogueSubsystem)
+	{
+		DialogueSubsystem->LoadDialogue();
+	}
 	//spawn camera
 	if (CameraReferenceClass)
 	{
@@ -709,6 +715,7 @@ void APlayerControllerBase::StartDialogue(UDialogueAsset* InDialogueAsset)
 	}
 
 	DialoguePlayer = NewObject<UDialogueSystemPlayer>(this);
+	//DialoguePlayer->OnCustomFunctionParam.AddUFunction(this,"CustomFunctionParam");
 	DialoguePlayer->PlayDialogue(DialogueAsset, this, FOnDialogueEnded::CreateLambda(
 		[this](EDialogueNodeAction Action, FString ActionData)
 		{
