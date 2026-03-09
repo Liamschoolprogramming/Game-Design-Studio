@@ -30,6 +30,7 @@ void APossessableEntity::SetPossessed(bool NewPossessed)
 	bPossessed = NewPossessed;
 	if (NewPossessed)
 	{
+		OnSetHighlight(false);
 		OnPossessedFinish();
 	}
 	if(GEngine)
@@ -51,6 +52,8 @@ void APossessableEntity::Tick(float DeltaTime)
 }
 
 void APossessableEntity::RotatePrism_Implementation(FVector2D InputValue) { }
+
+void APossessableEntity::OnSetHighlight_Implementation(bool IsHighlighted) { }
 
 void APossessableEntity::SetRotationMode(bool RotationModeActive)
 {

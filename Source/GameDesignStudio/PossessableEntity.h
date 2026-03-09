@@ -47,6 +47,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPossessedFinish();
 	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void OnSetHighlight(bool IsHighlighted);
+	
 	UFUNCTION(BlueprintNativeEvent)
 	void RotatePrism(FVector2D InputValue);
 	
