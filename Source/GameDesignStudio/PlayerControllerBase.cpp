@@ -17,6 +17,7 @@
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "DialogueSystemPlayer.h"
+#include "Kismet/KismetStringLibrary.h"
 
 DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
 
@@ -40,7 +41,7 @@ void APlayerControllerBase::Jump(const FInputActionValue& Value)
 	{
 		if (OurCharacter->PlayerCharacterType == EPlayerCharacterType::Beetle)
 		{
-			Cast<APossessableEntity>(GetPawn())->RotatePrism();
+			Cast<APossessableEntity>(GetPawn())->SetRotationMode(true);
 		}
 		else
 		{
@@ -52,7 +53,11 @@ void APlayerControllerBase::Jump(const FInputActionValue& Value)
 void APlayerControllerBase::StopJumping(const FInputActionValue& Value)
 {
 	//Get the pawn we are possessing, if it is a character we can just call Jump, if not, add custom jump logic
-	ACharacter* OurCharacter = Cast<ACharacter>(GetPawn());
+	APlayerCharacter* OurCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (OurCharacter->PlayerCharacterType == EPlayerCharacterType::Beetle)
+	{
+		Cast<APossessableEntity>(GetPawn())->SetRotationMode(false);
+	}
 	if (OurCharacter)
 	{
 		OurCharacter->StopJumping();
@@ -179,6 +184,19 @@ void APlayerControllerBase::StopMove(const FInputActionValue& Value)
 	bIsMoving = false;
 }
 
+void APlayerControllerBase::SetPossessIndexByNumber(FString NewIndex)
+{
+	int ParsedIndex = UKismetStringLibrary::Conv_StringToInt(NewIndex);
+	if (ParsedIndex == 1)
+	{
+		IndexForPossessables = -1;
+	} else if (ClosestPossessableEntities.Num() >= ParsedIndex - 1)
+	{
+		IndexForPossessables = ParsedIndex - 2;
+	}
+	OnCyclePossessionTarget();
+}
+
 void APlayerControllerBase::CyclePossessionUp()
 {
 	if (IndexForPossessables + 1 >= ClosestPossessableEntities.Num())
@@ -216,7 +234,7 @@ void APlayerControllerBase::OnCyclePossessionTarget_Implementation() { }
 void APlayerControllerBase::PossessIndex(int IndexToPossess)
 {
 	IndexForPossessables = IndexToPossess;
-	//OnCyclePossessionTarget();
+	
 	ConfirmPossession();
 }
 
@@ -396,6 +414,11 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 	{
 		if (PossessableEntity->PlayerCharacterType == EPlayerCharacterType::Turret)
 		{
+			return;
+		}
+		if (PossessableEntity->PlayerCharacterType == EPlayerCharacterType::Beetle && !(PossessableEntity->bCanMove))
+		{
+			PossessableEntity->RotatePrism(Value.Get<FVector2D>());
 			return;
 		}
 	}
