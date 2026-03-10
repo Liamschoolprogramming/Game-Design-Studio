@@ -18,5 +18,21 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	ASaveStation* ActiveSaveStation;
 	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int CurrentSaveStationIndex;
 	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<ASaveStation*> SaveStations;
+	
+	UFUNCTION(BlueprintCallable)
+	void SetActiveSaveStation(ASaveStation* SaveStation);
+	
+	UFUNCTION(BlueprintCallable)
+	void NextSaveStation();
+	
+	UFUNCTION(BlueprintCallable)
+	void PreviousSaveStation();
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	TArray<ASaveStation*> GetSaveStations();
 };
