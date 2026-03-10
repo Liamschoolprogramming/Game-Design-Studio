@@ -17,6 +17,6 @@ class DIALOGUEASSETEDITORRUNTIME_API UDialogueSave : public USaveGame
 
 public:
 	UPROPERTY(SaveGame)
-	TMap<TSoftObjectPtr<UDialogueAsset>, FStateData> SavedDialogueTreeStates;
+	TMap<FSoftObjectPath, FStateData> SavedDialogueTreeStates;
 	
 };

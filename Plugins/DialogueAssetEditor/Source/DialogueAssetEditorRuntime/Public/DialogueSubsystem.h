@@ -41,13 +41,14 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
-	TMap<TSoftObjectPtr<UDialogueAsset>, FStateData> GetStateDataMap() const;
+	TMap<FSoftObjectPath, FStateData> GetStateDataMap() const;
 
 	std::pair<bool,FStateData> GetStateDataByTree(UDialogueAsset* Tree) const; 
 
 	bool RegisterStateData(const TSoftObjectPtr<UDialogueAsset>& Tree, const FStateData& StateData);
 	bool UnregisterStateData(TSoftObjectPtr<UDialogueAsset> Tree);
 
+	UPROPERTY()
 	UDialogueSave* DialogueSave = nullptr;
 	
 	void SaveDialogue();
@@ -57,7 +58,7 @@ public:
 	void UnregisterAllStateData();
 	
 private:
-	TMap<TSoftObjectPtr<UDialogueAsset>, FStateData> DialogueTreeStates;
+	TMap<FSoftObjectPath, FStateData> DialogueTreeStates;
 };
 
 
