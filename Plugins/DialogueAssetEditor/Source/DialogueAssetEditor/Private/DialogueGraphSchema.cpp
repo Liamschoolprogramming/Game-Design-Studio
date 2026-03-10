@@ -32,6 +32,7 @@ void UDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& Cont
 			);
 
 		ContextMenuBuilder.AddAction(NewNodeAction);
+		
 	}
 }
 
@@ -46,7 +47,7 @@ const FPinConnectionResponse UDialogueGraphSchema::CanCreateConnection(const UEd
 		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Inputs can only connect to outputs"));
 	}
 	
-	return FPinConnectionResponse(CONNECT_RESPONSE_BREAK_OTHERS_AB, TEXT(""));
+	return FPinConnectionResponse(CONNECT_RESPONSE_MAKE, TEXT(""));
 	
 }
 
