@@ -75,6 +75,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UTutorialManager* GetTutorialManager() const;
 	
+	UFUNCTION(BlueprintCallable, Category = "Managers")
+	USaveStationManager* GetSaveStationManager() const;
+	
 	void RegisterActorToManager(TSubclassOf<UGameManagerBase> ManagerClass, FGuid Id, const FPersistantActorValues& ActorValues);
 	
 	UPROPERTY()
