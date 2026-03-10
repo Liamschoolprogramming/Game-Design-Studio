@@ -80,7 +80,7 @@ void APlayerControllerBase::AddPossessableEntity(APossessableEntity* Entity)
 {
 	for (int i = 0; i < ClosestPossessableEntities.Num(); i++)
 	{
-		Debug::PrintToScreen(ClosestPossessableEntities[i]->GetName());
+		//Debug::PrintToScreen(ClosestPossessableEntities[i]->GetName());
 	}
 	if (ClosestPossessableEntities.Find(Entity) != INDEX_NONE) return;
 	if (Entity)

@@ -26,8 +26,8 @@ GENERATED_BODY()
 	FNewNodeAction(){}
 	FNewNodeAction(UClass* InClassTemplate, FText InNodeCategory, FText InMenuDesc, FText InToolTip, uint32 InGroupingIndex)
 		: FEdGraphSchemaAction(InNodeCategory, InMenuDesc, InToolTip, InGroupingIndex), ClassTemplate(InClassTemplate) {}
-	
 	virtual UEdGraphNode* PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin,const FVector2f& Location, bool bSelectNewNode = true) override;
 protected:
+	
 	UClass* ClassTemplate = nullptr;
 };
