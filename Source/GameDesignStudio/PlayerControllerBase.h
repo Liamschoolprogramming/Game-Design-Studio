@@ -62,7 +62,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Possession")
 	TSubclassOf<UUserWidget> PossessionWidget;
 	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Possession")
+	UFUNCTION(BlueprintNativeEvent, Category="Possession")
 	void OnCyclePossessionTarget();
 	
 	UFUNCTION(BlueprintNativeEvent, Category="Possession")
@@ -185,8 +185,7 @@ public:
 
 	bool CanWeCyclePossessableEntity(int IndexToCheck);
 
-	UFUNCTION(BlueprintCallable, Category="Possession")
-	void SetPossessIndexByNumber(FString NewIndex);
+	
 	
 	//Essentially a toggle for if we want to be able to move the pawn without always point and click
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
@@ -232,12 +231,15 @@ protected:
 	//Whether the player is able to move or not (controlled by possessable entity for possessables that can't move
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
 	bool bCanMove = true;
+
+private:
 	
 
 public:
 	virtual void SetupInputComponent() override;
 	
 	//Dialogue System
+public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Dialogue")
 	void StartDialogue(class UDialogueAsset* InDialogueAsset = nullptr);

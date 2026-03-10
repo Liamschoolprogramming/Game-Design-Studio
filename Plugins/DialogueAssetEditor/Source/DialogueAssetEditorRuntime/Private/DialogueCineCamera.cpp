@@ -57,7 +57,7 @@ void ADialogueCineCamera::ActivateCamera()
 
 
 }
-#if WITH_EDITOR
+
 void ADialogueCineCamera::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
@@ -88,7 +88,6 @@ void ADialogueCineCamera::OnConstruction(const FTransform& Transform)
 	}
 	
 }
-#endif
 
 void ADialogueCineCamera::InitializeCamera()
 {

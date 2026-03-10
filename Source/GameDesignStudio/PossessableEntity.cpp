@@ -28,11 +28,6 @@ APossessableEntity::APossessableEntity()
 void APossessableEntity::SetPossessed(bool NewPossessed)
 {
 	bPossessed = NewPossessed;
-	if (NewPossessed)
-	{
-		OnSetHighlight(false);
-		OnPossessedFinish();
-	}
 	if(GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("SetPossessed"));
 }
@@ -51,11 +46,4 @@ void APossessableEntity::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void APossessableEntity::RotatePrism_Implementation(FVector2D InputValue) { }
-
-void APossessableEntity::OnSetHighlight_Implementation(bool IsHighlighted) { }
-
-void APossessableEntity::SetRotationMode(bool RotationModeActive)
-{
-	bCanMove = !RotationModeActive;
-}
+void APossessableEntity::RotatePrism_Implementation() { }
