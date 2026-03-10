@@ -383,7 +383,7 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 	else if (CurrentNode == nullptr)
 	{
 		EndDialogue(EDialogueNodeAction::None, "");
+		UE_LOG(DialoguePlayerSub, Warning, TEXT("No end node but no further connection, closing the dialogue."))
 		
-		Debug::PrintToScreen("No end node but no further connection, closing the dialogue.", FColor::Red);
 	}
 }

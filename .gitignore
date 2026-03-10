@@ -57,3 +57,4 @@ Saved/*
 Plugins/CustomAssetEditor/Intermediate/Build
 Plugins/DialogueAssetEditor/Intermediate/Build
 Plugins/DialogueAssetEditor/Intermediate
+*.DS_Store

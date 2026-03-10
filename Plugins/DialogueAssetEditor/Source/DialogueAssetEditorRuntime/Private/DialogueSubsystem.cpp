@@ -49,18 +49,10 @@ std::pair<bool, FStateData> UDialogueSubsystem::GetStateDataByTree(UDialogueAsse
 bool UDialogueSubsystem::RegisterStateData(const TSoftObjectPtr<UDialogueAsset>& Tree, const FStateData& StateData)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Registering State Data"));
-	if (Tree.IsValid())
+	if (!Tree.IsNull())
 	{
 		
-		if (DialogueTreeStates.Contains(Tree))
-		{
-			DialogueTreeStates.Remove(Tree);
-			DialogueTreeStates.Add(Tree, StateData);
-		}
-		else
-		{
-			DialogueTreeStates.Add(Tree, StateData);
-		}
+		DialogueTreeStates.Add(Tree, StateData);
 		UE_LOG(LogTemp, Warning, TEXT("Registered State Data"));
 		SaveDialogue();
 		return true;
@@ -75,7 +67,7 @@ bool UDialogueSubsystem::RegisterStateData(const TSoftObjectPtr<UDialogueAsset>&
 
 bool UDialogueSubsystem::UnregisterStateData(TSoftObjectPtr<UDialogueAsset> Tree)
 {
-	if (Tree.IsValid())
+	if (!Tree.IsNull())
 	{
 		DialogueTreeStates.Remove(Tree);
 		return true;
@@ -92,15 +84,12 @@ void UDialogueSubsystem::UnregisterAllStateData()
 }
 void UDialogueSubsystem::SaveDialogue()
 {
-	if (DialogueSave)
+
+	if (!DialogueSave)
 	{
-		DialogueSave->SavedDialogueTreeStates = DialogueTreeStates;
+		DialogueSave = Cast<UDialogueSave>(UGameplayStatics::CreateSaveGameObject(UDialogueSave::StaticClass()));
 	}
-	else
-	{
-		DialogueSave = NewObject<UDialogueSave>();
-		DialogueSave->SavedDialogueTreeStates = DialogueTreeStates;
-	}
+	DialogueSave->SavedDialogueTreeStates = DialogueTreeStates;
 	for (const auto& State : DialogueTreeStates)
 	{
 		FStateData StateData = State.Value;
