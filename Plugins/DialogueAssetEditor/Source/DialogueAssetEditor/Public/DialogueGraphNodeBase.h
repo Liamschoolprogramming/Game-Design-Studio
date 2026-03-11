@@ -49,7 +49,24 @@ public: // our interface
 	{
 		/* Override for functionality */
 	}
-
+	
+	virtual void AllocateDefaultPins() override
+	{
+		Super::AllocateDefaultPins();
+		CreateDefaultInputPin();
+		CreateDefaultOutputPins();
+	}
+	virtual void PostPasteNode() override
+	{
+		Super::PostPasteNode();
+		ReconstructNode();
+	}
+	virtual void PostDuplicate(bool bDuplicateForPIE) override
+	{
+		Super::PostDuplicate(bDuplicateForPIE);
+	}
+	
+	
 	
 	virtual UDialogueNodeBehaviour* GetNodeBehaviour() const
 	{

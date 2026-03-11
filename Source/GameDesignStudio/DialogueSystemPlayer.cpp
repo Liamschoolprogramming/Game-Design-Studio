@@ -80,7 +80,7 @@ UDialogueSpeakerComponent* UDialogueSystemPlayer::FindSpeakerComponent(UWorld* W
 		if (It->GetWorld() != World)
 			continue;
 
-		if (It->ComponentHasTag(SpeakerName))
+		if (It->SpeakerName == SpeakerName)
 		{
 			return *It;
 		}
@@ -264,8 +264,7 @@ void UDialogueSystemPlayer::ChangeCamera(FName CameraName, float TransitionTime,
 		
 	}else
 	{
-		
-		ChooseFirstOption();
+		ChooseOptionAtIndex(0);
 	}
 }
 
@@ -384,7 +383,7 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 	else if (CurrentNode == nullptr)
 	{
 		EndDialogue(EDialogueNodeAction::None, "");
+		UE_LOG(DialoguePlayerSub, Warning, TEXT("No end node but no further connection, closing the dialogue."))
 		
-		Debug::PrintToScreen("No end node but no further connection, closing the dialogue.", FColor::Red);
 	}
 }
