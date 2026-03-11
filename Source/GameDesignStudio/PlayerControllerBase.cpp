@@ -115,7 +115,11 @@ bool APlayerControllerBase::CanWeCyclePossessableEntity(int IndexToCheck)
 
 		if (!ClosestPossessableEntities.IsValidIndex(IndexToCheck)) return false;
 
-		if (!Macros::CanActorSeeActor(PlayerReference, ClosestPossessableEntities[IndexToCheck])) return false;
+		if (!Macros::CanActorSeeActor(PlayerReference, ClosestPossessableEntities[IndexToCheck]))
+		{
+			OnTryToPossessOutOfSight();
+			return false;
+		}
 		if (GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()) &&
 			GetPawn()->GetClass()->GetSuperClass() == APossessableEntity::StaticClass())
 		{
