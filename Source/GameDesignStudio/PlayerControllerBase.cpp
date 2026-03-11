@@ -115,7 +115,11 @@ bool APlayerControllerBase::CanWeCyclePossessableEntity(int IndexToCheck)
 
 		if (!ClosestPossessableEntities.IsValidIndex(IndexToCheck)) return false;
 
-		if (!Macros::CanActorSeeActor(PlayerReference, ClosestPossessableEntities[IndexToCheck])) return false;
+		if (!Macros::CanActorSeeActor(PlayerReference, ClosestPossessableEntities[IndexToCheck]))
+		{
+			OnTryToPossessOutOfSight();
+			return false;
+		}
 		if (GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()) &&
 			GetPawn()->GetClass()->GetSuperClass() == APossessableEntity::StaticClass())
 		{
@@ -231,6 +235,10 @@ void APlayerControllerBase::CyclePossessionDown()
 
 void APlayerControllerBase::OnCyclePossessionTarget_Implementation() { }
 
+void APlayerControllerBase::OnReturnToPlayer_Implementation() { }
+
+void APlayerControllerBase::OnTryToPossessOutOfSight_Implementation() { }
+
 void APlayerControllerBase::PossessIndex(int IndexToPossess)
 {
 	IndexForPossessables = IndexToPossess;
@@ -253,6 +261,7 @@ void APlayerControllerBase::ConfirmPossession()
 			CameraReference->ResetCameraRotation(PlayerReference->GetActorRotation());
 			TargetPawn = nullptr;
 			Possess(PlayerReference);
+			OnReturnToPlayer();
 			
 			PossessionTimerHandle.Invalidate();
 		}
@@ -277,7 +286,7 @@ void APlayerControllerBase::ConfirmPossession()
 					PossessableEntity->SetPossessed(false);
 					ClosestPossessableEntities[IndexForPossessables]->OnPossessedStart();
 				}
-			}
+			} 
 			return;
 		}
 
@@ -287,6 +296,7 @@ void APlayerControllerBase::ConfirmPossession()
 		
 		if (!Macros::CanActorSeeActor(PlayerReference, ClosestPossessableEntities[IndexForPossessables])) 
 		{
+			OnTryToPossessOutOfSight();
 			FTimerDelegate CycleTimerDelegate;
 			CycleTimerDelegate.BindUFunction(this, FName("CyclePossessionUp"));
 			GetWorld()->GetTimerManager().SetTimerForNextTick(CycleTimerDelegate);
