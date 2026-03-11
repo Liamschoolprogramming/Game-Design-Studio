@@ -71,6 +71,12 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category="Possession")
 	void AddPossessableToHotbar();
 	
+	UFUNCTION(BlueprintNativeEvent, Category="Possession")
+	void OnReturnToPlayer();
+	
+	UFUNCTION(BlueprintNativeEvent, Category="Possession")
+	void OnTryToPossessOutOfSight();
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
 	float ControllerSensitivity = 0.2f;
 	
