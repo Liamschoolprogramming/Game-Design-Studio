@@ -46,7 +46,7 @@ class DIALOGUEASSETEDITORRUNTIME_API UCustomFunctionNodeBehaviour : public UDial
 			UE_LOG(LogTemp, Warning, TEXT("Function name: %s"), *Function->GetName());
 			UE_LOG(LogTemp, Warning, TEXT("About to iterate param"))
 			//we create a buffer that is the size of the functions param buffer
-			uint8* Buffer = (uint8*)FMemory_Alloca(Function->ParmsSize);
+			uint8* Buffer = static_cast<uint8*>(FMemory_Alloca(Function->ParmsSize));
 			FMemory::Memzero(Buffer, Function->ParmsSize);
 			
 			//we iterate over each property in the buffer
@@ -65,9 +65,8 @@ class DIALOGUEASSETEDITORRUNTIME_API UCustomFunctionNodeBehaviour : public UDial
 				if (!Value) continue;
 				UE_LOG(LogTemp, Warning, TEXT("Param found "));
 				//we need to check if its a soft object reference
-				FSoftObjectProperty* SoftProp = CastField<FSoftObjectProperty>(Prop);
 				// we have a different setup for TSoftObjectPtr
-				if (SoftProp)
+				if (const FSoftObjectProperty* SoftProp = CastField<FSoftObjectProperty>(Prop))
 				{
 					void* ParamPtr = SoftProp->ContainerPtrToValuePtr<void>(Buffer);
 
