@@ -24,8 +24,6 @@ class UQuestDialogueUIController;
 
 
 
-// Unreal-style delegate instead of std::function
-DECLARE_DELEGATE_TwoParams(FOnDialogueEnded, EDialogueNodeAction, FString);
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnCustomFunctionParam, FString, FDialogueParameters)
 
@@ -38,8 +36,7 @@ public:
 	UDialogueSystemPlayer();
 	// Pass delegate by value (Unreal-friendly)
 	void PlayDialogue(UDialogueAsset* InDialogueAsset, 
-					  APlayerController* InPlayerController, 
-					  FOnDialogueEnded InOnDialogueEnded);
+					  APlayerController* InPlayerController);
 
 	void ChooseOptionAtIndex(int Index);
 
@@ -59,12 +56,13 @@ private:
 
 	UPROPERTY()
 	UQuestDialogueUIController* DialogueWidget = nullptr;
+	
+	UPROPERTY()
+	AActor* Owner;
 
 	UTexture2D* DefaultCharacterIcon;
 	
 	APlayerControllerBase* PlayerController;
-	
-	FOnDialogueEnded OnDialogueEnded;
 	
 
 	UDialogueAsset* DialogueAsset;
@@ -84,7 +82,7 @@ public:
 	virtual void ClearResponses() override;
 	virtual void AddResponseButton(FText InResponseText, int InOptionIndex) override;
 	virtual void SetupCameraAndSpeaker(FName CameraName, FName InSpeakerName, UTexture2D* Portrait) override;
-	virtual void EndDialogue(EDialogueNodeAction Action, FString ActionData) override;
+	virtual void EndDialogue() override;
 	virtual TArray<int> GetQuestProgress(FName QuestKey) override;
 	virtual void StartQuest(FName QuestKey) override;
 	virtual void CompleteQuest(FName QuestKey) override;
@@ -96,5 +94,6 @@ public:
 	virtual void ChooseOption(int IndexToChoose) override;
 	virtual UWorld* GetWorldFromPlayer() override;
 	virtual void CheckDialogueState() override;
+	virtual void PlayDialogue(AActor* InOwner, class UDialogueAsset* InDialogueAsset, APlayerController* InPlayerController) override;
 	//virtual void CallCustomFunctionWithParams(FString FunctionName, const FDialogueParameters& Parameters) override;
 };

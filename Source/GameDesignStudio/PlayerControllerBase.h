@@ -243,13 +243,6 @@ protected:
 public:
 	virtual void SetupInputComponent() override;
 	
-	//Dialogue System
-	
-	UFUNCTION(BlueprintCallable, Category = "Dialogue")
-	void StartDialogue(class UDialogueAsset* InDialogueAsset = nullptr);
-	
-	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
-	void DialogueBPFunction(const FString& ActionData);
 	
 	//UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
 	//void DialogueCustomFunctionParam(const FString& FunctionName, const FDialogueParameters& Parameters);

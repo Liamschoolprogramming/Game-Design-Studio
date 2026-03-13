@@ -12,13 +12,37 @@ void UDialogueSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 	UE_LOG(LogTemp, Warning, TEXT("Dialogue Subsystem Initialized"));
 	
-	
+	// Iterate all loaded UClasses
+	for (TObjectIterator<UClass> It; It; ++It)
+	{
+		UClass* Class = *It;
+	 
+		// Skip abstract, interface classes, or those not derived from UObject
+		if (Class->HasAnyClassFlags(CLASS_Abstract | CLASS_Interface) ||
+			!Class->IsChildOf(UObject::StaticClass()))
+		{
+			continue;
+		}
+	 
+		// Check if this class implements your plugin interface
+		if (Class->ImplementsInterface(UDialogueExecutionHandler::StaticClass()))
+		{
+			// Instantiate instance owned by this subsystem
+			UObject* Instance = NewObject<UObject>(this, Class);
+			if (Instance)
+			{
+				AutoCreatedInstances.Add(Instance);
+				UE_LOG(LogTemp, Log, TEXT("Instantiated class: %s"), *Class->GetName());
+			}
+		}
+	}
 	
 }
 
 void UDialogueSubsystem::Deinitialize()
 {
 	UnregisterAllStateData();
+	AutoCreatedInstances.Empty();
 	Super::Deinitialize();
 }
 
@@ -86,6 +110,49 @@ void UDialogueSubsystem::UnregisterAllStateData()
 	DialogueTreeStates.Empty();
 	SaveDialogue();
 }
+
+
+TArray<TScriptInterface<class IDialogueExecutionHandler>> UDialogueSubsystem::GetDialogueDelegates()	
+{
+	TArray<TScriptInterface<class IDialogueExecutionHandler>> Delegates;
+	for (const auto& Instance : AutoCreatedInstances)
+	{
+		UObject* ObjectInstance = Cast<UObject>(Instance);
+		if (ObjectInstance && ObjectInstance->Implements<UDialogueExecutionHandler>())
+		{
+			TScriptInterface<IDialogueExecutionHandler> Interface(ObjectInstance);
+			Delegates.Add(Interface);
+		}
+	}
+	return Delegates;
+}
+
+void UDialogueSubsystem::StartDialogue(UDialogueAsset* InDialogueAsset, AActor* InOwner, APlayerController* InPlayerController)
+{
+	
+	if (!DialogueAsset && !InDialogueAsset)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Asset selected"));
+		return;
+	}
+	if (InDialogueAsset)
+	{
+		DialogueAsset = InDialogueAsset;
+	}
+
+	
+	//DialoguePlayer->OnCustomFunctionParam.AddUFunction(this,"CustomFunctionParam");
+	
+	for (UObject* Instance : AutoCreatedInstances)
+	{
+		if (IDialogueExecutionHandler* InterfacePtr = Cast<IDialogueExecutionHandler>(Instance))
+		{
+			InterfacePtr->PlayDialogue(InOwner, InDialogueAsset, InPlayerController);
+		}
+	}
+
+}
+
 void UDialogueSubsystem::SaveDialogue()
 {
 

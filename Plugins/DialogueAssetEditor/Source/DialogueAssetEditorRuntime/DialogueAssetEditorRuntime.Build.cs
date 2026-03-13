@@ -26,7 +26,7 @@ public class DialogueAssetEditorRuntime : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "Engine",
+				"Core", "Engine","StructUtils",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

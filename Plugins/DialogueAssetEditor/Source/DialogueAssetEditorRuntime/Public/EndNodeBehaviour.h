@@ -6,8 +6,10 @@
 #include "DialogueEndNodeInfo.h"
 #include "DialogueNodeBehaviour.h"
 
+#include "DialogueSharedTypes.h"
 #include "DialogueExecutionHandler.h"
 #include "DialogueNodeInfo.h"
+#include "DialogueSubsystem.h"
 #include "EndNodeBehaviour.generated.h"
 
 /**
@@ -23,7 +25,6 @@ class DIALOGUEASSETEDITORRUNTIME_API UEndNodeBehaviour : public UDialogueNodeBeh
 		UDialogueEndNodeInfo* EndNodeInfo = Cast<UDialogueEndNodeInfo>(NodeInfoBase);
 		if (!EndNodeInfo) return;
 
-		
 		if (UDialogueSubsystem* DialogueSubsystem =  Handler->GetWorldFromPlayer()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>())
 		{
 			const TSoftObjectPtr<UDialogueAsset> AssetPtr = Handler->GetAsset();
@@ -39,7 +40,7 @@ class DIALOGUEASSETEDITORRUNTIME_API UEndNodeBehaviour : public UDialogueNodeBeh
 		}
 		
 		
-		Handler->EndDialogue(EndNodeInfo->Action, EndNodeInfo->ActionData);
+		Handler->EndDialogue();
 		
 	}
 };

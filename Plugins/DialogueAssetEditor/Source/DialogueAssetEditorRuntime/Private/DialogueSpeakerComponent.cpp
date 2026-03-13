@@ -42,6 +42,7 @@ void UDialogueSpeakerComponent::ActivateSpeakerCamera()
 		
 	}
 	
+	
 }
 
 

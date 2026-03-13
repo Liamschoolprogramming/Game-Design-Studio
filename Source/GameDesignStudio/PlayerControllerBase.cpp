@@ -551,11 +551,7 @@ void APlayerControllerBase::BeginPlay()
 	Super::BeginPlay();
 
 
-	UDialogueSubsystem* DialogueSubsystem =  GetWorld()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>();
-	if (DialogueSubsystem)
-	{
-		DialogueSubsystem->LoadDialogue();
-	}
+	
 	//spawn camera
 	if (CameraReferenceClass)
 	{
@@ -725,47 +721,6 @@ void APlayerControllerBase::ResetCameraFromDialogue(float TransitionTime)
 }
 
 
-void APlayerControllerBase::StartDialogue(UDialogueAsset* InDialogueAsset)
-{
-	
-	if (!DialogueAsset && !InDialogueAsset)
-	{
-		DEBUG_TO_SCREEN(FColor::Red, "No dialogue asset selected");
-		return;
-	}
-	if (InDialogueAsset)
-	{
-		DialogueAsset = InDialogueAsset;
-	}
-
-	DialoguePlayer = NewObject<UDialogueSystemPlayer>(this);
-	//DialoguePlayer->OnCustomFunctionParam.AddUFunction(this,"CustomFunctionParam");
-	DialoguePlayer->PlayDialogue(DialogueAsset, this, FOnDialogueEnded::CreateLambda(
-		[this](EDialogueNodeAction Action, FString ActionData)
-		{
-			if (Action == EDialogueNodeAction::StartQuest && ActionData != FString(""))
-			{
-				UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager();
-				QuestManager->ActivateQuestForItem(FName(ActionData));
-			}else if (Action == EDialogueNodeAction::BPFunction && ActionData != FString(""))
-			{
-				DialogueBPFunction(FString(ActionData));
-				
-			}
-			if (DialoguePlayer->CurrentSpeakerComponent)
-			{
-				ResetCameraFromDialogue(DialoguePlayer->CurrentSpeakerComponent->CameraTransitionTime);
-			}
-			else
-			{
-				ResetCameraFromDialogue(0.5f);
-			}
-		}
-		)
-		);
-
-
-}
 
 ARewardSpawnZone* APlayerControllerBase::FindFirstRewardSpawnZone()
 {

@@ -20,23 +20,8 @@ FText UEndGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 	if (NodeInfo != nullptr)
 	{
 		
-		if (NodeInfo->Action != EDialogueNodeAction::None)
-		{
-			FString OutputString = UEnum::GetDisplayValueAsText(NodeInfo->Action).ToString();
-			if (!NodeInfo->ActionData.IsEmpty())
-			{
-				FString ActionData = NodeInfo->ActionData;
-				if (ActionData.Len() > 15)
-				{
-					ActionData = ActionData.Left(15) + TEXT("...");
-				}
-				OutputString += TEXT(" - ") + ActionData;
-			}
 		
-			return FText::FromString(OutputString);
-		}
-		else
-		{
+		
 			FString OutputString = TEXT("End State: ") + UEnum::GetDisplayValueAsText(NodeInfo->EndState).ToString();
 			if (!NodeInfo->EndStateTag.IsEmpty())
 			{
@@ -48,7 +33,7 @@ FText UEndGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 				OutputString += TEXT(" - ") + ActionData;
 			}
 			return FText::FromString(OutputString);
-		}
+		
 	}
 	return FText::FromString(TEXT("End"));
 }
