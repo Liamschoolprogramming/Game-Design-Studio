@@ -9,7 +9,7 @@
 #include "DialogueRuntimeGraph.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
-
+#include "DialogueSubsystem.h"
 #include "DialogueResponseButtonController.h"
 #include "Macros.h"
 #include "PlayerControllerBase.h"
@@ -37,15 +37,13 @@ UDialogueSystemPlayer::UDialogueSystemPlayer()
 	}
 }
 
-void UDialogueSystemPlayer::PlayDialogue(class UDialogueAsset* InDialogueAsset, APlayerController* InPlayerController,
-                                         FOnDialogueEnded InOnDialogueEnded)
+void UDialogueSystemPlayer::PlayDialogue(class UDialogueAsset* InDialogueAsset, APlayerController* InPlayerController)
 {
 	PlayerController = Cast<APlayerControllerBase>(InPlayerController);
 	
 	PlayerController->SetCanMove(false);
 	UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PlayerController,nullptr);
 	PlayerController->SetShowMouseCursor(true);
-	OnDialogueEnded = InOnDialogueEnded;
 	UDialogueRuntimeGraph* RuntimeGraph = InDialogueAsset->Graph;
 	DialogueAsset = InDialogueAsset;
 	
@@ -166,7 +164,7 @@ void UDialogueSystemPlayer::SetupCameraAndSpeaker(FName CameraName, FName InSpea
 	}
 }
 
-void UDialogueSystemPlayer::EndDialogue(EDialogueNodeAction Action, FString ActionData)
+void UDialogueSystemPlayer::EndDialogue()
 {
 	DialogueWidget->RemoveFromParent();
 	DialogueWidget = nullptr;
@@ -187,7 +185,8 @@ void UDialogueSystemPlayer::EndDialogue(EDialogueNodeAction Action, FString Acti
 		
 	}
 	CurrentSpeakerComponent = nullptr;
-	OnDialogueEnded.ExecuteIfBound(Action, ActionData);
+	UDialogueSubsystem* Subsystem = GetWorld()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>();
+	Subsystem->OnDialogueEnded.Broadcast(EDialogueNodeAction::None, "");
 }
 
 TArray<int> UDialogueSystemPlayer::GetQuestProgress(FName QuestKey)
@@ -275,7 +274,8 @@ UObject* UDialogueSystemPlayer::GetCurrentNode()
 
 void UDialogueSystemPlayer::CallCustomFunction(FString FunctionName)
 {
-	OnDialogueEnded.ExecuteIfBound(EDialogueNodeAction::BPFunction, FunctionName);
+	UDialogueSubsystem* Subsystem = GetWorld()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>();
+	Subsystem->OnDialogueEnded.Broadcast(EDialogueNodeAction::BPFunction, FunctionName);
 	ChooseOptionAtIndex(0);
 }
 
@@ -343,6 +343,13 @@ void UDialogueSystemPlayer::CheckDialogueState()
 		ChooseOptionAtIndex(0);
 	}
 }
+
+void UDialogueSystemPlayer::PlayDialogue(AActor* InOwner, class UDialogueAsset* InDialogueAsset, APlayerController* InPlayerController)
+{
+	Owner = InOwner;
+	PlayDialogue(InDialogueAsset, InPlayerController);
+}
+
 /*
 void UDialogueSystemPlayer::CallCustomFunctionWithParams(FString FunctionName, const FDialogueParameters& Parameters)
 {
@@ -382,7 +389,7 @@ void UDialogueSystemPlayer::ChooseOptionAtIndex(int Index)
 	}
 	else if (CurrentNode == nullptr)
 	{
-		EndDialogue(EDialogueNodeAction::None, "");
+		EndDialogue();
 		UE_LOG(DialoguePlayerSub, Warning, TEXT("No end node but no further connection, closing the dialogue."))
 		
 	}
