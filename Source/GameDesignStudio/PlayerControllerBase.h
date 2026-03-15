@@ -163,7 +163,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Effects")
 	void UpdateMPC();
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
 	float PawnMovementSpeed = 500;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
@@ -231,6 +231,19 @@ public:
 	void ToggleLockCameraToPawn(const FInputActionValue& Value);
 	void Select(const FInputActionValue& Value);
 	
+	//bool for if player (specifically golem) is pushing a boulder
+	UPROPERTY(BlueprintReadWrite, Category = "Movement")
+	bool bIsPushingBoulder = false;
+
+	//Forward vector used to constrain movement when pushing boulders
+	UPROPERTY(BlueprintReadWrite, Category = "Movement")
+	FVector BoulderPushForwardAxis = FVector::ForwardVector;
+	
+	//Gets the current speed of the possessed pawn
+	UPROPERTY(BlueprintReadWrite, Category="Movement")
+	float CurrentMovementSpeed = 0.f;
+	
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -239,6 +252,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
 	bool bCanMove = true;
 	
+	//Last known location of possessed pawn
+	FVector LastPawnLocation = FVector::ZeroVector;
 
 public:
 	virtual void SetupInputComponent() override;
