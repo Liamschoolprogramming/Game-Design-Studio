@@ -10,6 +10,8 @@
 #include "Managers/InventoryManager.h"
 #include "Managers/PlayerStatManager.h"
 #include "Managers/QuestManager.h"
+#include "Managers/SaveStationManager.h"
+#include "Managers/TutorialManager.h"
 
 #if WITH_EDITOR
 #include "Editor.h"
@@ -58,6 +60,8 @@ void UGameManagerSubsystem::RegisterManagers()
 	RegisterManager<UGearManager>();
 	RegisterManager<UQuestManager>();
 	RegisterManager<UPlayerStatManager>();
+	RegisterManager<UTutorialManager>();
+	RegisterManager<USaveStationManager>();
 }
 
 template <typename T>
@@ -153,6 +157,26 @@ UPlayerStatManager* UGameManagerSubsystem::GetPlayerStatManager() const
 	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UPlayerStatManager::StaticClass()))
 	{
 		return Cast<UPlayerStatManager>(Found->Get());
+	}
+	
+	return nullptr;
+}
+
+UTutorialManager* UGameManagerSubsystem::GetTutorialManager() const
+{
+	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UTutorialManager::StaticClass()))
+	{
+		return Cast<UTutorialManager>(Found->Get());
+	}
+	
+	return nullptr;
+}
+
+USaveStationManager* UGameManagerSubsystem::GetSaveStationManager() const
+{
+	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(USaveStationManager::StaticClass()))
+	{
+		return Cast<USaveStationManager>(Found->Get());
 	}
 	
 	return nullptr;

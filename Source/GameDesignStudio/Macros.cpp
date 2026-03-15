@@ -6,14 +6,14 @@
 #include "Core/Puzzles/RefractingPrism.h"
 #include "Kismet/GameplayStatics.h"
 
-void Debug::PrintToScreen(const FString& Msg, float Time, FColor Color)
+/*void Debug::PrintToScreen(const FString& Msg, float Time, FColor Color)
 {
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, Time, Color, Msg);
 	}
 }
-
+*/
 
 bool Macros::CanActorSeeActor(const AActor* CheckingActor, const AActor* ActorToCheck, TArray<class AActor*> ActorsToIgnore)
 {

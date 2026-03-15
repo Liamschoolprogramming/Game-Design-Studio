@@ -4,30 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include "DialogueSharedTypes.h"
+#include "InstancedStruct.h"
 #include "DialogueSubsystem.generated.h"
 
 
+class FOnDialogueEnded;
 class UDialogueAsset;
 class UDialogueSave;
 
-UENUM(BlueprintType)
-enum class EStates : uint8
-{
-	NotStarted,
-	Finished,
-	FinishedWithTag
-};
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDialogueEnded, EDialogueNodeAction, DialogueNodeActionParam, const FString&, StringParam);
 
-USTRUCT()
-struct FStateData
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	EStates State;
-	UPROPERTY()
-	FString Tag;
-};
 
 /**
  * 
@@ -41,14 +28,38 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
-	TMap<TSoftObjectPtr<UDialogueAsset>, FStateData> GetStateDataMap() const;
+	TMap<FSoftObjectPath, FStateData> GetStateDataMap() const;
 
 	std::pair<bool,FStateData> GetStateDataByTree(UDialogueAsset* Tree) const; 
 
 	bool RegisterStateData(const TSoftObjectPtr<UDialogueAsset>& Tree, const FStateData& StateData);
 	bool UnregisterStateData(TSoftObjectPtr<UDialogueAsset> Tree);
 
+	UPROPERTY()
 	UDialogueSave* DialogueSave = nullptr;
+	
+	UPROPERTY()
+	UDialogueAsset* DialogueAsset = nullptr;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnDialogueEnded OnDialogueEnded;
+	
+	UPROPERTY()
+	TArray<UObject*> AutoCreatedInstances;
+	
+	UFUNCTION(BlueprintCallable)
+	TArray<TScriptInterface<class IDialogueExecutionHandler>> GetDialogueDelegates();
+	
+
+	//Dialogue System
+	
+	UFUNCTION(BlueprintCallable, Category = "Dialogue")
+	void StartDialogue(class UDialogueAsset* InDialogueAsset = nullptr, AActor* InOwner = nullptr, APlayerController* InPlayerController =
+		                   nullptr);
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
+	void DialogueBPFunction(const FString& ActionData);
+	
 	
 	void SaveDialogue();
 	void LoadDialogue();
@@ -57,7 +68,7 @@ public:
 	void UnregisterAllStateData();
 	
 private:
-	TMap<TSoftObjectPtr<UDialogueAsset>, FStateData> DialogueTreeStates;
+	TMap<FSoftObjectPath, FStateData> DialogueTreeStates;
 };
 
 

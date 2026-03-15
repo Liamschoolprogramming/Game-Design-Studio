@@ -145,7 +145,7 @@ float ACustomCamera::SetCameraHeight()
 		if (bHit)
 		{
 			CameraHeight = HalfHeight + HitResult.Location.Z;
-			Debug::PrintToScreen(HitResult.Location.Z);
+			//Debug::PrintToScreen(HitResult.Location.Z);
 		}
 		else
 		{

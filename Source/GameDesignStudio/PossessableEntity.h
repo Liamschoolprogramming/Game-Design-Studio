@@ -44,8 +44,16 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPossessedStart();
 	
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPossessedFinish();
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void OnSetHighlight(bool IsHighlighted);
+	
 	UFUNCTION(BlueprintNativeEvent)
-	void RotatePrism();
+	void RotatePrism(FVector2D InputValue);
+	
+	void SetRotationMode(bool RotationModeActive);
 	
 protected:
 	virtual void BeginPlay() override;

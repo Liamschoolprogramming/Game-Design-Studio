@@ -12,17 +12,41 @@ void UDialogueSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 	UE_LOG(LogTemp, Warning, TEXT("Dialogue Subsystem Initialized"));
 	
-	
+	// Iterate all loaded UClasses
+	for (TObjectIterator<UClass> It; It; ++It)
+	{
+		UClass* Class = *It;
+	 
+		// Skip abstract, interface classes, or those not derived from UObject
+		if (Class->HasAnyClassFlags(CLASS_Abstract | CLASS_Interface) ||
+			!Class->IsChildOf(UObject::StaticClass()))
+		{
+			continue;
+		}
+	 
+		// Check if this class implements your plugin interface
+		if (Class->ImplementsInterface(UDialogueExecutionHandler::StaticClass()))
+		{
+			// Instantiate instance owned by this subsystem
+			UObject* Instance = NewObject<UObject>(this, Class);
+			if (Instance)
+			{
+				AutoCreatedInstances.Add(Instance);
+				UE_LOG(LogTemp, Log, TEXT("Instantiated class: %s"), *Class->GetName());
+			}
+		}
+	}
 	
 }
 
 void UDialogueSubsystem::Deinitialize()
 {
 	UnregisterAllStateData();
+	AutoCreatedInstances.Empty();
 	Super::Deinitialize();
 }
 
-TMap<TSoftObjectPtr<UDialogueAsset>, FStateData> UDialogueSubsystem::GetStateDataMap() const
+TMap<FSoftObjectPath, FStateData> UDialogueSubsystem::GetStateDataMap() const
 {
 	return DialogueTreeStates;
 }
@@ -48,19 +72,13 @@ std::pair<bool, FStateData> UDialogueSubsystem::GetStateDataByTree(UDialogueAsse
 
 bool UDialogueSubsystem::RegisterStateData(const TSoftObjectPtr<UDialogueAsset>& Tree, const FStateData& StateData)
 {
+	
+	FSoftObjectPath Key = Tree.ToSoftObjectPath();
 	UE_LOG(LogTemp, Warning, TEXT("Registering State Data"));
-	if (Tree.IsValid())
+	if (!Tree.IsNull())
 	{
 		
-		if (DialogueTreeStates.Contains(Tree))
-		{
-			DialogueTreeStates.Remove(Tree);
-			DialogueTreeStates.Add(Tree, StateData);
-		}
-		else
-		{
-			DialogueTreeStates.Add(Tree, StateData);
-		}
+		DialogueTreeStates.Add(Key, StateData);
 		UE_LOG(LogTemp, Warning, TEXT("Registered State Data"));
 		SaveDialogue();
 		return true;
@@ -75,9 +93,10 @@ bool UDialogueSubsystem::RegisterStateData(const TSoftObjectPtr<UDialogueAsset>&
 
 bool UDialogueSubsystem::UnregisterStateData(TSoftObjectPtr<UDialogueAsset> Tree)
 {
-	if (Tree.IsValid())
+	FSoftObjectPath Key = Tree.ToSoftObjectPath();
+	if (!Tree.IsNull())
 	{
-		DialogueTreeStates.Remove(Tree);
+		DialogueTreeStates.Remove(Key);
 		return true;
 	}
 	else
@@ -89,20 +108,73 @@ bool UDialogueSubsystem::UnregisterStateData(TSoftObjectPtr<UDialogueAsset> Tree
 void UDialogueSubsystem::UnregisterAllStateData()
 {
 	DialogueTreeStates.Empty();
+	SaveDialogue();
 }
+
+
+TArray<TScriptInterface<class IDialogueExecutionHandler>> UDialogueSubsystem::GetDialogueDelegates()	
+{
+	TArray<TScriptInterface<class IDialogueExecutionHandler>> Delegates;
+	for (const auto& Instance : AutoCreatedInstances)
+	{
+		UObject* ObjectInstance = Cast<UObject>(Instance);
+		if (ObjectInstance && ObjectInstance->Implements<UDialogueExecutionHandler>())
+		{
+			TScriptInterface<IDialogueExecutionHandler> Interface(ObjectInstance);
+			Delegates.Add(Interface);
+		}
+	}
+	return Delegates;
+}
+
+void UDialogueSubsystem::StartDialogue(UDialogueAsset* InDialogueAsset, AActor* InOwner, APlayerController* InPlayerController)
+{
+	
+	if (!DialogueAsset && !InDialogueAsset)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Asset selected"));
+		return;
+	}
+	if (InDialogueAsset)
+	{
+		DialogueAsset = InDialogueAsset;
+	}
+
+	
+	//DialoguePlayer->OnCustomFunctionParam.AddUFunction(this,"CustomFunctionParam");
+	
+	for (UObject* Instance : AutoCreatedInstances)
+	{
+		if (IDialogueExecutionHandler* InterfacePtr = Cast<IDialogueExecutionHandler>(Instance))
+		{
+			InterfacePtr->PlayDialogue(InOwner, InDialogueAsset, InPlayerController);
+		}
+	}
+
+}
+
 void UDialogueSubsystem::SaveDialogue()
 {
-	if (DialogueSave)
+
+	if (!DialogueSave)
 	{
-		DialogueSave->SavedDialogueTreeStates = DialogueTreeStates;
+		if (UGameplayStatics::DoesSaveGameExist(TEXT("DialogueSave"), 0))
+		{
+			DialogueSave = Cast<UDialogueSave>(
+				UGameplayStatics::LoadGameFromSlot(TEXT("DialogueSave"), 0)
+			);
+		}
+		else
+		{
+			DialogueSave = Cast<UDialogueSave>(
+				UGameplayStatics::CreateSaveGameObject(UDialogueSave::StaticClass())
+			);
+		}
 	}
-	else
-	{
-		DialogueSave = NewObject<UDialogueSave>();
-		DialogueSave->SavedDialogueTreeStates = DialogueTreeStates;
-	}
+	
 	for (const auto& State : DialogueTreeStates)
 	{
+		DialogueSave->SavedDialogueTreeStates.Add(State.Key,State.Value);
 		FStateData StateData = State.Value;
 		UE_LOG(LogTemp, Warning, TEXT("%hhd State, %s Tag"), StateData.State, *StateData.Tag);
 	}

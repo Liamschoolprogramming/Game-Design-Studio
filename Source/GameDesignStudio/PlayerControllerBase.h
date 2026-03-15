@@ -62,7 +62,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Possession")
 	TSubclassOf<UUserWidget> PossessionWidget;
 	
-	UFUNCTION(BlueprintNativeEvent, Category="Possession")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Possession")
 	void OnCyclePossessionTarget();
 	
 	UFUNCTION(BlueprintNativeEvent, Category="Possession")
@@ -70,6 +70,12 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent, Category="Possession")
 	void AddPossessableToHotbar();
+	
+	UFUNCTION(BlueprintNativeEvent, Category="Possession")
+	void OnReturnToPlayer();
+	
+	UFUNCTION(BlueprintNativeEvent, Category="Possession")
+	void OnTryToPossessOutOfSight();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
 	float ControllerSensitivity = 0.2f;
@@ -157,7 +163,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Effects")
 	void UpdateMPC();
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
 	float PawnMovementSpeed = 500;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
@@ -185,7 +191,8 @@ public:
 
 	bool CanWeCyclePossessableEntity(int IndexToCheck);
 
-	
+	UFUNCTION(BlueprintCallable, Category="Possession")
+	void SetPossessIndexByNumber(FString NewIndex);
 	
 	//Essentially a toggle for if we want to be able to move the pawn without always point and click
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
@@ -224,6 +231,19 @@ public:
 	void ToggleLockCameraToPawn(const FInputActionValue& Value);
 	void Select(const FInputActionValue& Value);
 	
+	//bool for if player (specifically golem) is pushing a boulder
+	UPROPERTY(BlueprintReadWrite, Category = "Movement")
+	bool bIsPushingBoulder = false;
+
+	//Forward vector used to constrain movement when pushing boulders
+	UPROPERTY(BlueprintReadWrite, Category = "Movement")
+	FVector BoulderPushForwardAxis = FVector::ForwardVector;
+	
+	//Gets the current speed of the possessed pawn
+	UPROPERTY(BlueprintReadWrite, Category="Movement")
+	float CurrentMovementSpeed = 0.f;
+	
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -231,21 +251,13 @@ protected:
 	//Whether the player is able to move or not (controlled by possessable entity for possessables that can't move
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Default")
 	bool bCanMove = true;
-
-private:
 	
+	//Last known location of possessed pawn
+	FVector LastPawnLocation = FVector::ZeroVector;
 
 public:
 	virtual void SetupInputComponent() override;
 	
-	//Dialogue System
-public:
-	
-	UFUNCTION(BlueprintCallable, Category = "Dialogue")
-	void StartDialogue(class UDialogueAsset* InDialogueAsset = nullptr);
-	
-	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
-	void DialogueBPFunction(const FString& ActionData);
 	
 	//UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
 	//void DialogueCustomFunctionParam(const FString& FunctionName, const FDialogueParameters& Parameters);

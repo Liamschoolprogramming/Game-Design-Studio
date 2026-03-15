@@ -14,6 +14,6 @@ REGISTER_DIALOGUE_NODE(
 	0,
 	true
 );
-NODE_TITLE(UCustomFunctionGraphNode, "Change Camera", FunctionName);
+NODE_TITLE(UCustomFunctionGraphNode, "Custom Function", FunctionName);
 GET_CONTEXT_ACTION(UCustomFunctionGraphNode);
-CREATE_PINS(UCustomFunctionGraphNode,"Camera", "On Complete");
+CREATE_PINS(UCustomFunctionGraphNode,"Tools", "On Complete");

@@ -158,9 +158,13 @@ void FDialogueAssetEditorApp::OnNodeDetailViewPropertiesUpdated(const FPropertyC
 
 void FDialogueAssetEditorApp::OnClose()
 {
-	UpdateWorkingAssetFromGraph();
+	if (WorkingAsset != nullptr && WorkingGraph != nullptr)
+	{
+		UpdateWorkingAssetFromGraph();
 	
-	WorkingAsset->SetPreSaveListener(nullptr);
+		WorkingAsset->SetPreSaveListener(nullptr);
+	}
+	
 	FAssetEditorToolkit::OnClose();
 }
 
@@ -181,12 +185,16 @@ void FDialogueAssetEditorApp::UpdateWorkingAssetFromGraph()
 	{
 		return;
 	}
-	
+	if (WorkingGraph->Nodes.IsEmpty())
+	{
+		return;
+	}
 	UDialogueRuntimeGraph* RuntimeGraph = NewObject<UDialogueRuntimeGraph>(WorkingAsset);
 	WorkingAsset->Graph = RuntimeGraph;
 	
 	TArray<std::pair<FGuid, FGuid>> Connections;
 	TMap<FGuid, UDialogueeRuntimePin*> IdToPinMap;
+	
 	
 	for (UEdGraphNode* UiNode : WorkingGraph->Nodes)
 	{

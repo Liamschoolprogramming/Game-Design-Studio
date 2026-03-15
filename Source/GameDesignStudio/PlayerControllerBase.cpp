@@ -17,6 +17,7 @@
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "DialogueSystemPlayer.h"
+#include "Kismet/KismetStringLibrary.h"
 
 DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
 
@@ -40,7 +41,7 @@ void APlayerControllerBase::Jump(const FInputActionValue& Value)
 	{
 		if (OurCharacter->PlayerCharacterType == EPlayerCharacterType::Beetle)
 		{
-			Cast<APossessableEntity>(GetPawn())->RotatePrism();
+			Cast<APossessableEntity>(GetPawn())->SetRotationMode(true);
 		}
 		else
 		{
@@ -52,7 +53,11 @@ void APlayerControllerBase::Jump(const FInputActionValue& Value)
 void APlayerControllerBase::StopJumping(const FInputActionValue& Value)
 {
 	//Get the pawn we are possessing, if it is a character we can just call Jump, if not, add custom jump logic
-	ACharacter* OurCharacter = Cast<ACharacter>(GetPawn());
+	APlayerCharacter* OurCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (OurCharacter->PlayerCharacterType == EPlayerCharacterType::Beetle)
+	{
+		Cast<APossessableEntity>(GetPawn())->SetRotationMode(false);
+	}
 	if (OurCharacter)
 	{
 		OurCharacter->StopJumping();
@@ -75,7 +80,7 @@ void APlayerControllerBase::AddPossessableEntity(APossessableEntity* Entity)
 {
 	for (int i = 0; i < ClosestPossessableEntities.Num(); i++)
 	{
-		Debug::PrintToScreen(ClosestPossessableEntities[i]->GetName());
+		//Debug::PrintToScreen(ClosestPossessableEntities[i]->GetName());
 	}
 	if (ClosestPossessableEntities.Find(Entity) != INDEX_NONE) return;
 	if (Entity)
@@ -110,7 +115,11 @@ bool APlayerControllerBase::CanWeCyclePossessableEntity(int IndexToCheck)
 
 		if (!ClosestPossessableEntities.IsValidIndex(IndexToCheck)) return false;
 
-		if (!Macros::CanActorSeeActor(PlayerReference, ClosestPossessableEntities[IndexToCheck])) return false;
+		if (!Macros::CanActorSeeActor(PlayerReference, ClosestPossessableEntities[IndexToCheck]))
+		{
+			OnTryToPossessOutOfSight();
+			return false;
+		}
 		if (GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()) &&
 			GetPawn()->GetClass()->GetSuperClass() == APossessableEntity::StaticClass())
 		{
@@ -179,6 +188,19 @@ void APlayerControllerBase::StopMove(const FInputActionValue& Value)
 	bIsMoving = false;
 }
 
+void APlayerControllerBase::SetPossessIndexByNumber(FString NewIndex)
+{
+	int ParsedIndex = UKismetStringLibrary::Conv_StringToInt(NewIndex);
+	if (ParsedIndex == 1)
+	{
+		IndexForPossessables = -1;
+	} else if (ClosestPossessableEntities.Num() >= ParsedIndex - 1)
+	{
+		IndexForPossessables = ParsedIndex - 2;
+	}
+	OnCyclePossessionTarget();
+}
+
 void APlayerControllerBase::CyclePossessionUp()
 {
 	if (IndexForPossessables + 1 >= ClosestPossessableEntities.Num())
@@ -213,10 +235,14 @@ void APlayerControllerBase::CyclePossessionDown()
 
 void APlayerControllerBase::OnCyclePossessionTarget_Implementation() { }
 
+void APlayerControllerBase::OnReturnToPlayer_Implementation() { }
+
+void APlayerControllerBase::OnTryToPossessOutOfSight_Implementation() { }
+
 void APlayerControllerBase::PossessIndex(int IndexToPossess)
 {
 	IndexForPossessables = IndexToPossess;
-	//OnCyclePossessionTarget();
+	
 	ConfirmPossession();
 }
 
@@ -235,6 +261,7 @@ void APlayerControllerBase::ConfirmPossession()
 			CameraReference->ResetCameraRotation(PlayerReference->GetActorRotation());
 			TargetPawn = nullptr;
 			Possess(PlayerReference);
+			OnReturnToPlayer();
 			
 			PossessionTimerHandle.Invalidate();
 		}
@@ -259,7 +286,7 @@ void APlayerControllerBase::ConfirmPossession()
 					PossessableEntity->SetPossessed(false);
 					ClosestPossessableEntities[IndexForPossessables]->OnPossessedStart();
 				}
-			}
+			} 
 			return;
 		}
 
@@ -269,6 +296,7 @@ void APlayerControllerBase::ConfirmPossession()
 		
 		if (!Macros::CanActorSeeActor(PlayerReference, ClosestPossessableEntities[IndexForPossessables])) 
 		{
+			OnTryToPossessOutOfSight();
 			FTimerDelegate CycleTimerDelegate;
 			CycleTimerDelegate.BindUFunction(this, FName("CyclePossessionUp"));
 			GetWorld()->GetTimerManager().SetTimerForNextTick(CycleTimerDelegate);
@@ -398,6 +426,11 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 		{
 			return;
 		}
+		if (PossessableEntity->PlayerCharacterType == EPlayerCharacterType::Beetle && !(PossessableEntity->bCanMove))
+		{
+			PossessableEntity->RotatePrism(Value.Get<FVector2D>());
+			return;
+		}
 	}
 	
 	//move the camera if we have a reference to it
@@ -451,20 +484,39 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 				Dir = Dir * FVector(1, 1, 0);
 				
 				Dir.Normalize();
+				
+				//Constrains directional movement when pushing boulder
+				if (bIsPushingBoulder)
+				{
+					//Stop sideways movement when pushing boulder
+					float Projection = FVector::DotProduct(Dir, BoulderPushForwardAxis);
+					Dir = BoulderPushForwardAxis * Projection;
+					
+					if (!Dir.IsNearlyZero())
+					{
+						Dir.Normalize();
+					}
+					else
+					{
+						Dir = FVector::ZeroVector;
+					}
+				}
+				
 				FVector DeltaMove = pos + (Dir * PawnMovementSpeed * GetWorld()->GetDeltaSeconds());
 				PawnVelocity = Dir * PawnMovementSpeed;
 				FHitResult* Hit = new FHitResult();
 				OurPawn->SetActorLocation(DeltaMove, true, Hit);
 				
-				//Smoothly rotate to new direction
+				//Smoothly rotate to new direction, unless pushing a boulder
+				if (!bIsPushingBoulder)
+				{
+					FRotator TargetRotation = DirForRotation.Rotation();
 				
-				FRotator TargetRotation = DirForRotation.Rotation();
-				
-				FRotator SmoothRot = FMath::RInterpTo(CurrentRotation, TargetRotation, GetWorld()->GetDeltaSeconds(), PawnRotationSpeed);
+					FRotator SmoothRot = FMath::RInterpTo(CurrentRotation, TargetRotation, GetWorld()->GetDeltaSeconds(), PawnRotationSpeed);
 				
 				
-				OurPawn->SetActorRotation(SmoothRot);
-				
+					OurPawn->SetActorRotation(SmoothRot);
+				}
 			}
 			
 		}
@@ -518,11 +570,7 @@ void APlayerControllerBase::BeginPlay()
 	Super::BeginPlay();
 
 
-	UDialogueSubsystem* DialogueSubsystem =  GetWorld()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>();
-	if (DialogueSubsystem)
-	{
-		DialogueSubsystem->LoadDialogue();
-	}
+	
 	//spawn camera
 	if (CameraReferenceClass)
 	{
@@ -577,7 +625,16 @@ void APlayerControllerBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	
+	//Use current and last position to calculate possessed pawn speed
+	APawn* OurPawn = GetPawn();
+	if (OurPawn)
+	{
+		FVector CurrentLocation = OurPawn->GetActorLocation();
+		FVector Delta = CurrentLocation - LastPawnLocation;
+		Delta.Z = 0.f; //Removes vertical position change
+		CurrentMovementSpeed = Delta.Size() / DeltaTime;
+		LastPawnLocation = CurrentLocation;
+	}
 	
 	UpdateMPC();
 }
@@ -692,47 +749,6 @@ void APlayerControllerBase::ResetCameraFromDialogue(float TransitionTime)
 }
 
 
-void APlayerControllerBase::StartDialogue(UDialogueAsset* InDialogueAsset)
-{
-	
-	if (!DialogueAsset && !InDialogueAsset)
-	{
-		DEBUG_TO_SCREEN(FColor::Red, "No dialogue asset selected");
-		return;
-	}
-	if (InDialogueAsset)
-	{
-		DialogueAsset = InDialogueAsset;
-	}
-
-	DialoguePlayer = NewObject<UDialogueSystemPlayer>(this);
-	//DialoguePlayer->OnCustomFunctionParam.AddUFunction(this,"CustomFunctionParam");
-	DialoguePlayer->PlayDialogue(DialogueAsset, this, FOnDialogueEnded::CreateLambda(
-		[this](EDialogueNodeAction Action, FString ActionData)
-		{
-			if (Action == EDialogueNodeAction::StartQuest && ActionData != FString(""))
-			{
-				UQuestManager* QuestManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetQuestManager();
-				QuestManager->ActivateQuestForItem(FName(ActionData));
-			}else if (Action == EDialogueNodeAction::BPFunction && ActionData != FString(""))
-			{
-				DialogueBPFunction(FString(ActionData));
-				
-			}
-			if (DialoguePlayer->CurrentSpeakerComponent)
-			{
-				ResetCameraFromDialogue(DialoguePlayer->CurrentSpeakerComponent->CameraTransitionTime);
-			}
-			else
-			{
-				ResetCameraFromDialogue(0.5f);
-			}
-		}
-		)
-		);
-
-
-}
 
 ARewardSpawnZone* APlayerControllerBase::FindFirstRewardSpawnZone()
 {

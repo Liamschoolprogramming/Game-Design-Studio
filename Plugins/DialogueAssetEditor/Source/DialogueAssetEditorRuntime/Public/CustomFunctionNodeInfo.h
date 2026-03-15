@@ -16,7 +16,12 @@ class DIALOGUEASSETEDITORRUNTIME_API UCustomFunctionNodeInfo : public UDialogueN
 
 public:
 	//Properties go here
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UObject> TargetClass;
 	
 	UPROPERTY(EditAnywhere)
-	FString FunctionName;
+	TMap<FName, FString> Parameters;
+	
+	UPROPERTY(EditAnywhere, meta=(AllowedClasses="/Script/DialogueAssetEditorRuntime.CustomFunctionNodeInfo:TargetClass"))
+	FName FunctionName;
 };
