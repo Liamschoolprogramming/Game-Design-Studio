@@ -484,20 +484,39 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 				Dir = Dir * FVector(1, 1, 0);
 				
 				Dir.Normalize();
+				
+				//Constrains directional movement when pushing boulder
+				if (bIsPushingBoulder)
+				{
+					//Stop sideways movement when pushing boulder
+					float Projection = FVector::DotProduct(Dir, BoulderPushForwardAxis);
+					Dir = BoulderPushForwardAxis * Projection;
+					
+					if (!Dir.IsNearlyZero())
+					{
+						Dir.Normalize();
+					}
+					else
+					{
+						Dir = FVector::ZeroVector;
+					}
+				}
+				
 				FVector DeltaMove = pos + (Dir * PawnMovementSpeed * GetWorld()->GetDeltaSeconds());
 				PawnVelocity = Dir * PawnMovementSpeed;
 				FHitResult* Hit = new FHitResult();
 				OurPawn->SetActorLocation(DeltaMove, true, Hit);
 				
-				//Smoothly rotate to new direction
+				//Smoothly rotate to new direction, unless pushing a boulder
+				if (!bIsPushingBoulder)
+				{
+					FRotator TargetRotation = DirForRotation.Rotation();
 				
-				FRotator TargetRotation = DirForRotation.Rotation();
-				
-				FRotator SmoothRot = FMath::RInterpTo(CurrentRotation, TargetRotation, GetWorld()->GetDeltaSeconds(), PawnRotationSpeed);
+					FRotator SmoothRot = FMath::RInterpTo(CurrentRotation, TargetRotation, GetWorld()->GetDeltaSeconds(), PawnRotationSpeed);
 				
 				
-				OurPawn->SetActorRotation(SmoothRot);
-				
+					OurPawn->SetActorRotation(SmoothRot);
+				}
 			}
 			
 		}
@@ -610,7 +629,16 @@ void APlayerControllerBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	
+	//Use current and last position to calculate possessed pawn speed
+	APawn* OurPawn = GetPawn();
+	if (OurPawn)
+	{
+		FVector CurrentLocation = OurPawn->GetActorLocation();
+		FVector Delta = CurrentLocation - LastPawnLocation;
+		Delta.Z = 0.f; //Removes vertical position change
+		CurrentMovementSpeed = Delta.Size() / DeltaTime;
+		LastPawnLocation = CurrentLocation;
+	}
 	
 	UpdateMPC();
 }

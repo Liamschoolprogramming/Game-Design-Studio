@@ -16,6 +16,7 @@
 #include  "PlayerControllerBase.h"
 #include "StructUtils/PropertyBag.h"
 #include "VerseVM/VBPVMRuntimeType.h"
+#include "Core/Puzzles/Pickups/PuzzleInteractive_Pickupable.h"
 
 
 // Sets default values
@@ -78,6 +79,14 @@ void APlayerCharacter::RemoveInteractableObject(APuzzleInteractive* Object)
 
 void APlayerCharacter::InteractWithClosestObject()
 {
+	
+	if (PickupableObject)
+	{
+		PickupableObject->Drop();
+		PickupableObject = nullptr;
+		return;
+	}
+	
 	if (ClosestInteractiveObjects.IsEmpty()) return;
 	
 	
@@ -111,6 +120,15 @@ void APlayerCharacter::InteractWithClosestObject()
 		//then try the Cpp file
 		ClosestObject->Interact(this);
 		
+		//If the object is pickupable, then pickup and store the object in memory
+		if (ClosestObject->IsA<APuzzleInteractive_Pickupable>())
+		{
+			APuzzleInteractive_Pickupable* AsPickupable = Cast<APuzzleInteractive_Pickupable>(ClosestObject.Get());
+			if (AsPickupable->bBeingCarried)
+			{
+				PickupableObject = AsPickupable;
+			}
+		}
 	}
 }
 

@@ -22,6 +22,7 @@
 
 class APuzzleInteractive;
 class APlayerControllerBase;
+class APuzzleInteractive_Pickupable;
 
 
 
@@ -51,6 +52,10 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category="Interaction")
 	void InteractWithClosestObject();	
+	
+	//Storage for any pickupable or pushable item already being interacted with by the player
+	UPROPERTY(BlueprintReadWrite, Category="Interaction")
+	APuzzleInteractive_Pickupable* PickupableObject = nullptr;
 	
 protected:
 	// Called when the game starts or when spawned
