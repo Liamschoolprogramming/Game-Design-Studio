@@ -250,6 +250,8 @@ void APlayerControllerBase::ConfirmPossession()
 {
 	if (IndexForPossessables == -1)
 	{
+		// will always set the possessing bool to false if trying to go back to player
+		IsPossessing = false;
 		// if we are already the player, do nothing
 		if (!(GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()))) return;
 		
@@ -311,6 +313,7 @@ void APlayerControllerBase::ConfirmPossession()
 			
 		if (ClosestPossessableEntities[IndexForPossessables] != PossessableEntity)
 		{
+			IsPossessing = true;
 			TargetPawn = ClosestPossessableEntities[IndexForPossessables];
 			FTimerDelegate TimerDelegate;
 			TimerDelegate.BindUFunction(this, FName("PossessTargetPawn"));
