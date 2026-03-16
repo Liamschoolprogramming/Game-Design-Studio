@@ -15,6 +15,11 @@
 		{
 			"headerPath": "Source/GameDesignStudio/QuestDialogueUIController.h",
 			"cppPath": "Source/GameDesignStudio/QuestDialogueUIController.cpp"
+		},
+		"/Game/GameDesignStudio/UI/SaveMenu/WBP_SaveSlot.WBP_SaveSlot":
+		{
+			"headerPath": "Source/GameDesignStudio/SaveSlotController.h",
+			"cppPath": "Source/GameDesignStudio/SaveSlotController.cpp"
 		}
 	}
 }

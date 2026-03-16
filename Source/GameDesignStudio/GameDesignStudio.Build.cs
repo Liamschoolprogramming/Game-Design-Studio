@@ -11,7 +11,7 @@ public class GameDesignStudio : ModuleRules
 	
 		PublicIncludePaths.Add("GameDesignStudio");
 		
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" , "UMG", "DialogueAssetEditorRuntime"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" , "UMG", "DialogueAssetEditorRuntime", "ImageWrapper"});
 		
 
 		if(Target.bBuildEditor){

@@ -58,11 +58,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Music")
 	UAudioComponent* ActiveMusicPlayer;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Music")
 	UAudioComponent* FadeOutMusicPlayer;
 protected:
 	virtual void Init() override;
-	
 	
 };
