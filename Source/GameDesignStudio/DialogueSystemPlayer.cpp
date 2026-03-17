@@ -168,19 +168,24 @@ void UDialogueSystemPlayer::EndDialogue()
 {
 	DialogueWidget->RemoveFromParent();
 	DialogueWidget = nullptr;
+	UE_LOG(LogTemp, Warning, TEXT("DialogueSystemPlayer::EndDialogue"));
 	if (PlayerController)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("PlayerController Found"));
 		PlayerController->SetCanMove(true);
 		UWidgetBlueprintLibrary::SetInputMode_GameOnly(PlayerController);
 		PlayerController->SetShowMouseCursor(false);
 		
 		if (CurrentSpeakerComponent)
 		{
-			PlayerController->SetViewTargetWithBlend(PlayerController->PlayerReference,CurrentSpeakerComponent->CameraTransitionTime);
+			UE_LOG(LogTemp, Warning, TEXT("CurrentSpeakerComponent Found, switching to %s"), *PlayerController->PlayerReference->GetName());
+			
+			PlayerController->SetViewTargetWithBlend(PlayerController->CameraReference,CurrentSpeakerComponent->CameraTransitionTime);
 		}
 		else
 		{
-			PlayerController->SetViewTargetWithBlend(PlayerController->PlayerReference,.5f);
+			UE_LOG(LogTemp, Warning, TEXT("Speaker component Not Found"));
+			PlayerController->SetViewTargetWithBlend(PlayerController->CameraReference,.5f);
 		}
 		
 	}
