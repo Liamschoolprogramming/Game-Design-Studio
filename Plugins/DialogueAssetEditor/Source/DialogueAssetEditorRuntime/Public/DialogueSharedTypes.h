@@ -28,5 +28,17 @@ struct FStateData
 	EStates State;
 	UPROPERTY()
 	FString Tag;
+	
+	FStateData()
+	{
+		State = EStates::NotStarted,
+		Tag = "";
+	}
+	
+	FStateData(EStates InState, FString InTag)
+	{
+		State = InState;
+		Tag = InTag;
+	}
 };
 
