@@ -9,6 +9,7 @@
 #include "IImageWrapperModule.h"
 #include "Macros.h"
 #include "PuzzleWorldSubsystem.h"
+#include "SaveLoadIndicatorController.h"
 #include "Core/ELSGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -109,6 +110,21 @@ void USaveSubsystem::FindAllSubsystems()
 	Subsystems.Add(FName("DialogueSubsystem"), DialogueSubsystem);
 }
 
+void USaveSubsystem::CreateSaveIndicator()
+{
+   SaveIndicator =	USaveLoadIndicatorController::CreateInstance(GetWorld()->GetFirstPlayerController());
+	SaveIndicator->AddToViewport();
+}
+
+void USaveSubsystem::DestroySaveIndicator()
+{
+	if (SaveIndicator)
+	{
+		SaveIndicator->RemoveFromParent();
+	}
+	SaveIndicator = nullptr;
+}
+
 FSaveData USaveSubsystem::PrepareSaveData()
 {
 	FSaveData Data = FSaveData();
@@ -193,9 +209,11 @@ UTexture2D* USaveSubsystem::LoadTexture2DFromFile(const FString& FilePath)
 	return Texture;
 }
 
+
 bool USaveSubsystem::SaveAllGameSubsystems(bool bIsAutoSave, FString SlotName, bool bOverride)
 {
-	
+	OnSaveStart.Broadcast();
+	CreateSaveIndicator();
 	if (bIsAutoSave)
 	{
 		
@@ -292,6 +310,8 @@ bool USaveSubsystem::SaveAllGameSubsystems(bool bIsAutoSave, FString SlotName, b
 			
 		}
 	}
+	OnSaveFinish.Broadcast();
+	DestroySaveIndicator();
 	return true;
 }
 

@@ -20,6 +20,11 @@
 		{
 			"headerPath": "Source/GameDesignStudio/SaveSlotController.h",
 			"cppPath": "Source/GameDesignStudio/SaveSlotController.cpp"
+		},
+		"/Game/GameDesignStudio/UI/SaveMenu/WBP_SaveLoadIndicator.WBP_SaveLoadIndicator":
+		{
+			"headerPath": "Source/GameDesignStudio/SaveLoadIndicatorController.h",
+			"cppPath": "Source/GameDesignStudio/SaveLoadIndicatorController.cpp"
 		}
 	}
 }

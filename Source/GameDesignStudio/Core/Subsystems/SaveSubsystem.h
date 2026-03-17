@@ -6,11 +6,15 @@
 #include "DialogueNodeBehaviour.h"
 #include "DialogueExecutionHandler.h"
 #include "DialogueNodeInfo.h"
+#include "SaveLoadIndicatorController.h"
 #include "Core/ELSGameInstance.h"
 #include "Core/ELSSaveGame.h"
 #include "Core/MetaSave.h"
 #include "GameFramework/SaveGame.h"
 #include "SaveSubsystem.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSaveStart);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSaveFinish);
 
 /**
  * 
@@ -38,6 +42,16 @@ public:
 	
 	class UGameManagerSubsystem* GameManagerSubsystem;
 	class UDialogueSubsystem* DialogueSubsystem;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	FOnSaveStart OnSaveStart;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	FOnSaveFinish OnSaveFinish;
+	USaveLoadIndicatorController* SaveIndicator;
+	
+
+	void CreateSaveIndicator();
+	void DestroySaveIndicator();
 	
 	FSaveData PrepareSaveData();
 	void ConvertSaveData(const FSaveData& SaveData) const;
