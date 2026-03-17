@@ -150,6 +150,7 @@ bool APlayerControllerBase::CanPossessEntity(APossessableEntity* entity)
 {
 	if (!ClosestPossessableEntities.Contains(entity)) return false;
 	if (!PlayerReference) return false;
+	if (PlayerReference->PickupableObject != nullptr) return false;
 	//if (!CameraReference->CanSeeObject(entity)) return false;
 	if (!Macros::CanActorSeeActor(PlayerReference, entity)) return false;
 	if (GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()) &&
@@ -254,6 +255,10 @@ void APlayerControllerBase::ConfirmPossession()
 		IsPossessing = false;
 		// if we are already the player, do nothing
 		if (!(GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()))) return;
+		
+		// if the current pawn is holding an object, don't allow possession
+		APlayerCharacter* CurrentPlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+		if (CurrentPlayerCharacter->PickupableObject != nullptr) return;
 		
 		APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
 		if (PossessableEntity && PlayerReference)
