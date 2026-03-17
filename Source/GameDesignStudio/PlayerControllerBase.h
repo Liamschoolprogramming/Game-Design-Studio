@@ -51,7 +51,7 @@ public:
 	FTimerHandle PossessionTimerHandle;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Possession")
-	float CastTime = 6.f;
+	float CastTime = 3.f;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Possession")
 	bool IsPossessing = false;
