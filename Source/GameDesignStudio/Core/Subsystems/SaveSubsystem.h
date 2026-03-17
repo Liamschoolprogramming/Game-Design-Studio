@@ -56,6 +56,7 @@ public:
 	int MaxAutoSaves = 4;
 	
 	
+	
 	UFUNCTION(BlueprintCallable)
 	float GetTimeTillAutoSave() const;
 	UFUNCTION(BlueprintCallable)

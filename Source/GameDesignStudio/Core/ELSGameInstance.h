@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "SettingsSaveGame.h"
 #include "Engine/GameInstance.h"
+#include "Puzzles/Puzzle.h"
 #include "ELSGameInstance.generated.h"
 
 /**
@@ -28,6 +29,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Save")
 	void LoadAudioSettings();
 
+	virtual void OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld) override;
+    
+	UFUNCTION()
+	void OnMapChangeFinished(const UWorld* World);
+
+	
 	UFUNCTION(BlueprintCallable, Category = "Save")
 	void LoadSettings();
 

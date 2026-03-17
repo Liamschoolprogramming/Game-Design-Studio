@@ -46,7 +46,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite);
 	EPuzzleActorType PuzzleActorType;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<UGameManagerBase> OwningManager;
 	
 	// Weak pointers don't prevent another actor from being destroyed
