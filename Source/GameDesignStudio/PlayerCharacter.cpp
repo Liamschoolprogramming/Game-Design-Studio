@@ -215,6 +215,9 @@ void APlayerCharacter::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComp,
 void APlayerCharacter::OnSphereOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if (!PlayerController) return;
+	if (!PlayerController->GetPawn()) return;
+	
 	if (PlayerController->GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass())) return;
 	
 	if (OtherActor && OtherActor != this && OtherComp)
