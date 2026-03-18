@@ -17,6 +17,7 @@ UDialogueSpeakerComponent::UDialogueSpeakerComponent()
 	SpeakerCamera = CreateDefaultSubobject<UCameraComponent>(FName("SpeakerCamera"));
 	SpeakerCameraBoom = CreateDefaultSubobject<USpringArmComponent>(FName("SpeakerCameraBoom"));
 	SpeakerCameraBoom->TargetArmLength = 100.f;
+	SpeakerCameraBoom->bDoCollisionTest = false;
 	
 	SpeakerCamera->FieldOfView = 75.f;
 	SpeakerCamera->PostProcessSettings.bOverride_DepthOfFieldFstop = true;
