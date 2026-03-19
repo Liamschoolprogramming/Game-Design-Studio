@@ -170,7 +170,7 @@ public:
 	float PawnMovementSpeed = 500;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
-	float PawnRotationSpeed = 8.f;
+	float PawnRotationSpeed = 16.f;
 	
 	FRotator PawnDesiredRotation;
 	bool bPawnHasMovementInput = false;

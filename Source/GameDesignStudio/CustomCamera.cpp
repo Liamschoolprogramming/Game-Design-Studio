@@ -72,6 +72,18 @@ void ACustomCamera::ZoomCamera(float Value)
 	
 }
 
+/**
+ * 
+ * @param Value the new zoom value
+ * @param InZoomedOutViewMode true is in zoomed out, false is normal
+ */
+void ACustomCamera::OverrideZoom(float Value, bool InZoomedOutViewMode)
+{
+	ZoomPercent = UKismetMathLibrary::FClamp (Value, 0, 1);
+	bInTopDownMode = InZoomedOutViewMode;
+	SetCameraTransformAlongSpline(ZoomPercent);
+}
+
 bool ACustomCamera::CanSeeObject(AActor* Actor)
 {
 	if (!Actor) return false;
