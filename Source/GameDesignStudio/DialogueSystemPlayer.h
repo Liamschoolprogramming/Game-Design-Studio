@@ -63,6 +63,12 @@ private:
 	UTexture2D* DefaultCharacterIcon;
 	
 	APlayerControllerBase* PlayerController;
+
+	bool bCanStartDialogue = true;
+	float DialogueCooldown = .2f;
+
+	UFUNCTION()
+	void CooldownEnded();
 	
 
 	UDialogueAsset* DialogueAsset;
