@@ -90,6 +90,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zoom")
 	float ZoomMinPercent = 0.25f;
 
+	UFUNCTION(BlueprintCallable, Category = "Zoom")
+	void OverrideZoom(float Value, bool InZoomedOutViewMode);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zoom")
 	float ZoomPercent = ZoomMinPercent * 1.2;
 	float pitchMax;

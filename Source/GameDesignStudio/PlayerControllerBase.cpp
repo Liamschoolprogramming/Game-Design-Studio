@@ -275,6 +275,7 @@ void APlayerControllerBase::ConfirmPossession()
 	}
 	else if (IndexForPossessables >= 0)
 	{
+		
 		if (!CanWeCyclePossessableEntity(IndexForPossessables)) return;
 		
 		if (!ClosestPossessableEntities.IsValidIndex(IndexForPossessables)) return;
