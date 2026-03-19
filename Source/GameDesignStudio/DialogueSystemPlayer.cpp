@@ -39,6 +39,8 @@ UDialogueSystemPlayer::UDialogueSystemPlayer()
 
 void UDialogueSystemPlayer::PlayDialogue(class UDialogueAsset* InDialogueAsset, APlayerController* InPlayerController)
 {
+	if (!bCanStartDialogue) return;
+	bCanStartDialogue = false;
 	PlayerController = Cast<APlayerControllerBase>(InPlayerController);
 	
 	PlayerController->SetCanMove(false);
@@ -105,6 +107,11 @@ ADialogueCineCamera* UDialogueSystemPlayer::FindCineCamera(UWorld* World, FName 
 	return nullptr;
 }
 
+void UDialogueSystemPlayer::CooldownEnded()
+{
+	bCanStartDialogue = true;
+}
+
 void UDialogueSystemPlayer::ChooseFirstOptionAndEnableDialogue()
 {
 	if (DialogueWidget)
@@ -167,6 +174,11 @@ void UDialogueSystemPlayer::SetupCameraAndSpeaker(FName CameraName, FName InSpea
 void UDialogueSystemPlayer::EndDialogue()
 {
 	DialogueWidget->RemoveFromParent();
+	DialogueWidget->Destruct();
+	FTimerHandle TimerHandle;
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindUFunction(this, "CooldownEnded");
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, DialogueCooldown, false);
 	DialogueWidget = nullptr;
 	UE_LOG(LogTemp, Warning, TEXT("DialogueSystemPlayer::EndDialogue"));
 	if (PlayerController)
