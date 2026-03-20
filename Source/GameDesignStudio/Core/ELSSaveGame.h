@@ -51,5 +51,11 @@ public:
 
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere,SaveGame)
 	FRotator PlayerRotation;
+
+	UPROPERTY(BlueprintReadOnly,VisibleAnywhere,SaveGame)
+	bool bIsAutoSave;
+
+	UPROPERTY(BlueprintReadOnly,VisibleAnywhere,SaveGame)
+	TSoftObjectPtr<UWorld> World;
 	
 };

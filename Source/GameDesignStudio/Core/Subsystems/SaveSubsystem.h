@@ -66,6 +66,9 @@ public:
 	void CreateSaveIndicator();
 	void DestroySaveIndicator();
 	
+	void Save(bool bInIsAutoSave, const FString& SlotName, const FString& SaveSlotPath);
+
+	void SaveMeta();
 	
 	FSaveData PrepareSaveData();
 	void ConvertSaveData(const FSaveData& SaveData) const;
