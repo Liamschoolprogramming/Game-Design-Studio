@@ -16,6 +16,17 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSaveStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSaveFinish);
 
+USTRUCT(BlueprintType)
+struct FPlayerData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	FVector PlayerLocation;
+	UPROPERTY(BlueprintReadWrite)
+	FRotator PlayerRotation;
+};
+
 /**
  * 
  */
@@ -48,7 +59,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FOnSaveFinish OnSaveFinish;
 	USaveLoadIndicatorController* SaveIndicator;
-	
+
+	UFUNCTION(BlueprintCallable, Category = "SaveSubsystem")
+	static bool DoesSaveExist(const FString& SaveName);
 
 	void CreateSaveIndicator();
 	void DestroySaveIndicator();
@@ -106,7 +119,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SavePlayer() const;
 	UFUNCTION(BlueprintCallable)
-	FVector LoadPlayer();
+	FPlayerData LoadPlayer();
 	UFUNCTION(BlueprintCallable)
 	static void SaveDialogue();
 	UFUNCTION(BlueprintCallable)

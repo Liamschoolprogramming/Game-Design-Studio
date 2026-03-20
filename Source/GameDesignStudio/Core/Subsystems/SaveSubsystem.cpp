@@ -161,6 +161,11 @@ void USaveSubsystem::FindAllSubsystems()
 	Subsystems.Add(FName("DialogueSubsystem"), DialogueSubsystem);
 }
 
+bool USaveSubsystem::DoesSaveExist(const FString& SaveName)
+{
+	return UGameplayStatics::DoesSaveGameExist(SaveName, 0);
+}
+
 void USaveSubsystem::CreateSaveIndicator()
 {
    SaveIndicator =	USaveLoadIndicatorController::CreateInstance(GetWorld()->GetFirstPlayerController());
@@ -183,21 +188,26 @@ void USaveSubsystem::SavePlayer() const
 		if (const APlayerControllerBase* PlayerController = Cast<APlayerControllerBase>(GetWorld()->GetFirstPlayerController()))
 		{
 			SaveGame->PlayerLocation = PlayerController->PlayerReference->GetActorLocation();
+			SaveGame->PlayerRotation = PlayerController->PlayerReference->GetActorRotation();
 		}
 	}
 	
 }
 
-FVector USaveSubsystem::LoadPlayer()
+FPlayerData USaveSubsystem::LoadPlayer()
 {
+	FPlayerData PlayerData;
 	 if (LoadGame())
 	 {
-		 return LoadGame()->PlayerLocation;
+		 PlayerData.PlayerLocation = LoadGame()->PlayerLocation;
+	 	PlayerData.PlayerRotation = LoadGame()->PlayerRotation;
 	 }
 	else
 	{
-		return FVector::ZeroVector;
+		PlayerData.PlayerLocation = FVector(0, 0, 0);
+		PlayerData.PlayerRotation = FRotator();
 	}
+	return PlayerData;
 }
 
 FSaveData USaveSubsystem::PrepareSaveData()
@@ -247,7 +257,8 @@ void USaveSubsystem::ConvertSaveData(const FSaveData& SaveData) const
 
 void USaveSubsystem::CaptureToTexture(const FString& SlotName)
 {
-	FString Path = FString(TEXT("/Saved/Screenshots/") + SlotName);
+	FString Path =FPaths::ProjectSavedDir() + "ScreenShots/" + SlotName + ".png";
+	IFileManager::Get().MakeDirectory(*FPaths::GetPath(Path),true);
 	FScreenshotRequest::RequestScreenshot(Path, false,false);
 	
 }
@@ -341,14 +352,17 @@ bool USaveSubsystem::SaveAllGameSubsystems(bool bIsAutoSave, FString SlotName, b
 			int NewIndex = MetaSave->AutoSaveKeys.Num();
 			FString AutoSaveKey = TEXT("AutoSave") + FString::FromInt(NewIndex) + TEXT("_");
 			MetaSave->AutoSaveSlotList.Add((AutoSaveKey), Now);
+			
 			FSaveData SaveData = PrepareSaveData();
 			ConvertSaveData(SaveData);
 			SaveGame->LastSaveDate = Now;
 			SaveGame->SlotName = (TEXT("AutoSave") + FString::FromInt(NewIndex)).ToLower();
 			MetaSave->AutoSaveKeys.Add(AutoSaveKey);
+			MetaSave->CurrentSave = SlotName;
+			SavePlayer();
 			FString SaveSlotName = AutoSaveKey + Now.ToString();
 			CaptureToTexture(SaveSlotName);
-			SaveGame->ScreenshotPath = FString(TEXT("/Saved/Screenshots/") + SaveSlotName);
+			SaveGame->ScreenshotPath = FPaths::ProjectSavedDir() + "ScreenShots/" + SaveSlotName + ".png";
 			UGameplayStatics::SaveGameToSlot(SaveGame,SaveSlotName, 0);
 			UGameplayStatics::SaveGameToSlot(MetaSave,"meta", 0);
 		}
@@ -376,9 +390,11 @@ bool USaveSubsystem::SaveAllGameSubsystems(bool bIsAutoSave, FString SlotName, b
 			
 			SaveGame->SlotName = SlotName;
 			MetaSave->SaveSlotList.Add(SlotName, Now);
+			MetaSave->CurrentSave = SlotName;
+			SavePlayer();
 			FString SaveSlotName = SlotName;
 			CaptureToTexture(SaveSlotName);
-			SaveGame->ScreenshotPath = FString(TEXT("/Saved/Screenshots/") + SaveSlotName);
+			SaveGame->ScreenshotPath = FPaths::ProjectSavedDir() + "ScreenShots/" + SaveSlotName + ".png";
 			UGameplayStatics::SaveGameToSlot(MetaSave,"meta", 0);
 			UGameplayStatics::SaveGameToSlot(SaveGame,SaveSlotName, 0);
 		

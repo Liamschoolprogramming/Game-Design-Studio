@@ -48,5 +48,8 @@ public:
 
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere,SaveGame)
 	FVector PlayerLocation;
+
+	UPROPERTY(BlueprintReadOnly,VisibleAnywhere,SaveGame)
+	FRotator PlayerRotation;
 	
 };

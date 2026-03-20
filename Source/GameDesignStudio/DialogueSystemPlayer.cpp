@@ -176,11 +176,11 @@ void UDialogueSystemPlayer::EndDialogue()
 		
 		if (CurrentSpeakerComponent)
 		{
-			PlayerController->SetViewTargetWithBlend(PlayerController->PlayerReference,CurrentSpeakerComponent->CameraTransitionTime);
+			PlayerController->SetViewTargetWithBlend(PlayerController->CameraReference,CurrentSpeakerComponent->CameraTransitionTime);
 		}
 		else
 		{
-			PlayerController->SetViewTargetWithBlend(PlayerController->PlayerReference,.5f);
+			PlayerController->SetViewTargetWithBlend(PlayerController->CameraReference,.5f);
 		}
 		
 	}
