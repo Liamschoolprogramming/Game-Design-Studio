@@ -45,5 +45,8 @@ public:
 	FString ScreenshotPath;
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere,SaveGame)
 	FString SlotName;
+
+	UPROPERTY(BlueprintReadOnly,VisibleAnywhere,SaveGame)
+	FVector PlayerLocation;
 	
 };

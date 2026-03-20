@@ -53,6 +53,7 @@ public:
 	void CreateSaveIndicator();
 	void DestroySaveIndicator();
 	
+	
 	FSaveData PrepareSaveData();
 	void ConvertSaveData(const FSaveData& SaveData) const;
 
@@ -64,7 +65,7 @@ public:
 	bool SaveAllGameSubsystems(bool bIsAutoSave = false, FString SlotName = FString(TEXT("default")), bool bOverrideSave = false);
 	
 	UFUNCTION(BlueprintCallable)
-	TArray<UELSSaveGame*> GetAllGameSaves();
+	TArray<UELSSaveGame*> GetAllGameSaves() const;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int MaxAutoSaves = 4;
@@ -78,9 +79,12 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Save")
 	void AutoSave();
+
+	UFUNCTION(BlueprintCallable, Category = "Save")
+	UELSSaveGame* LoadGame(FString SlotName);
 	
 	UFUNCTION(BlueprintCallable, Category = "Save")
-	void DeleteSaveSlot(FString SlotName);
+	void DeleteSaveSlot(FString SlotName) const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Save")
 	void SetAutoSaveFrequency(float InTimeThreshold);
@@ -100,7 +104,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static void SavePuzzleWorld();
 	UFUNCTION(BlueprintCallable)
-	static void SavePlayer();
+	void SavePlayer() const;
+	UFUNCTION(BlueprintCallable)
+	FVector LoadPlayer();
 	UFUNCTION(BlueprintCallable)
 	static void SaveDialogue();
 	UFUNCTION(BlueprintCallable)

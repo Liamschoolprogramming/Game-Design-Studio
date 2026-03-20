@@ -8,6 +8,7 @@
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
 #include "Macros.h"
+#include "PlayerControllerBase.h"
 #include "PuzzleWorldSubsystem.h"
 #include "SaveLoadIndicatorController.h"
 #include "Core/ELSGameInstance.h"
@@ -57,7 +58,57 @@ void USaveSubsystem::AutoSave()
 	UE_LOG(LogTemp,Error,TEXT("AutoSave Saved"));
 }
 
-void USaveSubsystem::DeleteSaveSlot(FString SlotName)
+UELSSaveGame* USaveSubsystem::LoadGame(FString SlotName = "")
+{
+	if (SlotName.IsEmpty())
+	{
+		if (MetaSave)
+		{
+			if (UGameplayStatics::DoesSaveGameExist(MetaSave->CurrentSave, 0))
+			{
+				SaveGame = Cast<UELSSaveGame>(UGameplayStatics::LoadGameFromSlot(MetaSave->CurrentSave, 0));
+				return SaveGame;
+			}else
+			{
+				UE_LOG(LogTemp,Error,TEXT("Can't load save. Tried to load slot %s"), *MetaSave->CurrentSave);
+				return nullptr;
+			}
+		}
+		else if (UGameplayStatics::DoesSaveGameExist(FString(TEXT("meta")), 0))
+		{
+			MetaSave = Cast<UMetaSave>(UGameplayStatics::LoadGameFromSlot(FString(TEXT("meta")), 0));
+			if (UGameplayStatics::DoesSaveGameExist(MetaSave->CurrentSave, 0))
+			{
+				SaveGame = Cast<UELSSaveGame>(UGameplayStatics::LoadGameFromSlot(MetaSave->CurrentSave, 0));
+				return SaveGame;
+			}else
+			{
+				UE_LOG(LogTemp,Error,TEXT("Can't load save. Tried to load slot %s"), *MetaSave->CurrentSave);
+				return nullptr;
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp,Error,TEXT("Slot name is empty and meta save failed to load"));
+			return nullptr;
+		}
+	}
+	else
+	{
+		if (UGameplayStatics::DoesSaveGameExist(MetaSave->CurrentSave, 0))
+		{
+			SaveGame = Cast<UELSSaveGame>(UGameplayStatics::LoadGameFromSlot(MetaSave->CurrentSave, 0));
+			return SaveGame;
+		}
+		else
+		{
+			UE_LOG(LogTemp,Error,TEXT("Can't load save. Tried to load slot %s"), *SlotName);
+			return nullptr;
+		}
+	}
+}
+
+void USaveSubsystem::DeleteSaveSlot(FString SlotName) const
 {
 	if (MetaSave)
 	{
@@ -123,6 +174,30 @@ void USaveSubsystem::DestroySaveIndicator()
 		SaveIndicator->RemoveFromParent();
 	}
 	SaveIndicator = nullptr;
+}
+
+void USaveSubsystem::SavePlayer() const
+{
+	if (SaveGame)
+	{
+		if (const APlayerControllerBase* PlayerController = Cast<APlayerControllerBase>(GetWorld()->GetFirstPlayerController()))
+		{
+			SaveGame->PlayerLocation = PlayerController->PlayerReference->GetActorLocation();
+		}
+	}
+	
+}
+
+FVector USaveSubsystem::LoadPlayer()
+{
+	 if (LoadGame())
+	 {
+		 return LoadGame()->PlayerLocation;
+	 }
+	else
+	{
+		return FVector::ZeroVector;
+	}
 }
 
 FSaveData USaveSubsystem::PrepareSaveData()
@@ -315,7 +390,7 @@ bool USaveSubsystem::SaveAllGameSubsystems(bool bIsAutoSave, FString SlotName, b
 	return true;
 }
 
-TArray<UELSSaveGame*> USaveSubsystem::GetAllGameSaves()
+TArray<UELSSaveGame*> USaveSubsystem::GetAllGameSaves() const
 {
 	TArray<UELSSaveGame*> GameSaves;
 	UE_LOG(LogTemp,Warning, TEXT("GetAllGameSaves"))
@@ -355,10 +430,6 @@ void USaveSubsystem::SaveGameManager()
 }
 
 void USaveSubsystem::SavePuzzleWorld()
-{
-}
-
-void USaveSubsystem::SavePlayer()
 {
 }
 
