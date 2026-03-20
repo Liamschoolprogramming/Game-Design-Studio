@@ -30,7 +30,7 @@ ACustomCamera::ACustomCamera()
 	
 	//Setup camera boom
 	
-	CameraBoom->bDoCollisionTest = true;
+	CameraBoom->bDoCollisionTest = false;
 
 	
 

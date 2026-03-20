@@ -45,7 +45,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom")
 	float PitchMin = -25.0f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom")
-	float PitchMax = 45.0f;
+	float PitchMax = 20.0f;
 
 	UFUNCTION(BlueprintCallable, Category = "Camera")
 	bool CanSeeObject(AActor* Actor);
