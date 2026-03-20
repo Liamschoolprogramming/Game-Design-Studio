@@ -191,10 +191,23 @@ void ACustomCamera::RotateCamera(FVector2D ActionValue) const
 	{
 		
 		FRotator rot = RootComponent->GetComponentRotation();
-		
+		float AbsX = FMath::Abs(ActionValue.X);
+		float AbsY = FMath::Abs(ActionValue.Y);
+		if (AbsX > AbsY)
+		{
+			ActionValue.Y = 0;
+		}
+		else if (AbsX < AbsY)
+		{
+			ActionValue.X = 0;
+		}
 		float deltaYaw = ActionValue.X * CameraRotationSpeed * GetWorld()->GetDeltaSeconds();
+		float deltaPitch = ActionValue.Y * CameraRotationSpeed * GetWorld()->GetDeltaSeconds();
+		deltaPitch = FMath::Clamp(deltaPitch, -MaxPitchSpeed, MaxPitchSpeed);
 		deltaYaw = FMath::Clamp(deltaYaw, -MaxYawSpeed, MaxYawSpeed);
 		rot.Yaw = rot.Yaw + deltaYaw;
+		rot.Pitch = rot.Pitch + deltaPitch;
+		rot.Pitch = FMath::Clamp(rot.Pitch, PitchMin, PitchMax);
 		
 		RootComponent->SetWorldRotation(rot);
 	}
