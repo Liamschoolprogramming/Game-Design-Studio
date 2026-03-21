@@ -150,6 +150,7 @@ bool APlayerControllerBase::CanPossessEntity(APossessableEntity* entity)
 {
 	if (!ClosestPossessableEntities.Contains(entity)) return false;
 	if (!PlayerReference) return false;
+	if (PlayerReference->PickupableObject != nullptr) return false;
 	//if (!CameraReference->CanSeeObject(entity)) return false;
 	if (!Macros::CanActorSeeActor(PlayerReference, entity)) return false;
 	if (GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()) &&
@@ -250,8 +251,14 @@ void APlayerControllerBase::ConfirmPossession()
 {
 	if (IndexForPossessables == -1)
 	{
+		// will always set the possessing bool to false if trying to go back to player
+		IsPossessing = false;
 		// if we are already the player, do nothing
 		if (!(GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()))) return;
+		
+		// if the current pawn is holding an object, don't allow possession
+		APlayerCharacter* CurrentPlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+		if (CurrentPlayerCharacter->PickupableObject != nullptr) return;
 		
 		APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
 		if (PossessableEntity && PlayerReference)
@@ -268,6 +275,7 @@ void APlayerControllerBase::ConfirmPossession()
 	}
 	else if (IndexForPossessables >= 0)
 	{
+		
 		if (!CanWeCyclePossessableEntity(IndexForPossessables)) return;
 		
 		if (!ClosestPossessableEntities.IsValidIndex(IndexForPossessables)) return;
@@ -311,6 +319,7 @@ void APlayerControllerBase::ConfirmPossession()
 			
 		if (ClosestPossessableEntities[IndexForPossessables] != PossessableEntity)
 		{
+			IsPossessing = true;
 			TargetPawn = ClosestPossessableEntities[IndexForPossessables];
 			FTimerDelegate TimerDelegate;
 			TimerDelegate.BindUFunction(this, FName("PossessTargetPawn"));

@@ -39,7 +39,14 @@ public:
 	const float ToPerspectiveThreshold = 0.2f;
 	
 	const float TopDownAngle = -20.0f;
-	
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom")
+	float MaxPitchSpeed = 50.0f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom")
+	float PitchMin = -25.0f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom")
+	float PitchMax = 20.0f;
+
 	UFUNCTION(BlueprintCallable, Category = "Camera")
 	bool CanSeeObject(AActor* Actor);
 
@@ -89,6 +96,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zoom")
 	float ZoomMinPercent = 0.25f;
+
+	UFUNCTION(BlueprintCallable, Category = "Zoom")
+	void OverrideZoom(float Value, bool InZoomedOutViewMode);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zoom")
 	float ZoomPercent = ZoomMinPercent * 1.2;

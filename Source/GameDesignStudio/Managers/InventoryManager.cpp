@@ -29,7 +29,7 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 		{"Berry", FPlayerInventoryItem(
 			"Berry",
 			TSoftObjectPtr<UTexture2D>(
-				FSoftObjectPath(TEXT("/Engine/Tutorial/Mobile/TutorialAssets/IOS.IOS"))
+				FSoftObjectPath(TEXT("/Game/GameDesignStudio/Art/UI/Items/T_BerriesItemIcon.T_BerriesItemIcon"))
 			),
 			"A berry.",
 			0, 10,
@@ -50,7 +50,7 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 		{"Owl Child", FPlayerInventoryItem(
 			"Owl Child",
 			TSoftObjectPtr<UTexture2D>(
-				FSoftObjectPath(TEXT("/Engine/EngineResources/AICON-Green.AICON-Green"))
+				FSoftObjectPath(TEXT("/Game/GameDesignStudio/Art/UI/Items/T_BabyOwlItemIcon.T_BabyOwlItemIcon"))
 			),
 			"One of Whistlebranch's children.",
 			0, 4,
@@ -62,7 +62,7 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 		{"Aegis Charm", FPlayerInventoryItem(
 			"Aegis Charm", 
 			TSoftObjectPtr<UTexture2D>(
-				FSoftObjectPath(TEXT("/Engine/EngineResources/AICON-Red.AICON-Red"))
+				FSoftObjectPath(TEXT("/Game/GameDesignStudio/Art/UI/Items/T_AegisCharmItemIcon.T_AegisCharmItemIcon"))
 			),
 			"A charm given to you by Verdan. Nullifies one instance of damage taken per life.",
 			0, 1, 
@@ -72,7 +72,7 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 		{"Windrunner Sandals", FPlayerInventoryItem(
 			"Windrunner Sandals",
 			TSoftObjectPtr<UTexture2D>(
-				FSoftObjectPath(TEXT("/Engine/EditorResources/Ai_Spawnpoint.Ai_Spawnpoint"))
+				FSoftObjectPath(TEXT("/Game/GameDesignStudio/Art/UI/Items/T_WindrunnerSandalsItemIcon.T_WindrunnerSandalsItemIcon"))
 			),
 			"Sandals that you found in a chest. Grants +5 Stamina",
 			0, 1, 

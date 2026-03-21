@@ -37,6 +37,16 @@ struct FDialogueParameters
 	UPROPERTY(BlueprintReadWrite)
 	bool BoolValue;
 	
+	FDialogueParameters()
+	{
+		Type = EDialogueParamType::Int;
+		Name = "";
+		IntValue = 0;
+		FloatValue = 0;
+		StringValue = "";
+		BoolValue = false;
+	}
+	
 };
 
 

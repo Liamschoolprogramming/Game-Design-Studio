@@ -51,7 +51,10 @@ public:
 	FTimerHandle PossessionTimerHandle;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Possession")
-	float CastTime = 6.f;
+	float CastTime = 3.f;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Possession")
+	bool IsPossessing = false;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Possession")
 	bool CanSwitchToOthersWhilePossessed = false;
@@ -167,7 +170,7 @@ public:
 	float PawnMovementSpeed = 500;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")
-	float PawnRotationSpeed = 8.f;
+	float PawnRotationSpeed = 16.f;
 	
 	FRotator PawnDesiredRotation;
 	bool bPawnHasMovementInput = false;

@@ -215,6 +215,11 @@ void APlayerCharacter::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComp,
 void APlayerCharacter::OnSphereOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if (!PlayerController) return;
+	if (!PlayerController->GetPawn()) return;
+	
+	if (PlayerController->GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass())) return;
+	
 	if (OtherActor && OtherActor != this && OtherComp)
 	{
 
@@ -223,7 +228,6 @@ void APlayerCharacter::OnSphereOverlapEnd(UPrimitiveComponent* OverlappedComp, A
 			APossessableEntity* PossessableEntity = Cast<APossessableEntity>(OtherActor);
 			if (PlayerController && PossessableEntity  && OtherComp->ComponentHasTag("HitBox"))
 			{
-				//Debug::PrintToScreen(PossessableEntity->GetName(), 10.0f, FColor::Red);
 				PlayerController->RemovePossessableEntity(PossessableEntity);
 			}
 			
@@ -233,7 +237,6 @@ void APlayerCharacter::OnSphereOverlapEnd(UPrimitiveComponent* OverlappedComp, A
 			APuzzleInteractive* Puzzle = Cast<APuzzleInteractive>(OtherActor);
 			if (PlayerController && Puzzle)
 			{
-				//Debug::PrintToScreen(Puzzle->GetName(), 10.0f, FColor::Red);
 				RemoveInteractableObject(Puzzle);
 			}
 		}
