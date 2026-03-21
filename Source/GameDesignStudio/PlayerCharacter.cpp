@@ -3,6 +3,7 @@
 
 #include "PlayerCharacter.h"
 
+#include "EngineUtils.h"
 #include "Macros.h"
 #include "PossessableEntity.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -17,6 +18,7 @@
 #include "StructUtils/PropertyBag.h"
 #include "VerseVM/VBPVMRuntimeType.h"
 #include "Core/Puzzles/Pickups/PuzzleInteractive_Pickupable.h"
+#include "Engine/PlayerStartPIE.h"
 
 
 // Sets default values
@@ -150,6 +152,7 @@ void APlayerCharacter::BeginPlay()
 		}
 	}
 	
+
 	
 	
 	FTimerDelegate TimerDelegate;

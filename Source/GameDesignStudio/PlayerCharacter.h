@@ -6,6 +6,7 @@
 #include "CameraAttachPoint.h"
 #include "DialogueInterface.h"
 #include "DialogueSpeakerComponent.h"
+#include "EngineUtils.h"
 #include "GameFramework/Character.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -15,6 +16,7 @@
 #include "Components/SphereComponent.h"
 
 #include "Core/Subsystems/GameManagerSubsystem.h"
+#include "Engine/PlayerStartPIE.h"
 #include "Engine/TriggerSphere.h"
 #include "Managers/PlayerStatManager.h"
 #include "PlayerCharacter.generated.h"
@@ -136,6 +138,23 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Other")
 	FVector SafeLocation;
+	
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Editor", Meta=(WorldContext="WorldContext"))
+	static bool WasLaunchedFromHere(UObject* WorldContext)
+	{
+		//we want to check if someone called play from here so we don't override any position data whenloading
+#if WITH_EDITOR
+		if (UWorld* World = GEngine->GetWorldFromContextObject(WorldContext, EGetWorldErrorMode::ReturnNull))
+		{
+			for (TActorIterator<APlayerStartPIE> It(World); It; ++It)
+			{
+				if (It->bIsPIEPlayerStart) return true;
+			}
+		}
+#endif
+		return false;
+	}
 
 	virtual UCameraAttachPoint* GetAttachPoint() override;
 	

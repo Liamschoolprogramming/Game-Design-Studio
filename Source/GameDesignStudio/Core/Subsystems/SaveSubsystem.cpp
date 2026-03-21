@@ -237,7 +237,7 @@ FPlayerData USaveSubsystem::LoadPlayer()
 	else
 	{
 		PlayerData.PlayerLocation = FVector(0, 0, 0);
-		PlayerData.PlayerRotation = FRotator();
+		PlayerData.PlayerRotation = FRotator(-180,-180,-180);
 	}
 	return PlayerData;
 }
