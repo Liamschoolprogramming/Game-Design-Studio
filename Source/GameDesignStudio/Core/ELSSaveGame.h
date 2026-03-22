@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/QuestData.h"
 #include "GameFramework/SaveGame.h"
+#include "Puzzles/Puzzle.h"
 #include "ELSSaveGame.generated.h"
 
 USTRUCT()
@@ -18,6 +20,16 @@ public:
 	UPROPERTY()
 	int QuestsComplete;
 	
+};
+
+USTRUCT()
+struct FPuzzleData
+{
+	GENERATED_BODY()
+public:
+	
+	UPROPERTY(SaveGame)
+	FPersistantActorValues ActorValues;
 };
 
 /**
@@ -55,6 +67,12 @@ public:
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere,SaveGame)
 	bool bIsAutoSave;
 
+	UPROPERTY(BlueprintReadOnly,VisibleAnywhere,SaveGame)
+	TMap<FName, FQuest> Quests;
+	
+	UPROPERTY(SaveGame)
+	TMap<FGuid, FPuzzleData> PuzzleData;
+	
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere,SaveGame)
 	TSoftObjectPtr<UWorld> World;
 	

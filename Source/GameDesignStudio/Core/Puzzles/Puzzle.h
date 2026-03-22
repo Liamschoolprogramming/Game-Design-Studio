@@ -7,6 +7,7 @@
 #include "Data/PersistantActorValues.h"
 #include "Core/Managers/GameManagerBase.h"
 #include "PuzzleActorInterface.h"
+#include "Core/ELSSaveGame.h"
 #include "Puzzle.generated.h"
 
 UENUM(Blueprintable)
@@ -68,6 +69,24 @@ public:
 	void SetState(EPuzzleState State);
 	
 	virtual void ApplyPuzzleState_Implementation();
+	
+	
+	
+	virtual void SaveData(FPuzzleData& OutData)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Save"));
+		OutData.ActorValues = ActorValues;
+		
+	}
+	virtual void LoadData(FPuzzleData& InData)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Load"));
+		ActorValues = InData.ActorValues;
+	}
+	virtual void InitializePuzzleDefaults()
+	{
+		PuzzleActorGuid = FGuid::NewGuid();
+	}
 
 protected:
 	// Called when the game starts or when spawned

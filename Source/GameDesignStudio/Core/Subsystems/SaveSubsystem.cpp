@@ -130,6 +130,15 @@ void USaveSubsystem::DeleteSaveSlot(FString SlotName) const
 	}
 }
 
+void USaveSubsystem::CreateSaveGame()
+{
+	if (!SaveGame)
+	{
+		SaveGame = Cast<UELSSaveGame>(UGameplayStatics::CreateSaveGameObject(UELSSaveGame::StaticClass()));
+		SaveGame->StartDate = FDateTime::UtcNow();
+	}
+}
+
 void USaveSubsystem::SetAutoSaveFrequency(float InTimeThreshold)
 {
 	if (InTimeThreshold == AutoSaveFrequency) return;
@@ -152,7 +161,7 @@ float USaveSubsystem::GetTimeElapsedSinceAutoSave() const
 
 void USaveSubsystem::Deinitialize()
 {
-	
+	SaveAllGameSubsystems(true);
 	Super::Deinitialize();
 }
 
@@ -201,7 +210,7 @@ void USaveSubsystem::Save(const bool bInIsAutoSave, const FString& SlotName, con
 	MetaSave->SaveSlotList.Add(SlotName, Now);
 	MetaSave->CurrentSave = SlotName;
 	SavePlayer();
-			
+	SaveQuests();
 	CaptureToTexture(SaveSlotPath);
 	SaveGame->ScreenshotPath = FPaths::ProjectSavedDir() + "ScreenShots/" + SaveSlotPath + ".png";
 	UGameplayStatics::SaveGameToSlot(MetaSave,"meta", 0);
@@ -213,8 +222,9 @@ void USaveSubsystem::SaveMeta()
 	UGameplayStatics::SaveGameToSlot(MetaSave,"meta", 0);
 }
 
-void USaveSubsystem::SavePlayer() const
+void USaveSubsystem::SavePlayer()
 {
+	CreateSaveGame();
 	if (SaveGame)
 	{
 		if (const APlayerControllerBase* PlayerController = Cast<APlayerControllerBase>(GetWorld()->GetFirstPlayerController()))
@@ -374,11 +384,7 @@ bool USaveSubsystem::SaveAllGameSubsystems(bool bIsAutoSave, FString SlotName, b
 				MetaSave->AutoSaveSlotList = NewList;
 			}
 			const FDateTime Now = FDateTime::UtcNow();
-			if (!SaveGame)
-			{
-				SaveGame = Cast<UELSSaveGame>(UGameplayStatics::CreateSaveGameObject(UELSSaveGame::StaticClass()));
-				SaveGame->StartDate = Now;
-			}
+			CreateSaveGame();
 			UE_LOG(LogTemp,Warning, TEXT("Autosaving"))
 			SaveGame->StartDate = Now;
 			int NewIndex = MetaSave->AutoSaveKeys.Num();
@@ -460,6 +466,7 @@ void USaveSubsystem::SaveGameManager()
 
 void USaveSubsystem::SavePuzzleWorld()
 {
+	
 }
 
 void USaveSubsystem::SaveDialogue()
@@ -468,4 +475,27 @@ void USaveSubsystem::SaveDialogue()
 
 void USaveSubsystem::SaveQuests()
 {
+	CreateSaveGame();
+	if (SaveGame)
+	{
+		UQuestManager* QuestManager = GameManagerSubsystem->GetQuestManager();
+		if (QuestManager)
+		{
+			SaveGame->Quests = QuestManager->Quests;
+		}
+	}
+}
+
+bool USaveSubsystem::LoadQuests()
+{
+	if (LoadGame())
+	{
+		UQuestManager* QuestManager = GameManagerSubsystem->GetQuestManager();
+		if (QuestManager)
+		{
+			QuestManager->Quests = LoadGame()->Quests;
+			return true;
+		}
+	}
+	return false;
 }

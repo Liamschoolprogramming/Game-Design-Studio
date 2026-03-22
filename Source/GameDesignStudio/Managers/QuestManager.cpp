@@ -12,6 +12,7 @@
 #include "Managers/QuestInterface.h"
 #include "Blueprint/UserWidget.h"
 #include "Core/Puzzles/Pickups/PuzzleInteractive_QuestItem.h"
+#include "Core/Subsystems/SaveSubsystem.h"
 #include "Engine/RendererSettings.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -19,61 +20,24 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 {
 	Super::Initialize(InstanceOwner);
 	
-	Quests = {
-		//Day Quest - Sundew
+	USaveSubsystem* SaveSubsystem = InstanceOwner->GetGameInstance()->GetSubsystem<USaveSubsystem>();
+	if (SaveSubsystem)
+	{
+		if (SaveSubsystem->LoadQuests())
 		{
-			"Sunstone",
-			FQuest(
-				"Flower Spirit Sundew",
-				"A cheery sunflower spirit wants to live closer to the goddess but it's too cold. Find a Sunstone to heat up its living space.",
-				"Sunstone",
-				1,
-				EPlayerBoostableStat::Mind,
-				5,
-				"None"
-			)
-		},
-		//Night Quest - Stoneface
+			UE_LOG(LogTemp, Warning, TEXT("Loading Quests from save"));
+		}else
 		{
-			"Golem",
-			FQuest(
-				"Self-Aware Golem",
-				"The Golem wants someone to talk to.",
-				"Golem",
-				1,
-				EPlayerBoostableStat::Health,
-				10,
-				"None"
-			)
-		},
-		//Lehan Quest - Whistlebranch
-		{
-			"Owl Child",
-			FQuest(
-				"Whistlebranch's Missing Children",
-				"Whistlebranch can't seem to find her children. Help her find all 4 of them.",
-				"Owl Child",
-				4,
-				EPlayerBoostableStat::Stamina,
-				5,
-				"None"
-			)
-		},
-		
-		//Lehan Quest - Verdan
-		{
-			"Berry",
-			FQuest(
-				"Verdan's Request",
-				"Verdan wants you to collect 10 berries to help the local wildlife.",
-				"Berry",
-				10,
-				EPlayerBoostableStat::Stamina,
-				0,
-				"Aegis Charm"
-			)
-		},
-	};
+			UE_LOG(LogTemp, Warning, TEXT("Failed to load Quests from save"));
+			InitializeQuests();
+		}
+	}
+	else
+	{
+		InitializeQuests();
+	}
+	
+	
 }
 
 /**

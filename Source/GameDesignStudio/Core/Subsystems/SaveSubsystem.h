@@ -103,6 +103,9 @@ public:
 	void DeleteSaveSlot(FString SlotName) const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Save")
+	void CreateSaveGame();
+	
+	UFUNCTION(BlueprintCallable, Category = "Save")
 	void SetAutoSaveFrequency(float InTimeThreshold);
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Save")
@@ -118,15 +121,19 @@ public:
 	static void SaveGameManager();
 	
 	UFUNCTION(BlueprintCallable)
-	static void SavePuzzleWorld();
+	void SavePuzzleWorld();
 	UFUNCTION(BlueprintCallable)
-	void SavePlayer() const;
+	void SavePlayer();
 	UFUNCTION(BlueprintCallable)
 	FPlayerData LoadPlayer();
 	UFUNCTION(BlueprintCallable)
-	static void SaveDialogue();
+	void SaveDialogue();
 	UFUNCTION(BlueprintCallable)
-	static void SaveQuests();
+	void SaveQuests();
+	UFUNCTION(BlueprintCallable)
+	bool LoadQuests();
+	
+	
 	
 };
 

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "Core/ELSSaveGame.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "data/PersistentActorId.h"
 #include "Core/Debug/DebugUtils.h"
@@ -38,6 +39,10 @@ public:
 	
 	// Make blueprintable
 	TArray<APuzzle*> GetActorsOfManagerType(TSubclassOf<UGameManagerBase> Manager);
+	
+	void SaveAll(UELSSaveGame* SaveGame);
+	
+	void LoadAll(UELSSaveGame* SaveGame);
 
 private:
 	

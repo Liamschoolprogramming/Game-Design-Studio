@@ -50,6 +50,41 @@ TArray<APuzzle*> UPuzzleWorldSubsystem::GetActorsOfManagerType(TSubclassOf<UGame
 	return Actors;
 }
 
+void UPuzzleWorldSubsystem::SaveAll(UELSSaveGame* SaveGame)
+{
+	for (auto& [Guid, Puzzle] : RuntimeActors)
+	{
+		// Generate GUID on first save if not already set
+		if (!Puzzle->PuzzleActorGuid.IsValid())
+		{
+			Puzzle->PuzzleActorGuid = FGuid::NewGuid();
+		}
+
+		FPuzzleData Data;
+		Puzzle->SaveData(Data);
+		SaveGame->PuzzleData.Add(Puzzle->PuzzleActorGuid, Data);
+	}
+}
+
+void UPuzzleWorldSubsystem::LoadAll(UELSSaveGame* SaveGame)
+{
+	for (auto& [Guid, Puzzle] : RuntimeActors)
+	{
+		if (FPuzzleData* Data = SaveGame->PuzzleData.Find(Puzzle->PuzzleActorGuid))
+		{
+			// Found in save — restore state
+			Puzzle->LoadData(*Data);
+		}
+		else
+		{
+			// Not saved before — first time seeing this puzzle
+			Puzzle->InitializePuzzleDefaults();
+		}
+	}
+	
+}
+
+
 void UPuzzleWorldSubsystem::PostInitialize()
 {
 	Super::PostInitialize();

@@ -20,7 +20,6 @@ void APuzzle::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	PuzzleActorGuid = FGuid::NewGuid();
 	
 	ActorValues.ActorLocation = GetActorTransform();
 	
@@ -52,6 +51,7 @@ void APuzzle::ApplyPuzzleState_Implementation()
 {
 	
 }
+
 
 // Called every frame
 void APuzzle::Tick(float DeltaTime)
