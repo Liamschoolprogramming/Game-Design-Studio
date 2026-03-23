@@ -22,15 +22,6 @@ public:
 	
 };
 
-USTRUCT()
-struct FPuzzleData
-{
-	GENERATED_BODY()
-public:
-	
-	UPROPERTY(SaveGame)
-	FPersistantActorValues ActorValues;
-};
 
 /**
  * 

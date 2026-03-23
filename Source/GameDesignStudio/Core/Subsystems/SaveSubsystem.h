@@ -98,6 +98,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Save")
 	UELSSaveGame* LoadGame(FString SlotName);
+
+	UFUNCTION(BlueprintCallable, Category = "Save")
+	void LoadPuzzles();
 	
 	UFUNCTION(BlueprintCallable, Category = "Save")
 	void DeleteSaveSlot(FString SlotName) const;
@@ -136,4 +139,5 @@ public:
 	
 	
 };
+
 

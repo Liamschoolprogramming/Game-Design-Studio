@@ -44,7 +44,7 @@ void USaveSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 		}
 		
 	}
-	
+
 	
 	
 	AutoSaveTimerDelegate.BindUFunction(this, FName("AutoSave"));
@@ -180,6 +180,7 @@ bool USaveSubsystem::DoesSaveExist(const FString& SaveName)
 
 void USaveSubsystem::CreateSaveIndicator()
 {
+	if (!GetWorld()->GetFirstPlayerController()) return;
    SaveIndicator =	USaveLoadIndicatorController::CreateInstance(GetWorld()->GetFirstPlayerController());
 	SaveIndicator->AddToViewport();
 }
@@ -239,8 +240,14 @@ void USaveSubsystem::SavePlayer()
 FPlayerData USaveSubsystem::LoadPlayer()
 {
 	FPlayerData PlayerData;
-	 if (LoadGame())
+	 if (UELSSaveGame* Load = LoadGame())
 	 {
+	 	if (Load->World.Get() != GetWorld())
+	 	{
+	 		PlayerData.PlayerLocation = FVector(0, 0, 0);
+	 		PlayerData.PlayerRotation = FRotator(-180,-180,-180);
+	 		return PlayerData;
+	 	}
 		 PlayerData.PlayerLocation = LoadGame()->PlayerLocation;
 	 	PlayerData.PlayerRotation = LoadGame()->PlayerRotation;
 	 }
@@ -466,6 +473,14 @@ void USaveSubsystem::SaveGameManager()
 
 void USaveSubsystem::SavePuzzleWorld()
 {
+	if (SaveGame)
+	{
+		UPuzzleWorldSubsystem* PuzzleWorldSubsystem = GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>();
+		if (PuzzleWorldSubsystem)
+		{
+			PuzzleWorldSubsystem->SaveAll(SaveGame);
+		}
+	}
 	
 }
 
@@ -498,4 +513,15 @@ bool USaveSubsystem::LoadQuests()
 		}
 	}
 	return false;
+}
+
+void USaveSubsystem::LoadPuzzles()
+{
+	if (UELSSaveGame* Load = LoadGame())
+	{
+		if (UPuzzleWorldSubsystem* PuzzleWorldSubsystem = GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>())
+		{
+			PuzzleWorldSubsystem->LoadAll(Load);
+		}
+	}
 }

@@ -22,11 +22,16 @@ void APuzzle::BeginPlay()
 	
 	
 	ActorValues.ActorLocation = GetActorTransform();
+
+	SaveDefults();
+	LoadData(PuzzleData);
+	ActorValues = PuzzleData.ActorValues;
 	
 	//************************************************************************************//
 	// SetState should maybe be called after registration. Might need to change where the
 	// error handling happens from SnapshotActorValues if it does
 	//************************************************************************************//
+	PuzzleStatus = PuzzleData.ActorValues.PuzzleState;
 	SetState(PuzzleStatus);
 	
 	GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>()->RegisterPuzzleActor(this);
@@ -50,6 +55,19 @@ void APuzzle::SetState(EPuzzleState State)
 void APuzzle::ApplyPuzzleState_Implementation()
 {
 	
+}
+
+void APuzzle::SaveDefults()
+{
+	PuzzleDataDefaults.ActorValues.ActorLocation = GetActorTransform();
+}
+
+void APuzzle::ResetPuzzleIfNotSolved()
+{
+	if (!(PuzzleStatus == EPuzzleState::Solved))
+	{
+		SetActorTransform(PuzzleDataDefaults.ActorValues.ActorLocation);
+	}
 }
 
 
