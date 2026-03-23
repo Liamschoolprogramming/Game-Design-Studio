@@ -18,9 +18,6 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 		//Quest Items
 		{"Sunstone", FPlayerInventoryItem(
 			"Sunstone",
-			TSoftObjectPtr<UTexture2D>(
-				FSoftObjectPath(TEXT("/Engine/Tutorial/Landscape/TutorialAssets/Landscape.Landscape"))
-			),
 			"A sunstone.",
 			0, 10,
 			EInventoryItemType::Quest
@@ -28,9 +25,6 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 		},
 		{"Berry", FPlayerInventoryItem(
 			"Berry",
-			TSoftObjectPtr<UTexture2D>(
-				FSoftObjectPath(TEXT("/Game/GameDesignStudio/Art/UI/Items/T_BerriesItemIcon.T_BerriesItemIcon"))
-			),
 			"A berry.",
 			0, 10,
 			EInventoryItemType::Quest
@@ -38,20 +32,14 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 		},
 		{"Golem", FPlayerInventoryItem(
 			"Golem",
-			TSoftObjectPtr<UTexture2D>(
-				FSoftObjectPath(TEXT("/Engine/Tutorial/Mobile/TutorialAssets/android_Icon.android_Icon"))
-			),
 			"A golem.",
 			0, 1,
 			EInventoryItemType::Quest,
 			true
 			)
 		},
-		{"Owl Child", FPlayerInventoryItem(
+		{"OwlChild", FPlayerInventoryItem(
 			"Owl Child",
-			TSoftObjectPtr<UTexture2D>(
-				FSoftObjectPath(TEXT("/Game/GameDesignStudio/Art/UI/Items/T_BabyOwlItemIcon.T_BabyOwlItemIcon"))
-			),
 			"One of Whistlebranch's children.",
 			0, 4,
 			EInventoryItemType::Quest
@@ -59,21 +47,15 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 		},
 		
 		//Gear
-		{"Aegis Charm", FPlayerInventoryItem(
+		{"AegisCharm", FPlayerInventoryItem(
 			"Aegis Charm", 
-			TSoftObjectPtr<UTexture2D>(
-				FSoftObjectPath(TEXT("/Game/GameDesignStudio/Art/UI/Items/T_AegisCharmItemIcon.T_AegisCharmItemIcon"))
-			),
 			"A charm given to you by Verdan. Nullifies one instance of damage taken per life.",
 			0, 1, 
 			FGearInfo({{"Health",  5}}, {"DamageNullification"}, EGearType::Head)
 			)
 		},
-		{"Windrunner Sandals", FPlayerInventoryItem(
+		{"WindrunnerSandals", FPlayerInventoryItem(
 			"Windrunner Sandals",
-			TSoftObjectPtr<UTexture2D>(
-				FSoftObjectPath(TEXT("/Game/GameDesignStudio/Art/UI/Items/T_WindrunnerSandalsItemIcon.T_WindrunnerSandalsItemIcon"))
-			),
 			"Sandals that you found in a chest. Grants +5 Stamina",
 			0, 1, 
 			FGearInfo({{"Stamina", 5}}, {}, EGearType::Legs)
@@ -103,7 +85,7 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 	{
 		FPlayerInventoryItem* NewItem = AllItems.Find(ItemName);
 		
-		FPlayerInventoryItem ItemToAdd = FPlayerInventoryItem(NewItem->ItemDisplayName, NewItem->Icon, NewItem->Description, Amount, NewItem->MaxAmount, NewItem->ItemType, NewItem->bHidden, NewItem->GearInfo);
+		FPlayerInventoryItem ItemToAdd = FPlayerInventoryItem(NewItem->ItemDisplayName, NewItem->Description, Amount, NewItem->MaxAmount, NewItem->ItemType, NewItem->bHidden, NewItem->GearInfo);
 		
 		if (NewItem == nullptr)
 		{
