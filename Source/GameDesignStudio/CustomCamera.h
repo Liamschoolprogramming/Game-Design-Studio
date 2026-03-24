@@ -50,6 +50,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Camera")
 	bool CanSeeObject(AActor* Actor);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+	bool bLetCameraRotate = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+	bool bLetCameraZoom = true;
+
+	UFUNCTION(BlueprintCallable, Category = "Camera")
+	void SetCameraState(bool bLetRotate, bool bLetZoom)
+	{
+		bLetCameraRotate = bLetRotate;
+		bLetCameraZoom = bLetZoom;
+	}
 	
 	void ToggleCameraMode();
 	
