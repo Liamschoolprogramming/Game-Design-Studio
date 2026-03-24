@@ -270,7 +270,7 @@ void APlayerControllerBase::ConfirmPossession()
 			Possess(PlayerReference);
 			OnReturnToPlayer();
 			
-			PossessionTimerHandle.Invalidate();
+			//PossessionTimerHandle.Invalidate();
 		}
 	}
 	else if (IndexForPossessables >= 0)
@@ -279,7 +279,7 @@ void APlayerControllerBase::ConfirmPossession()
 		if (!CanWeCyclePossessableEntity(IndexForPossessables)) return;
 		
 		if (!ClosestPossessableEntities.IsValidIndex(IndexForPossessables)) return;
-		if (PossessionTimerHandle.IsValid()) return; // don't stack handle
+		//if (PossessionTimerHandle.IsValid()) return; // don't stack handle
 		
 		// if we pawn is already a PossessableEntity, switch immediately w/o timer
 		if ((GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass())))
@@ -300,7 +300,7 @@ void APlayerControllerBase::ConfirmPossession()
 
 		const FPlayerStats PlayerStats = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPlayerStatManager()->GetPlayerStats();
 		
-		PlayerStats.MindPoints >= 5 ? CastTime = 3.f : 6.f;
+		//PlayerStats.MindPoints >= 5 ? CastTime = 3.f : 6.f;
 		
 		if (!Macros::CanActorSeeActor(PlayerReference, ClosestPossessableEntities[IndexForPossessables])) 
 		{
@@ -321,17 +321,17 @@ void APlayerControllerBase::ConfirmPossession()
 		{
 			IsPossessing = true;
 			TargetPawn = ClosestPossessableEntities[IndexForPossessables];
-			FTimerDelegate TimerDelegate;
+			/*FTimerDelegate TimerDelegate;
 			TimerDelegate.BindUFunction(this, FName("PossessTargetPawn"));
 			GetWorld()->GetTimerManager().SetTimer(PossessionTimerHandle, TimerDelegate, CastTime, false);
 			if (PossessionWidget)
 			{
 				UUserWidget* PossessTimeWidget = CreateWidget(this, PossessionWidget);
 				PossessTimeWidget->AddToViewport();
-			}
+			}*/
 
 			ClosestPossessableEntities[IndexForPossessables]->OnPossessedStart();
-				
+			PossessTargetPawn();
 		}
 	}
 }
@@ -553,7 +553,7 @@ void APlayerControllerBase::PossessTargetPawn()
 	}
 	Possess(TargetPawn);
 	
-	PossessionTimerHandle.Invalidate();
+	//PossessionTimerHandle.Invalidate();
 	
 }
 
