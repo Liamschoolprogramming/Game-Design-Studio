@@ -8,7 +8,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Core/Subsystems/GameManagerSubsystem.h"
 
-const FPlayerInventoryItem EmptyGear = FPlayerInventoryItem("None",TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Game/GameDesignStudio/Art/UI/T_Placeholder.T_Placeholder"))),"Nothing.",0, 0, FGearInfo());
+const FPlayerInventoryItem EmptyGear = FPlayerInventoryItem("None","Nothing.",0, 0, FGearInfo());
 
 void UGearManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 {
@@ -54,20 +54,22 @@ FPlayerInventoryItem UGearManager::UnequipGear(EGearType GearType)
 	
 	if (UnequippedGear.ItemDisplayName != "None")
 	{
-		InventoryManager->AddToInventory(UnequippedGear.ItemDisplayName, 1);
+		FName GearName = *InventoryManager->AllItems.FindKey(UnequippedGear);
+		InventoryManager->AddToInventory(GearName, 1);
 	}
 	return UnequippedGear;
 }
 
 /**
  * Equips the provided gear in its designated slot.
- * @param Gear
+ * @param GearName
  * @return The gear that was replaced
  */
-FPlayerInventoryItem UGearManager::EquipGear(FPlayerInventoryItem Gear)
+FPlayerInventoryItem UGearManager::EquipGear(FName GearName)
 {
 	UInventoryManager* InventoryManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetInventoryManager();
 	
+	FPlayerInventoryItem Gear = InventoryManager->AllItems.FindRef(GearName);
 	FPlayerInventoryItem ReplacedGear;
 	
 	switch (Gear.GearInfo.GearType)
@@ -86,7 +88,7 @@ FPlayerInventoryItem UGearManager::EquipGear(FPlayerInventoryItem Gear)
 			break;
 	}
 	
-	InventoryManager->RemoveFromInventory(Gear.ItemDisplayName, 1);
+	InventoryManager->RemoveFromInventory(GearName, 1);
 	ApplyGearStats(Gear);
 	
 	IInventoryInterface::Execute_OnGearChanged(InventoryManager->InventoryMenu, Gear.GearInfo.GearType, ReplacedGear.ItemDisplayName, Gear.ItemDisplayName);
