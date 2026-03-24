@@ -79,18 +79,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Puzzle Actors")
 	virtual void ResetPuzzleIfNotSolved();
 
-	virtual void SaveData(FPuzzleData& OutData)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Save"));
-		OutData.ActorValues = ActorValues;
-		
-	}
-	virtual void LoadData(FPuzzleData& InData)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Load"));
-		ActorValues = InData.ActorValues;
-		SetActorTransform(ActorValues.ActorLocation);
-	}
+	virtual void SaveData(FPuzzleData& OutData);
+	
+	virtual void LoadData(FPuzzleData& InData);
+	
 	virtual void InitializePuzzleDefaults()
 	{
 		PuzzleActorGuid = FGuid::NewGuid();

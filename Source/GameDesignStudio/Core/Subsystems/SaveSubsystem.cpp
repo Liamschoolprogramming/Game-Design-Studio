@@ -212,6 +212,7 @@ void USaveSubsystem::Save(const bool bInIsAutoSave, const FString& SlotName, con
 	MetaSave->CurrentSave = SlotName;
 	SavePlayer();
 	SaveQuests();
+	SavePuzzleWorld();
 	CaptureToTexture(SaveSlotPath);
 	SaveGame->ScreenshotPath = FPaths::ProjectSavedDir() + "ScreenShots/" + SaveSlotPath + ".png";
 	UGameplayStatics::SaveGameToSlot(MetaSave,"meta", 0);
@@ -473,6 +474,7 @@ void USaveSubsystem::SaveGameManager()
 
 void USaveSubsystem::SavePuzzleWorld()
 {
+	CreateSaveGame();
 	if (SaveGame)
 	{
 		UPuzzleWorldSubsystem* PuzzleWorldSubsystem = GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>();

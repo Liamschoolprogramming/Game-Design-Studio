@@ -13,4 +13,7 @@ public:
 	
 	UPROPERTY(SaveGame)
 	FPersistantActorValues ActorValues;
+	
+	UPROPERTY(SaveGame)
+	FGuid ActorGuid;
 };

@@ -62,7 +62,7 @@ public:
 	TMap<FName, FQuest> Quests;
 	
 	UPROPERTY(SaveGame)
-	TMap<FGuid, FPuzzleData> PuzzleData;
+	TMap<FString, FPuzzleData> PuzzleData;
 	
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere,SaveGame)
 	TSoftObjectPtr<UWorld> World;

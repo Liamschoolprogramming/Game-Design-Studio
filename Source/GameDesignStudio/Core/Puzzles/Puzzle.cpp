@@ -26,6 +26,10 @@ void APuzzle::BeginPlay()
 	SaveDefults();
 	//LoadData(PuzzleData);
 	ActorValues = PuzzleData.ActorValues;
+	if (!PuzzleActorGuid.IsValid())
+	{
+		PuzzleActorGuid = FGuid::NewGuid();
+	}
 	
 	//************************************************************************************//
 	// SetState should maybe be called after registration. Might need to change where the
@@ -68,6 +72,26 @@ void APuzzle::ResetPuzzleIfNotSolved()
 	{
 		SetActorTransform(PuzzleDataDefaults.ActorValues.ActorLocation);
 	}
+}
+
+void APuzzle::SaveData(FPuzzleData& OutData)
+{
+	ActorValues.ActorLocation = GetActorTransform();
+	UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Save %f,%f,%f"), ActorValues.ActorLocation.GetLocation().X,ActorValues.ActorLocation.GetLocation().Y,ActorValues.ActorLocation.GetLocation().Z);
+	OutData.ActorValues = ActorValues;
+	OutData.ActorGuid = PuzzleActorGuid;
+	
+
+}
+
+void APuzzle::LoadData(FPuzzleData& InData)
+{
+	PuzzleActorGuid = InData.ActorGuid;
+	UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Loaded Guid"));
+	ActorValues = InData.ActorValues;
+	UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Load %f,%f,%f"), ActorValues.ActorLocation.GetLocation().X,ActorValues.ActorLocation.GetLocation().Y,ActorValues.ActorLocation.GetLocation().Z);
+	SetActorTransform(ActorValues.ActorLocation);
+	
 }
 
 

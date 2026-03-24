@@ -55,14 +55,11 @@ void UPuzzleWorldSubsystem::SaveAll(UELSSaveGame* SaveGame)
 	for (auto& [Guid, Puzzle] : RuntimeActors)
 	{
 		// Generate GUID on first save if not already set
-		if (!Puzzle->PuzzleActorGuid.IsValid())
-		{
-			Puzzle->PuzzleActorGuid = FGuid::NewGuid();
-		}
-
+		FString ActorKey = GetPathNameSafe(Puzzle.Get());
 		FPuzzleData Data;
 		Puzzle->SaveData(Data);
-		SaveGame->PuzzleData.Add(Puzzle->PuzzleActorGuid, Data);
+		UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Save %f, %f,%f"), Data.ActorValues.ActorLocation.GetLocation().X, Data.ActorValues.ActorLocation.GetLocation().Y,Data.ActorValues.ActorLocation.GetLocation().Z);
+		SaveGame->PuzzleData.Add(ActorKey, Data);
 	}
 }
 
@@ -71,8 +68,9 @@ void UPuzzleWorldSubsystem::LoadAll(UELSSaveGame* SaveGame)
 	UE_LOG(LogTemp, Warning, TEXT("Loading Puzzle Actors from array"));
 	for (auto& [Guid, Puzzle] : RuntimeActors)
 	{
+		FString ActorKey = GetPathNameSafe(Puzzle.Get());
 		UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Loading"));
-		if (FPuzzleData* Data = SaveGame->PuzzleData.Find(Puzzle->PuzzleActorGuid))
+		if (FPuzzleData* Data = SaveGame->PuzzleData.Find(ActorKey))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Found"));
 			// Found in save — restore state
