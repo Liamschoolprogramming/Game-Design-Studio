@@ -24,7 +24,7 @@ void APuzzle::BeginPlay()
 	ActorValues.ActorLocation = GetActorTransform();
 
 	SaveDefults();
-	LoadData(PuzzleData);
+	//LoadData(PuzzleData);
 	ActorValues = PuzzleData.ActorValues;
 	
 	//************************************************************************************//

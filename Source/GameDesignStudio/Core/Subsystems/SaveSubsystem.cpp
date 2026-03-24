@@ -521,7 +521,9 @@ void USaveSubsystem::LoadPuzzles()
 	{
 		if (UPuzzleWorldSubsystem* PuzzleWorldSubsystem = GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>())
 		{
+			UE_LOG(LogTemp,Warning, TEXT("LoadPuzzles"));
 			PuzzleWorldSubsystem->LoadAll(Load);
+			
 		}
 	}
 }

@@ -68,16 +68,20 @@ void UPuzzleWorldSubsystem::SaveAll(UELSSaveGame* SaveGame)
 
 void UPuzzleWorldSubsystem::LoadAll(UELSSaveGame* SaveGame)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Loading Puzzle Actors from array"));
 	for (auto& [Guid, Puzzle] : RuntimeActors)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Loading"));
 		if (FPuzzleData* Data = SaveGame->PuzzleData.Find(Puzzle->PuzzleActorGuid))
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Found"));
 			// Found in save — restore state
 			Puzzle->LoadData(*Data);
 		}
 		else
 		{
 			// Not saved before — first time seeing this puzzle
+			UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Not Found"));
 			Puzzle->InitializePuzzleDefaults();
 		}
 	}

@@ -89,6 +89,7 @@ public:
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Load"));
 		ActorValues = InData.ActorValues;
+		SetActorTransform(ActorValues.ActorLocation);
 	}
 	virtual void InitializePuzzleDefaults()
 	{

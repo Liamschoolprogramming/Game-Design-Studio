@@ -45,6 +45,12 @@ public:
 	void PauseMusic();
 	UFUNCTION(BlueprintCallable, Category = "Music")
 	void ResumeMusic();
+
+	
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void LoadDone();
+
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Music")
 	USoundBase* CurrentMusic;

@@ -112,6 +112,8 @@ void UELSGameInstance::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
 			It->OwningManager = UPuzzleRiverManager::StaticClass();
 		}
 	}
+
+	LoadDone();
 }
 
 
