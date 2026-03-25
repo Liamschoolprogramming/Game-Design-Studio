@@ -109,8 +109,8 @@ void UGearManager::ApplyGearStats(FPlayerInventoryItem Gear)
 	double MindBoost = Gear.GearInfo.StatBoosts.FindRef("Mind");
 	
 	PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Health, HealthBoost);
-	PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Stamina, StaminaBoost);
-	PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Mind, MindBoost);
+	//PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Stamina, StaminaBoost);
+	//PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Mind, MindBoost);
 
 	for (FName AbilityName : Gear.GearInfo.AbilityTags)
 	{
@@ -131,8 +131,8 @@ void UGearManager::RemoveGearStats(FPlayerInventoryItem Gear)
 	double MindBoost = Gear.GearInfo.StatBoosts.FindRef("Mind");
 	
 	PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Health, -HealthBoost);
-	PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Stamina, -StaminaBoost);
-	PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Mind, -MindBoost);
+	//PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Stamina, -StaminaBoost);
+	//PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Mind, -MindBoost);
 	
 	for (FName AbilityName : Gear.GearInfo.AbilityTags)
 	{

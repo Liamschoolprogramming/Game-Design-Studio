@@ -38,11 +38,12 @@ void UPlayerStatManager::BoostPlayerStat(EPlayerBoostableStat StatToBoost, doubl
 		case EPlayerBoostableStat::Health:
 			PlayerStats.HealthPoints += Amount;
 			break;
-		case EPlayerBoostableStat::Stamina:
+		/*case EPlayerBoostableStat::Stamina:
 			PlayerStats.StaminaPoints += Amount;
 			break;
 		case EPlayerBoostableStat::Mind:
 			PlayerStats.MindPoints += Amount;
 			break;
+		*/
 	}
 }
