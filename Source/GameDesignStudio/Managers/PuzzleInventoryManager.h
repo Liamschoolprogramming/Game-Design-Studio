@@ -46,12 +46,12 @@ struct FPuzzleInventorySlotItem
 };
 
 UCLASS()
-class GAMEDESIGNSTUDIO_API APuzzleInventoryManager : public AActor
+class GAMEDESIGNSTUDIO_API UPuzzleInventoryManager : public UGameManagerBase
 {
 	GENERATED_BODY()
 
 public:
-	APuzzleInventoryManager();
+	UPuzzleInventoryManager();
 	
 	int MaxSlots = 3;
 	
@@ -64,6 +64,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ClearPuzzleSlots();
 	
+	UFUNCTION(BlueprintCallable)
+	void ResetAllPuzzleSlotsToNotInLevel();
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void PickupPuzzleItem(APuzzle* PuzzleItem);
 	
@@ -72,9 +75,6 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	FPuzzleInventorySlotItem GetPuzzleInventorySlotItem(int SlotIndex);
-
-protected:  
-	virtual void BeginPlay() override;
 
 private:
 	// all available unlocked puzzle items

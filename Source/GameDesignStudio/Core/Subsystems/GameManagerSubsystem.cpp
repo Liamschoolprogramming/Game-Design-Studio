@@ -57,6 +57,7 @@ void UGameManagerSubsystem::RegisterManagers()
 	RegisterManager<UPuzzleGriefManager>();
 	RegisterManager<UPuzzleTutorialGriefManager>();
 	RegisterManager<UInventoryManager>();
+	RegisterManager<UInventoryManager>();
 	RegisterManager<UGearManager>();
 	RegisterManager<UQuestManager>();
 	RegisterManager<UPlayerStatManager>();

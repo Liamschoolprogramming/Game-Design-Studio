@@ -4,24 +4,17 @@
 #include "PuzzleInventoryManager.h"
 #include "Macros.h"
 
-APuzzleInventoryManager::APuzzleInventoryManager()
+UPuzzleInventoryManager::UPuzzleInventoryManager()
 {
-	PrimaryActorTick.bCanEverTick = false;
 	PuzzleInventorySlots = TArray<FPuzzleInventorySlotItem>();
 }
 
-void APuzzleInventoryManager::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-void APuzzleInventoryManager::UnlockPuzzleItem(FPuzzleInventoryItem PuzzleItem)
+void UPuzzleInventoryManager::UnlockPuzzleItem(FPuzzleInventoryItem PuzzleItem)
 {
 	PuzzleItems.Add(PuzzleItem);
 }
 
-void APuzzleInventoryManager::SetPuzzleSlot(FPuzzleInventoryItem PuzzleItem, int SlotIndex)
+void UPuzzleInventoryManager::SetPuzzleSlot(FPuzzleInventoryItem PuzzleItem, int SlotIndex)
 {
 
 	if (SlotIndex < PuzzleItems.Num())
@@ -41,17 +34,25 @@ void APuzzleInventoryManager::SetPuzzleSlot(FPuzzleInventoryItem PuzzleItem, int
 	}
 }
 
-void APuzzleInventoryManager::ClearPuzzleSlots()
+void UPuzzleInventoryManager::ClearPuzzleSlots()
 {
 	PuzzleInventorySlots = TArray<FPuzzleInventorySlotItem>();
 }
 
-void APuzzleInventoryManager::AddPuzzleInventorySlot()
+void UPuzzleInventoryManager::ResetAllPuzzleSlotsToNotInLevel()
+{
+	for (int i = 0; i < PuzzleInventorySlots.Num(); i++)
+	{
+		PuzzleInventorySlots[i].bInLevel = false;
+	}
+}
+
+void UPuzzleInventoryManager::AddPuzzleInventorySlot()
 {
 	MaxSlots++;
 }
 
-void APuzzleInventoryManager::PickupPuzzleItem_Implementation(APuzzle* PuzzleItem)
+void UPuzzleInventoryManager::PickupPuzzleItem_Implementation(APuzzle* PuzzleItem)
 {
 	// check if is in level 
 	// if not then instantiate and attach to player
@@ -74,7 +75,7 @@ void APuzzleInventoryManager::PickupPuzzleItem_Implementation(APuzzle* PuzzleIte
 	}
 }
 
-FPuzzleInventorySlotItem APuzzleInventoryManager::GetPuzzleInventorySlotItem(int SlotIndex)
+FPuzzleInventorySlotItem UPuzzleInventoryManager::GetPuzzleInventorySlotItem(int SlotIndex)
 {
 	return PuzzleInventorySlots[SlotIndex];
 }
