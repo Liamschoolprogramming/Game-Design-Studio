@@ -28,7 +28,7 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 				"A cheery sunflower spirit wants to live closer to the goddess but it's too cold. Find a Sunstone to heat up its living space.",
 				"Sunstone",
 				1,
-				EPlayerBoostableStat::Mind,
+				EPlayerBoostableStat::Health,
 				5,
 				"None"
 			)
@@ -54,7 +54,7 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 				"Whistlebranch can't seem to find her children. Help her find all 4 of them.",
 				"Owl Child",
 				4,
-				EPlayerBoostableStat::Stamina,
+				EPlayerBoostableStat::Health,
 				5,
 				"None"
 			)
@@ -68,7 +68,7 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 				"Verdan wants you to collect 10 berries to help the local wildlife.",
 				"Berry",
 				10,
-				EPlayerBoostableStat::Stamina,
+				EPlayerBoostableStat::Health,
 				0,
 				"Aegis Charm"
 			)
