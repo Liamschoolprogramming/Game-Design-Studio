@@ -54,8 +54,22 @@ FPlayerInventoryItem UGearManager::UnequipGear(EGearType GearType)
 	
 	if (UnequippedGear.ItemDisplayName != "None")
 	{
-		FName GearName = *InventoryManager->AllItems.FindKey(UnequippedGear);
-		InventoryManager->AddToInventory(GearName, 1);
+		FName GearName;
+		
+		//Currently looping through all items to get a gear's name from its display name.
+		//If there's a better way to do this please let me know or change it.
+		for (const TPair<FName, FPlayerInventoryItem>& Pair : InventoryManager->AllItems)
+		{
+			if (UnequippedGear.ItemDisplayName  == Pair.Value.ItemDisplayName)
+			{
+				GearName = Pair.Key;
+			}
+		}
+		
+		if (GearName != NAME_None)
+		{
+			InventoryManager->AddToInventory(GearName, 1);
+		}
 	}
 	return UnequippedGear;
 }
@@ -91,7 +105,18 @@ FPlayerInventoryItem UGearManager::EquipGear(FName GearName)
 	InventoryManager->RemoveFromInventory(GearName, 1);
 	ApplyGearStats(Gear);
 	
-	IInventoryInterface::Execute_OnGearChanged(InventoryManager->InventoryMenu, Gear.GearInfo.GearType, ReplacedGear.ItemDisplayName, Gear.ItemDisplayName);
+	//Currently looping through all items to get a gear's name from its display name.
+	//If there's a better way to do this please let me know or change it.
+	FName ReplacedGearName;
+	for (const TPair<FName, FPlayerInventoryItem>& Pair : InventoryManager->AllItems)
+	{
+		if (ReplacedGear.ItemDisplayName  == Pair.Value.ItemDisplayName)
+		{
+			ReplacedGearName = Pair.Key;
+		}
+	}
+	
+	IInventoryInterface::Execute_OnGearChanged(InventoryManager->InventoryMenu, Gear.GearInfo.GearType, ReplacedGearName, GearName);
 	
 	return ReplacedGear;
 }
@@ -104,14 +129,16 @@ void UGearManager::ApplyGearStats(FPlayerInventoryItem Gear)
 {
 	UPlayerStatManager* PlayerStatManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPlayerStatManager();
 	
+	/*
 	double HealthBoost = Gear.GearInfo.StatBoosts.FindRef("Health");
 	double StaminaBoost = Gear.GearInfo.StatBoosts.FindRef("Stamina");
 	double MindBoost = Gear.GearInfo.StatBoosts.FindRef("Mind");
 	
 	PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Health, HealthBoost);
-	//PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Stamina, StaminaBoost);
-	//PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Mind, MindBoost);
-
+	PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Stamina, StaminaBoost);
+	PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Mind, MindBoost);
+	*/
+	
 	for (FName AbilityName : Gear.GearInfo.AbilityTags)
 	{
 		PlayerStatManager->AddAbilityTag(AbilityName);
@@ -126,13 +153,15 @@ void UGearManager::RemoveGearStats(FPlayerInventoryItem Gear)
 {
 	UPlayerStatManager* PlayerStatManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPlayerStatManager();
 	
+	/*
 	double HealthBoost = Gear.GearInfo.StatBoosts.FindRef("Health");
 	double StaminaBoost = Gear.GearInfo.StatBoosts.FindRef("Stamina");
 	double MindBoost = Gear.GearInfo.StatBoosts.FindRef("Mind");
 	
 	PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Health, -HealthBoost);
-	//PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Stamina, -StaminaBoost);
-	//PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Mind, -MindBoost);
+	PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Stamina, -StaminaBoost);
+	PlayerStatManager->BoostPlayerStat(EPlayerBoostableStat::Mind, -MindBoost);
+	*/
 	
 	for (FName AbilityName : Gear.GearInfo.AbilityTags)
 	{
