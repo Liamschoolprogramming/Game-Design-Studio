@@ -70,7 +70,7 @@ void UQuestManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 				10,
 				EPlayerBoostableStat::Health,
 				0,
-				"Aegis Charm"
+				"AegisCharm"
 			)
 		},
 	};
