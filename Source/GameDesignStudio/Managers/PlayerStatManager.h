@@ -21,20 +21,20 @@ struct FPlayerStats
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	double HealthPoints;
 	
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//double StaminaPoints;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	double StaminaPoints;
 	
 	// Mind Points corresponds to meters of Possession Range
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//double MindPoints;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	double MindPoints;
 	
 	FPlayerStats()
 	{
 		PossessRange = 2500.0;
 		InteractRange = 500.0;
 		HealthPoints = 3.0;
-		//StaminaPoints = 100.0;
-		//MindPoints = 10.0;
+		StaminaPoints = 100.0;
+		MindPoints = 10.0;
 	}
 };
 
@@ -42,8 +42,8 @@ UENUM(Blueprintable)
 enum class EPlayerBoostableStat : uint8
 {
 	Health UMETA(DisplayName = "Health"),
-	//Stamina UMETA(DisplayName = "Stamina"),
-	//Mind UMETA(DisplayName = "Mind"),
+	Stamina UMETA(DisplayName = "Stamina"),
+	Mind UMETA(DisplayName = "Mind"),
 };
 
 UENUM(Blueprintable)
