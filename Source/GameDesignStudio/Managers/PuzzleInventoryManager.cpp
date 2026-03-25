@@ -79,3 +79,8 @@ FPuzzleInventorySlotItem UPuzzleInventoryManager::GetPuzzleInventorySlotItem(int
 {
 	return PuzzleInventorySlots[SlotIndex];
 }
+
+TArray<FPuzzleInventorySlotItem> UPuzzleInventoryManager::GetPuzzleInventorySlots()
+{
+	return PuzzleInventorySlots;
+}

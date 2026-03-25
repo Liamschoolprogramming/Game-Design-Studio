@@ -9,6 +9,7 @@
 #include "Misc/MessageDialog.h"
 #include "Managers/InventoryManager.h"
 #include "Managers/PlayerStatManager.h"
+#include "Managers/PuzzleInventoryManager.h"
 #include "Managers/QuestManager.h"
 #include "Managers/SaveStationManager.h"
 #include "Managers/TutorialManager.h"
@@ -58,6 +59,7 @@ void UGameManagerSubsystem::RegisterManagers()
 	RegisterManager<UPuzzleTutorialGriefManager>();
 	RegisterManager<UInventoryManager>();
 	RegisterManager<UInventoryManager>();
+	RegisterManager<UPuzzleInventoryManager>();
 	RegisterManager<UGearManager>();
 	RegisterManager<UQuestManager>();
 	RegisterManager<UPlayerStatManager>();
@@ -128,6 +130,16 @@ UInventoryManager* UGameManagerSubsystem::GetInventoryManager() const
 	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UInventoryManager::StaticClass()))
 	{
 		return Cast<UInventoryManager>(Found->Get());
+	}
+	
+	return nullptr;
+}
+
+UPuzzleInventoryManager* UGameManagerSubsystem::GetPuzzleInventoryManager() const
+{
+	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UPuzzleInventoryManager::StaticClass()))
+	{
+		return Cast<UPuzzleInventoryManager>(Found->Get());
 	}
 	
 	return nullptr;

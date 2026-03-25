@@ -75,6 +75,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	FPuzzleInventorySlotItem GetPuzzleInventorySlotItem(int SlotIndex);
+	
+	UFUNCTION(BlueprintCallable)
+	TArray<FPuzzleInventorySlotItem> GetPuzzleInventorySlots();
 
 private:
 	// all available unlocked puzzle items
