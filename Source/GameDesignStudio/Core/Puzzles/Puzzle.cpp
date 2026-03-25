@@ -53,7 +53,16 @@ void APuzzle::ApplyPuzzleState_Implementation()
 	
 }
 
-// Called every frame
+void APuzzle::SetInventorySlotIndex(int NewSlotIndex)
+{
+	InventorySlotIndex = NewSlotIndex;
+}
+
+int APuzzle::GetInventorySlotIndex()
+{
+	return InventorySlotIndex;
+}
+
 void APuzzle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

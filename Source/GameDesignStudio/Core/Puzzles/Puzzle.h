@@ -68,14 +68,21 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Puzzle Actors")
 	void SetState(EPuzzleState State);
 	
+	UFUNCTION(BlueprintCallable)
+	void SetInventorySlotIndex(int NewSlotIndex);
+	
+	UFUNCTION(BlueprintCallable)
+	int GetInventorySlotIndex();
+	
 	virtual void ApplyPuzzleState_Implementation();
+	
+	virtual void Tick(float DeltaTime) override;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	
+private:
+	int InventorySlotIndex;
 
 };
