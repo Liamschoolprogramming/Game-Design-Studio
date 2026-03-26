@@ -11,6 +11,14 @@ UPuzzleInventoryManager::UPuzzleInventoryManager()
 
 void UPuzzleInventoryManager::UnlockPuzzleItem(FPuzzleInventoryItem PuzzleItem)
 {
+	// do not add duplicate items
+	for (int i = 0; i < PuzzleItems.Num(); i++)
+	{
+		if (PuzzleItems[i].Name == PuzzleItem.Name)
+		{
+			return;
+		}
+	}
 	PuzzleItems.Add(PuzzleItem);
 }
 
@@ -88,4 +96,9 @@ FPuzzleInventorySlotItem UPuzzleInventoryManager::GetPuzzleInventorySlotItem(int
 TArray<FPuzzleInventorySlotItem> UPuzzleInventoryManager::GetPuzzleInventorySlots()
 {
 	return PuzzleInventorySlots;
+}
+
+TArray<FPuzzleInventoryItem> UPuzzleInventoryManager::GetAvailablePuzzleItems()
+{
+	return PuzzleItems;
 }
