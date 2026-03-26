@@ -47,6 +47,11 @@ void UPuzzleInventoryManager::ResetAllPuzzleSlotsToNotInLevel()
 	}
 }
 
+int UPuzzleInventoryManager::GetMaxSlots()
+{
+	return MaxSlots;	
+}
+
 void UPuzzleInventoryManager::AddPuzzleInventorySlot()
 {
 	MaxSlots++;
