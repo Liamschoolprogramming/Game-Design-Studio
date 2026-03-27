@@ -151,6 +151,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UUserWidget* InventoryMenu;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UUserWidget* QuestInventoryMenu;
+	
 	UFUNCTION(BlueprintCallable)
 	int AddToInventory(FName ItemName, int Amount);
 	
