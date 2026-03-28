@@ -6,6 +6,7 @@
 #include "DelayAction.h"
 #include "Macros.h"
 #include "PlayerCharacterCameraInterface.h"
+#include "PlayerControllerBase.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
@@ -60,6 +61,7 @@ ACustomCamera::ACustomCamera()
 }
 void ACustomCamera::ZoomCamera(float Value)
 {
+	if (!bLetCameraZoom) return;
 	
 	float temp = ((ZoomSpeed) * Value) + ZoomPercent;
 
@@ -187,17 +189,32 @@ void ACustomCamera::MoveCamera(FVector2D ActionValue)
 
 void ACustomCamera::RotateCamera(FVector2D ActionValue) const
 {
+	
 	if (bAllowRotation)
 	{
 		
 		FRotator rot = RootComponent->GetComponentRotation();
-		
+		float AbsX = FMath::Abs(ActionValue.X);
+		float AbsY = FMath::Abs(ActionValue.Y);
+		if (AbsX > AbsY)
+		{
+			ActionValue.Y = 0;
+		}
+		else if (AbsX < AbsY)
+		{
+			ActionValue.X = 0;
+		}
 		float deltaYaw = ActionValue.X * CameraRotationSpeed * GetWorld()->GetDeltaSeconds();
+		float deltaPitch = ActionValue.Y * CameraRotationSpeed * GetWorld()->GetDeltaSeconds();
+		deltaPitch = FMath::Clamp(deltaPitch, -MaxPitchSpeed, MaxPitchSpeed);
 		deltaYaw = FMath::Clamp(deltaYaw, -MaxYawSpeed, MaxYawSpeed);
 		rot.Yaw = rot.Yaw + deltaYaw;
+		rot.Pitch = rot.Pitch + deltaPitch;
+		rot.Pitch = FMath::Clamp(rot.Pitch, PitchMin, PitchMax);
 		
 		RootComponent->SetWorldRotation(rot);
 	}
+	
 }
 //basically some fancy math to figure out which direction we are moving and whether we are reaching the edge of the camera bounds and smoothly slows us down if we move away from the pawn
 float ACustomCamera::GetCameraSpeedFromDesiredDirection(FVector2D InputValue) const
@@ -422,5 +439,16 @@ void ACustomCamera::Tick(float DeltaTime)
 		RootComponent->SetWorldScale3D(FVector(1,1,1));
 	}
 
+	if (!bLetCameraRotate)
+	{
+		APlayerController* PlayerControllerBase =(GetWorld()->GetFirstPlayerController());
+		if (PlayerControllerBase)
+		{
+			FRotator Rot = RootComponent->GetComponentRotation();
+			FRotator PawnRot = PlayerControllerBase->GetPawn()->GetActorRotation();
+			FRotator NewRot = FRotator(Rot.Pitch, PawnRot.Yaw, Rot.Roll);
+			RootComponent->SetWorldRotation(NewRot);
+		}
+	}
 }
 

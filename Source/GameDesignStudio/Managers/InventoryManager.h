@@ -72,18 +72,12 @@ struct FPlayerInventoryItem
 	FGearInfo GearInfo;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSoftObjectPtr<UTexture2D> Icon;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Description;
 	
 	
 	FPlayerInventoryItem()
 	{
 		ItemDisplayName = "None";
-		Icon = TSoftObjectPtr<UTexture2D>(
-			FSoftObjectPath(TEXT("/Game/GameDesignStudio/Art/UI/T_Placeholder.T_Placeholder"))
-		);
 		Description = "Basic Description";
 		MaxAmount = 1000;
 		CurrentAmount = 0;
@@ -92,10 +86,9 @@ struct FPlayerInventoryItem
 	}
 	
 	//Simple Constructor, No Gear Info & Not Hidden
-	FPlayerInventoryItem(FName ItemName, TSoftObjectPtr<UTexture2D> Icon, FString Description, int Amount, int Max, EInventoryItemType InvItemType)
+	FPlayerInventoryItem(FName ItemName, FString Description, int Amount, int Max, EInventoryItemType InvItemType)
 	{
 		ItemDisplayName = ItemName;
-		this->Icon = Icon;
 		this->Description = Description;
 		CurrentAmount = Amount;
 		MaxAmount = Max;
@@ -105,10 +98,9 @@ struct FPlayerInventoryItem
 	}
 	
 	//Constructor with Hidden value, used for Quests without an actual item (Ex: Golem Quest)
-	FPlayerInventoryItem(FName ItemName, TSoftObjectPtr<UTexture2D> Icon, FString Description, int Amount, int Max, EInventoryItemType ItemType, bool bHidden)
+	FPlayerInventoryItem(FName ItemName, FString Description, int Amount, int Max, EInventoryItemType ItemType, bool bHidden)
 	{
 		ItemDisplayName = ItemName;
-		this->Icon = Icon;
 		this->Description = Description;
 		CurrentAmount = Amount;
 		MaxAmount = Max;
@@ -118,10 +110,9 @@ struct FPlayerInventoryItem
 	}
 	
 	//Constructor with Gear Info, should be used when making gear
-	FPlayerInventoryItem(FName ItemName, TSoftObjectPtr<UTexture2D> Icon, FString Description, int Amount, int Max, FGearInfo GearInfo)
+	FPlayerInventoryItem(FName ItemName, FString Description, int Amount, int Max, FGearInfo GearInfo)
 	{
 		ItemDisplayName = ItemName;
-		this->Icon = Icon;
 		this->Description = Description;
 		CurrentAmount = Amount;
 		MaxAmount = Max;
@@ -131,10 +122,9 @@ struct FPlayerInventoryItem
 	}
 	
 	//Complete constructor with everything
-	FPlayerInventoryItem(FName ItemName, TSoftObjectPtr<UTexture2D> Icon, FString Description, int Amount, int Max, EInventoryItemType ItemType, bool bHidden, FGearInfo GearInfo)
+	FPlayerInventoryItem(FName ItemName, FString Description, int Amount, int Max, EInventoryItemType ItemType, bool bHidden, FGearInfo GearInfo)
 	{
 		ItemDisplayName = ItemName;
-		this->Icon = Icon;
 		this->Description = Description;
 		CurrentAmount = Amount;
 		MaxAmount = Max;
@@ -160,6 +150,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UUserWidget* InventoryMenu;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UUserWidget* QuestInventoryMenu;
 	
 	UFUNCTION(BlueprintCallable)
 	int AddToInventory(FName ItemName, int Amount);

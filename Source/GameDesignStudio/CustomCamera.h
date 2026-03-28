@@ -39,10 +39,28 @@ public:
 	const float ToPerspectiveThreshold = 0.2f;
 	
 	const float TopDownAngle = -20.0f;
-	
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom")
+	float MaxPitchSpeed = 50.0f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom")
+	float PitchMin = -25.0f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom")
+	float PitchMax = 20.0f;
+
 	UFUNCTION(BlueprintCallable, Category = "Camera")
 	bool CanSeeObject(AActor* Actor);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+	bool bLetCameraRotate = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+	bool bLetCameraZoom = true;
+
+	UFUNCTION(BlueprintCallable, Category = "Camera")
+	void SetCameraState(bool bLetRotate, bool bLetZoom)
+	{
+		bLetCameraRotate = bLetRotate;
+		bLetCameraZoom = bLetZoom;
+	}
 	
 	void ToggleCameraMode();
 	
