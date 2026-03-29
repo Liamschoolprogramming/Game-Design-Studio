@@ -136,6 +136,12 @@ void ACustomCamera::ResetCameraRotation(const FRotator& NewRotation)
 	}
 }
 
+void ACustomCamera::SetCustomCameraHeight(float CustomHeight)
+{
+	CustomHeightOffset = CustomHeight;
+	bUseCustomHeight = true;
+}
+
 float ACustomCamera::SetCameraHeight()
 {
 	ACharacter* Character = GetWorld()->GetFirstPlayerController()->GetCharacter();
@@ -415,7 +421,17 @@ void ACustomCamera::Tick(float DeltaTime)
 		{
 			if (ReactingObject->GetAttachPoint())
 			{
-				RootComponent->SetWorldLocation(ReactingObject->GetAttachPoint()->GetComponentLocation());
+				//If custom camera offset is being used, adjust the camera location
+				if (bUseCustomHeight)
+				{
+					FVector pos = ReactingObject->GetAttachPoint()->GetComponentLocation();
+					pos.Z += CustomHeightOffset;
+					RootComponent->SetWorldLocation(pos);
+				}
+				else
+				{
+					RootComponent->SetWorldLocation(ReactingObject->GetAttachPoint()->GetComponentLocation());
+				}
 				RootComponent->SetWorldScale3D(ReactingObject->GetAttachPoint()->GetComponentScale());
 				SetCameraTransformAlongSpline(ZoomPercent);
 			}
