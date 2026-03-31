@@ -58,6 +58,7 @@ public:
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere,SaveGame)
 	bool bIsAutoSave;
 
+
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere,SaveGame)
 	TMap<FName, FQuest> Quests;
 	

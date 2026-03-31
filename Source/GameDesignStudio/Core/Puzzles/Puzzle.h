@@ -82,19 +82,7 @@ public:
 
 	FPuzzleData PuzzleData;
 	
-	virtual void SaveDefults();
-
-	UFUNCTION(BlueprintCallable, Category = "Puzzle Actors")
-	virtual void ResetPuzzleIfNotSolved();
-
-	virtual void SaveData(FPuzzleData& OutData);
 	
-	virtual void LoadData(FPuzzleData& InData);
-	
-	virtual void InitializePuzzleDefaults()
-	{
-		PuzzleActorGuid = FGuid::NewGuid();
-	}
 
 protected:
 	// Called when the game starts or when spawned

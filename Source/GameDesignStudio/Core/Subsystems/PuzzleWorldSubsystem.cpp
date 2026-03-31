@@ -50,42 +50,6 @@ TArray<APuzzle*> UPuzzleWorldSubsystem::GetActorsOfManagerType(TSubclassOf<UGame
 	return Actors;
 }
 
-void UPuzzleWorldSubsystem::SaveAll(UELSSaveGame* SaveGame)
-{
-	for (auto& [Guid, Puzzle] : RuntimeActors)
-	{
-		// Generate GUID on first save if not already set
-		FString ActorKey = GetPathNameSafe(Puzzle.Get());
-		FPuzzleData Data;
-		Puzzle->SaveData(Data);
-		UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Save %f, %f,%f"), Data.ActorValues.ActorLocation.GetLocation().X, Data.ActorValues.ActorLocation.GetLocation().Y,Data.ActorValues.ActorLocation.GetLocation().Z);
-		SaveGame->PuzzleData.Add(ActorKey, Data);
-	}
-}
-
-void UPuzzleWorldSubsystem::LoadAll(UELSSaveGame* SaveGame)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Loading Puzzle Actors from array"));
-	for (auto& [Guid, Puzzle] : RuntimeActors)
-	{
-		FString ActorKey = GetPathNameSafe(Puzzle.Get());
-		UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Loading"));
-		if (FPuzzleData* Data = SaveGame->PuzzleData.Find(ActorKey))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Found"));
-			// Found in save — restore state
-			Puzzle->LoadData(*Data);
-		}
-		else
-		{
-			// Not saved before — first time seeing this puzzle
-			UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Not Found"));
-			Puzzle->InitializePuzzleDefaults();
-		}
-	}
-	
-}
-
 
 void UPuzzleWorldSubsystem::PostInitialize()
 {

@@ -40,10 +40,6 @@ public:
 	// Make blueprintable
 	TArray<APuzzle*> GetActorsOfManagerType(TSubclassOf<UGameManagerBase> Manager);
 	
-	void SaveAll(UELSSaveGame* SaveGame);
-	
-	void LoadAll(UELSSaveGame* SaveGame);
-
 private:
 	
 	// Key will be the unique actor key
