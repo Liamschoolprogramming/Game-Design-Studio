@@ -414,29 +414,32 @@ void ACustomCamera::Tick(float DeltaTime)
 	if (bLockCameraToCharacter == true)
 	{
 		ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-		
-		bool bIsImplemented = PlayerCharacter->Implements<UPlayerCharacterCameraInterface>();
-		IPlayerCharacterCameraInterface* ReactingObject = Cast<IPlayerCharacterCameraInterface>(PlayerCharacter);
-		if (bIsImplemented && ReactingObject)
+		if (PlayerCharacter)
 		{
-			if (ReactingObject->GetAttachPoint())
+			bool bIsImplemented = PlayerCharacter->Implements<UPlayerCharacterCameraInterface>();
+			IPlayerCharacterCameraInterface* ReactingObject = Cast<IPlayerCharacterCameraInterface>(PlayerCharacter);
+			if (bIsImplemented && ReactingObject)
 			{
-				//If custom camera offset is being used, adjust the camera location
-				if (bUseCustomHeight)
+				if (ReactingObject->GetAttachPoint())
 				{
-					FVector pos = ReactingObject->GetAttachPoint()->GetComponentLocation();
-					pos.Z += CustomHeightOffset;
-					RootComponent->SetWorldLocation(pos);
+					//If custom camera offset is being used, adjust the camera location
+					if (bUseCustomHeight)
+					{
+						FVector pos = ReactingObject->GetAttachPoint()->GetComponentLocation();
+						pos.Z += CustomHeightOffset;
+						RootComponent->SetWorldLocation(pos);
+					}
+					else
+					{
+						RootComponent->SetWorldLocation(ReactingObject->GetAttachPoint()->GetComponentLocation());
+					}
+					RootComponent->SetWorldScale3D(ReactingObject->GetAttachPoint()->GetComponentScale());
+					SetCameraTransformAlongSpline(ZoomPercent);
 				}
-				else
-				{
-					RootComponent->SetWorldLocation(ReactingObject->GetAttachPoint()->GetComponentLocation());
-				}
-				RootComponent->SetWorldScale3D(ReactingObject->GetAttachPoint()->GetComponentScale());
-				SetCameraTransformAlongSpline(ZoomPercent);
-			}
 			
+			}
 		}
+		
 		
 		else if (PlayerCharacter)
 		{
