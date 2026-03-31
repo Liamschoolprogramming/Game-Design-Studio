@@ -50,6 +50,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Camera")
 	bool CanSeeObject(AActor* Actor);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+	bool bLetCameraRotate = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+	bool bLetCameraZoom = true;
+
+	UFUNCTION(BlueprintCallable, Category = "Camera")
+	void SetCameraState(bool bLetRotate, bool bLetZoom)
+	{
+		bLetCameraRotate = bLetRotate;
+		bLetCameraZoom = bLetZoom;
+	}
 	
 	void ToggleCameraMode();
 	
@@ -70,6 +81,18 @@ public:
 	float CameraHeight;
 
 	float SetCameraHeight();
+	
+	//Toggle to use a custom z offset for specific possessables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	bool bUseCustomHeight = false;
+
+	//Custom z offset for specific possessables
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
+	float CustomHeightOffset = 0.0f;
+	
+	//Call to enable the use of the custom camera height
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void SetCustomCameraHeight(float CustomHeight);
 	
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void MoveCamera(FVector2D ActionValue);

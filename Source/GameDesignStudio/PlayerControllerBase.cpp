@@ -87,6 +87,7 @@ void APlayerControllerBase::AddPossessableEntity(APossessableEntity* Entity)
 	{
 		ClosestPossessableEntities.Add(Entity);
 	}
+	
 	AddPossessableToHotbar();
 }
 //This removes a possessable entity from our array only if the Entity given is not a null pointer. 
@@ -95,6 +96,12 @@ void APlayerControllerBase::RemovePossessableEntity(APossessableEntity* Entity)
 	if (Entity)
 	{
 		int IndexToRemove = ClosestPossessableEntities.Find(Entity);
+		//Cycle down if the possessable being removed is the one they had selected
+		if (IndexForPossessables == IndexToRemove)
+		{
+			CyclePossessionDown();
+		}
+		
 		RemovePossessableFromHotbar(IndexToRemove);
 		ClosestPossessableEntities.Remove(Entity);
 	}
@@ -145,12 +152,46 @@ void APlayerControllerBase::InteractWithClosestObject()
 	}
 }
 
+/**
+ * Enables possession of entities of the passed PlayerCharacterType
+ * @param EntityType 
+ */
+void APlayerControllerBase::UnlockPossession(EPlayerCharacterType EntityType)
+{
+	if (!UnlockedPossessables.Contains(EntityType))
+	{
+		UnlockedPossessables.Add(EntityType);
+	}
+}
+
+/**
+ * Disables possession of entities of the passed PlayerCharacterType
+ * @param EntityType 
+ */
+void APlayerControllerBase::LockPossession(EPlayerCharacterType EntityType)
+{
+	if (UnlockedPossessables.Contains(EntityType))
+	{
+		UnlockedPossessables.Remove(EntityType);
+	}
+	
+	//Remove any entities of EntityType 
+	for (APossessableEntity* Entity : ClosestPossessableEntities)
+	{
+		if (Entity->PlayerCharacterType == EntityType)
+		{
+			RemovePossessableEntity(Entity);
+		}
+	}
+}
+
 //check if we can possess an entity
 bool APlayerControllerBase::CanPossessEntity(APossessableEntity* entity)
 {
 	if (!ClosestPossessableEntities.Contains(entity)) return false;
 	if (!PlayerReference) return false;
 	if (PlayerReference->PickupableObject != nullptr) return false;
+	if (!UnlockedPossessables.Contains(entity->PlayerCharacterType)) return false;
 	//if (!CameraReference->CanSeeObject(entity)) return false;
 	if (!Macros::CanActorSeeActor(PlayerReference, entity)) return false;
 	if (GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()) &&
@@ -270,7 +311,7 @@ void APlayerControllerBase::ConfirmPossession()
 			Possess(PlayerReference);
 			OnReturnToPlayer();
 			
-			PossessionTimerHandle.Invalidate();
+			//PossessionTimerHandle.Invalidate();
 		}
 	}
 	else if (IndexForPossessables >= 0)
@@ -279,7 +320,7 @@ void APlayerControllerBase::ConfirmPossession()
 		if (!CanWeCyclePossessableEntity(IndexForPossessables)) return;
 		
 		if (!ClosestPossessableEntities.IsValidIndex(IndexForPossessables)) return;
-		if (PossessionTimerHandle.IsValid()) return; // don't stack handle
+		//if (PossessionTimerHandle.IsValid()) return; // don't stack handle
 		
 		// if we pawn is already a PossessableEntity, switch immediately w/o timer
 		if ((GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass())))
@@ -300,7 +341,7 @@ void APlayerControllerBase::ConfirmPossession()
 
 		const FPlayerStats PlayerStats = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPlayerStatManager()->GetPlayerStats();
 		
-		PlayerStats.MindPoints >= 5 ? CastTime = 3.f : 6.f;
+		//PlayerStats.MindPoints >= 5 ? CastTime = 3.f : 6.f;
 		
 		if (!Macros::CanActorSeeActor(PlayerReference, ClosestPossessableEntities[IndexForPossessables])) 
 		{
@@ -321,17 +362,17 @@ void APlayerControllerBase::ConfirmPossession()
 		{
 			IsPossessing = true;
 			TargetPawn = ClosestPossessableEntities[IndexForPossessables];
-			FTimerDelegate TimerDelegate;
+			/*FTimerDelegate TimerDelegate;
 			TimerDelegate.BindUFunction(this, FName("PossessTargetPawn"));
 			GetWorld()->GetTimerManager().SetTimer(PossessionTimerHandle, TimerDelegate, CastTime, false);
 			if (PossessionWidget)
 			{
 				UUserWidget* PossessTimeWidget = CreateWidget(this, PossessionWidget);
 				PossessTimeWidget->AddToViewport();
-			}
+			}*/
 
 			ClosestPossessableEntities[IndexForPossessables]->OnPossessedStart();
-				
+			PossessTargetPawn();
 		}
 	}
 }
@@ -553,7 +594,7 @@ void APlayerControllerBase::PossessTargetPawn()
 	}
 	Possess(TargetPawn);
 	
-	PossessionTimerHandle.Invalidate();
+	//PossessionTimerHandle.Invalidate();
 	
 }
 
@@ -628,7 +669,8 @@ void APlayerControllerBase::BeginPlay()
 	bShowMouseCursor = false;
 	bEnableClickEvents = true;
 	
-	
+	//default unlocked possessable entities
+	UnlockedPossessables = {EPlayerCharacterType::Default, EPlayerCharacterType::Golem};
 }
 
 void APlayerControllerBase::Tick(float DeltaTime)

@@ -20,22 +20,14 @@ void APuzzle::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	PuzzleActorGuid = FGuid::NewGuid();
 	
 	ActorValues.ActorLocation = GetActorTransform();
-
-	SaveDefults();
-	//LoadData(PuzzleData);
-	ActorValues = PuzzleData.ActorValues;
-	if (!PuzzleActorGuid.IsValid())
-	{
-		PuzzleActorGuid = FGuid::NewGuid();
-	}
 	
 	//************************************************************************************//
 	// SetState should maybe be called after registration. Might need to change where the
 	// error handling happens from SnapshotActorValues if it does
 	//************************************************************************************//
-	PuzzleStatus = PuzzleData.ActorValues.PuzzleState;
 	SetState(PuzzleStatus);
 	
 	GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>()->RegisterPuzzleActor(this);
@@ -61,41 +53,16 @@ void APuzzle::ApplyPuzzleState_Implementation()
 	
 }
 
-void APuzzle::SaveDefults()
+void APuzzle::SetInventorySlotIndex(int NewSlotIndex)
 {
-	PuzzleDataDefaults.ActorValues.ActorLocation = GetActorTransform();
+	InventorySlotIndex = NewSlotIndex;
 }
 
-void APuzzle::ResetPuzzleIfNotSolved()
+int APuzzle::GetInventorySlotIndex()
 {
-	if (!(PuzzleStatus == EPuzzleState::Solved))
-	{
-		SetActorTransform(PuzzleDataDefaults.ActorValues.ActorLocation);
-	}
+	return InventorySlotIndex;
 }
 
-void APuzzle::SaveData(FPuzzleData& OutData)
-{
-	ActorValues.ActorLocation = GetActorTransform();
-	UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Save %f,%f,%f"), ActorValues.ActorLocation.GetLocation().X,ActorValues.ActorLocation.GetLocation().Y,ActorValues.ActorLocation.GetLocation().Z);
-	OutData.ActorValues = ActorValues;
-	OutData.ActorGuid = PuzzleActorGuid;
-	
-
-}
-
-void APuzzle::LoadData(FPuzzleData& InData)
-{
-	PuzzleActorGuid = InData.ActorGuid;
-	UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Loaded Guid"));
-	ActorValues = InData.ActorValues;
-	UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Load %f,%f,%f"), ActorValues.ActorLocation.GetLocation().X,ActorValues.ActorLocation.GetLocation().Y,ActorValues.ActorLocation.GetLocation().Z);
-	SetActorTransform(ActorValues.ActorLocation);
-	
-}
-
-
-// Called every frame
 void APuzzle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
