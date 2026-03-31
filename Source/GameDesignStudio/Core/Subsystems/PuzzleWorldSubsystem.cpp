@@ -28,7 +28,7 @@ void UPuzzleWorldSubsystem::RegisterPuzzleActor(APuzzle* Actor)
 		
 		// Registering actor with the manager set in the editor and storing initial data
 		Subsystem->RegisterActorToManager(Actor->OwningManager, Actor->PuzzleActorGuid, Actor->ActorValues);
-		UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Registered %d"), RuntimeActors.Num());
+		//UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Registered %d"), RuntimeActors.Num());
 	
 	}
 }

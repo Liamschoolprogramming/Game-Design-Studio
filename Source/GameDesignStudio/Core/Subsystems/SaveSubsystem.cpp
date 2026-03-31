@@ -267,12 +267,7 @@ FSaveData USaveSubsystem::PrepareSaveData()
 	{
 		FindAllSubsystems();
 	}
-	UPlayerStatManager* PlayerStatManager = GameManagerSubsystem->GetPlayerStatManager();
-	if (PlayerStatManager)
-	{
-		Data.MindStat = PlayerStatManager->GetPlayerStats().MindPoints;
-		Data.StaminaStat = PlayerStatManager->GetPlayerStats().StaminaPoints;
-	}
+	
 	UQuestManager* QuestManager = GameManagerSubsystem->GetQuestManager();
 	if (QuestManager)
 	{
@@ -300,8 +295,7 @@ void USaveSubsystem::ConvertSaveData(const FSaveData& SaveData) const
 	if (SaveGame)
 	{
 		SaveGame->QuestsComplete = SaveData.QuestsComplete;
-		SaveGame->MindStat = SaveData.MindStat;
-		SaveGame->StaminaStat = SaveData.StaminaStat;
+		
 	}
 }
 
@@ -474,15 +468,7 @@ void USaveSubsystem::SaveGameManager()
 
 void USaveSubsystem::SavePuzzleWorld()
 {
-	CreateSaveGame();
-	if (SaveGame)
-	{
-		UPuzzleWorldSubsystem* PuzzleWorldSubsystem = GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>();
-		if (PuzzleWorldSubsystem)
-		{
-			PuzzleWorldSubsystem->SaveAll(SaveGame);
-		}
-	}
+	
 	
 }
 
@@ -519,13 +505,5 @@ bool USaveSubsystem::LoadQuests()
 
 void USaveSubsystem::LoadPuzzles()
 {
-	if (UELSSaveGame* Load = LoadGame())
-	{
-		if (UPuzzleWorldSubsystem* PuzzleWorldSubsystem = GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>())
-		{
-			UE_LOG(LogTemp,Warning, TEXT("LoadPuzzles"));
-			PuzzleWorldSubsystem->LoadAll(Load);
-			
-		}
-	}
+	
 }

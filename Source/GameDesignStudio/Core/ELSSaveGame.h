@@ -13,10 +13,7 @@ struct FSaveData
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY()
-	float MindStat;
-	UPROPERTY()
-	float StaminaStat;
+	
 	UPROPERTY()
 	int QuestsComplete;
 	
@@ -32,10 +29,7 @@ class GAMEDESIGNSTUDIO_API UELSSaveGame : public USaveGame
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(BlueprintReadOnly,VisibleAnywhere,SaveGame)
-	float MindStat;
-	UPROPERTY(BlueprintReadOnly,VisibleAnywhere,SaveGame)
-	float StaminaStat;
+
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere,SaveGame)
 	int QuestsComplete;
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere,SaveGame)
