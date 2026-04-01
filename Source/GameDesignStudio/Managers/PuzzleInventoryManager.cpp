@@ -25,7 +25,7 @@ void UPuzzleInventoryManager::UnlockPuzzleItem(FPuzzleInventoryItem PuzzleItem)
 void UPuzzleInventoryManager::SetPuzzleSlot(FPuzzleInventoryItem PuzzleItem, int SlotIndex)
 {
 
-	if (SlotIndex < PuzzleItems.Num())
+	if (SlotIndex < PuzzleInventorySlots.Num())
 	{
 		// do not overwrite puzzle item of same type
 		if (PuzzleItem.Name == PuzzleInventorySlots[SlotIndex].PuzzleInventoryItem.Name) return;
@@ -38,7 +38,8 @@ void UPuzzleInventoryManager::SetPuzzleSlot(FPuzzleInventoryItem PuzzleItem, int
 			ExistingPuzzleItemInSlot.PuzzleItemRef->Destroy();
 		}
 		
-		PuzzleItems[SlotIndex] = PuzzleItem;
+		FPuzzleInventorySlotItem NewInventorySlotItem = FPuzzleInventorySlotItem(PuzzleItem, SlotIndex);
+		PuzzleInventorySlots[SlotIndex] = NewInventorySlotItem;
 	}
 }
 

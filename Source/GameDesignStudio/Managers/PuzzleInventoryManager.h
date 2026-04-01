@@ -28,6 +28,13 @@ struct FPuzzleInventoryItem : public FTableRowBase
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftObjectPtr<UTexture2D> Icon;
+	
+	FPuzzleInventoryItem()
+	{
+		Name = EPuzzleInventoryItem::Boulder;
+		PuzzleItemClass = APuzzle::StaticClass();
+		Icon = nullptr;
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -46,6 +53,22 @@ struct FPuzzleInventorySlotItem
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	bool bInLevel;
+	
+	FPuzzleInventorySlotItem()
+	{
+		SlotIndex = 0;
+		PuzzleInventoryItem = FPuzzleInventoryItem();
+		PuzzleItemRef = nullptr;
+		bInLevel = false;
+	}
+	
+	FPuzzleInventorySlotItem(FPuzzleInventoryItem InventoryItem, int Index)
+	{
+		SlotIndex = Index;
+		PuzzleInventoryItem = InventoryItem;
+		PuzzleItemRef = nullptr;
+		bInLevel = false;
+	}
 };
 
 UCLASS()
