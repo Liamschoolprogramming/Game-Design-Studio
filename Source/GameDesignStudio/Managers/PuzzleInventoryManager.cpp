@@ -11,13 +11,21 @@ UPuzzleInventoryManager::UPuzzleInventoryManager()
 
 void UPuzzleInventoryManager::UnlockPuzzleItem(FPuzzleInventoryItem PuzzleItem)
 {
+	// do not add duplicate items
+	for (int i = 0; i < PuzzleItems.Num(); i++)
+	{
+		if (PuzzleItems[i].Name == PuzzleItem.Name)
+		{
+			return;
+		}
+	}
 	PuzzleItems.Add(PuzzleItem);
 }
 
 void UPuzzleInventoryManager::SetPuzzleSlot(FPuzzleInventoryItem PuzzleItem, int SlotIndex)
 {
 
-	if (SlotIndex < PuzzleItems.Num())
+	if (SlotIndex < PuzzleInventorySlots.Num())
 	{
 		// do not overwrite puzzle item of same type
 		if (PuzzleItem.Name == PuzzleInventorySlots[SlotIndex].PuzzleInventoryItem.Name) return;
@@ -30,7 +38,8 @@ void UPuzzleInventoryManager::SetPuzzleSlot(FPuzzleInventoryItem PuzzleItem, int
 			ExistingPuzzleItemInSlot.PuzzleItemRef->Destroy();
 		}
 		
-		PuzzleItems[SlotIndex] = PuzzleItem;
+		FPuzzleInventorySlotItem NewInventorySlotItem = FPuzzleInventorySlotItem(PuzzleItem, SlotIndex);
+		PuzzleInventorySlots[SlotIndex] = NewInventorySlotItem;
 	}
 }
 
@@ -45,6 +54,11 @@ void UPuzzleInventoryManager::ResetAllPuzzleSlotsToNotInLevel()
 	{
 		PuzzleInventorySlots[i].bInLevel = false;
 	}
+}
+
+int UPuzzleInventoryManager::GetMaxSlots()
+{
+	return MaxSlots;	
 }
 
 void UPuzzleInventoryManager::AddPuzzleInventorySlot()
@@ -83,4 +97,9 @@ FPuzzleInventorySlotItem UPuzzleInventoryManager::GetPuzzleInventorySlotItem(int
 TArray<FPuzzleInventorySlotItem> UPuzzleInventoryManager::GetPuzzleInventorySlots()
 {
 	return PuzzleInventorySlots;
+}
+
+TArray<FPuzzleInventoryItem> UPuzzleInventoryManager::GetAvailablePuzzleItems()
+{
+	return PuzzleItems;
 }
