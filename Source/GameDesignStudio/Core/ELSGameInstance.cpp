@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Managers/PuzzleRiverManager.h"
 #include "Puzzles/Puzzle.h"
+#include "Subsystems/PuzzleWorldSubsystem.h"
 #include "Subsystems/SaveSubsystem.h"
 
 void UELSGameInstance::PlayMusic(USoundBase* Music, float InFadeOutTimeOld, float InFadeInTimeNew)
@@ -112,6 +113,8 @@ void UELSGameInstance::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
 			It->OwningManager = UPuzzleRiverManager::StaticClass();
 		}
 	}
+	
+	
 
 	LoadDone();
 }

@@ -77,14 +77,22 @@ UELSSaveGame* USaveSubsystem::LoadGame(FString SlotName = "")
 		else if (UGameplayStatics::DoesSaveGameExist(FString(TEXT("meta")), 0))
 		{
 			MetaSave = Cast<UMetaSave>(UGameplayStatics::LoadGameFromSlot(FString(TEXT("meta")), 0));
-			if (UGameplayStatics::DoesSaveGameExist(MetaSave->CurrentSave, 0))
+			if (MetaSave)
 			{
-				SaveGame = Cast<UELSSaveGame>(UGameplayStatics::LoadGameFromSlot(MetaSave->CurrentSave, 0));
-				
-				return SaveGame;
-			}else
+					if (UGameplayStatics::DoesSaveGameExist(MetaSave->CurrentSave, 0))
+				{
+					SaveGame = Cast<UELSSaveGame>(UGameplayStatics::LoadGameFromSlot(MetaSave->CurrentSave, 0));
+					
+					return SaveGame;
+				}else
+				{
+					UE_LOG(LogTemp,Error,TEXT("Can't load save. Tried to load slot %s"), *MetaSave->CurrentSave);
+					return nullptr;
+				}
+			}
+			else
 			{
-				UE_LOG(LogTemp,Error,TEXT("Can't load save. Tried to load slot %s"), *MetaSave->CurrentSave);
+				UE_LOG(LogTemp,Error,TEXT("Slot name is empty and meta save failed to load"));
 				return nullptr;
 			}
 		}
@@ -468,9 +476,43 @@ void USaveSubsystem::SaveGameManager()
 
 void USaveSubsystem::SavePuzzleWorld()
 {
+
+	UPuzzleWorldSubsystem* PuzzleWorldSubsystem = GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>();
+	if (PuzzleWorldSubsystem)
+	{
+		FPuzzleWorldData Data;
+		Data.PuzzleOwners = PuzzleWorldSubsystem->CaptureAllStates();
+
+		const FName LevelKey = FName(GetWorld()->GetOutermost()->GetFName());
+		
+		PuzzleWorldData.Add(LevelKey, Data);
+		SaveGame->AllWorldData = PuzzleWorldData;
+	}
+	
 	
 	
 }
+
+
+void USaveSubsystem::LoadPuzzles()
+{
+	LoadGame();
+	if (SaveGame)
+	{
+		PuzzleWorldData = SaveGame->AllWorldData;
+		UE_LOG(LogTemp,Warning, TEXT("LoadPuzzles"))
+		UPuzzleWorldSubsystem* PuzzleWorldSubsystem = GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>();
+		if (PuzzleWorldSubsystem)
+		{
+			const FName LevelKey = FName(GetWorld()->GetOutermost()->GetFName());
+			FPuzzleWorldData Data = *PuzzleWorldData.Find(LevelKey);
+			PuzzleWorldSubsystem->RestoreAllStates(Data.PuzzleOwners);
+			UE_LOG(LogTemp,Warning, TEXT("RestoredAllStates"))
+		}
+	}
+	
+}
+
 
 void USaveSubsystem::SaveDialogue()
 {
@@ -501,9 +543,4 @@ bool USaveSubsystem::LoadQuests()
 		}
 	}
 	return false;
-}
-
-void USaveSubsystem::LoadPuzzles()
-{
-	
 }

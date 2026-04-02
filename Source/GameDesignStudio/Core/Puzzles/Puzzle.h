@@ -10,6 +10,8 @@
 #include "Data/PuzzleData.h"
 #include "Puzzle.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPuzzleSolvedDelegate, bool, bIsSolved);
+
 UENUM(Blueprintable)
 enum class EPuzzleActorType : uint8
 {
@@ -54,7 +56,15 @@ public:
 	FPersistantActorValues ActorValues;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FOnPuzzleSolvedDelegate OnPuzzleSolved;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FGuid, bool> Signals;
+	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//Only one solver per puzzle owner
+	bool bIsSolver;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true", InstanceEditable = "true"))
 	APuzzle* LinkedReceiver;
@@ -87,6 +97,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	virtual void OnConstruction(const FTransform& Transform) override;
 	
 private:
 	int InventorySlotIndex;

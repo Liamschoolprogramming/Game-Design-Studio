@@ -6,6 +6,7 @@
 #include "Data/QuestData.h"
 #include "GameFramework/SaveGame.h"
 #include "Puzzles/Puzzle.h"
+#include "Data/PuzzleWorldData.h"
 #include "ELSSaveGame.generated.h"
 
 USTRUCT()
@@ -61,5 +62,8 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly,VisibleAnywhere,SaveGame)
 	TSoftObjectPtr<UWorld> World;
+	
+	UPROPERTY(SaveGame)
+	TMap<FName, FPuzzleWorldData> AllWorldData;
 	
 };

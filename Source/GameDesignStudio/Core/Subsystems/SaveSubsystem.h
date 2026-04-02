@@ -10,6 +10,7 @@
 #include "Core/ELSGameInstance.h"
 #include "Core/ELSSaveGame.h"
 #include "Core/MetaSave.h"
+#include "Data/PuzzleWorldData.h"
 #include "GameFramework/SaveGame.h"
 #include "SaveSubsystem.generated.h"
 
@@ -119,6 +120,8 @@ public:
 	FTimerHandle AutoSaveTimerHandle;
 	
 	FTimerDelegate AutoSaveTimerDelegate;
+	
+	TMap<FName,FPuzzleWorldData> PuzzleWorldData;
 	
 	UFUNCTION(BlueprintCallable)
 	static void SaveGameManager();
