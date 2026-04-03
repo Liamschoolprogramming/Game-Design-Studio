@@ -45,7 +45,11 @@ void USaveSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 		
 	}
 
-	
+	if (MetaSave)
+	{
+		AutoSaveFrequency = MetaSave->AutoSaveFrequency;
+		MaxAutoSaves = MetaSave->MaxAutoSaves;
+	}
 	
 	AutoSaveTimerDelegate.BindUFunction(this, FName("AutoSave"));
 	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, AutoSaveTimerDelegate, AutoSaveFrequency, true);
@@ -64,6 +68,7 @@ UELSSaveGame* USaveSubsystem::LoadGame(FString SlotName = "")
 	{
 		if (MetaSave)
 		{
+			UE_LOG(FSaveSubsystemLog, Warning, TEXT("Current save is %s"), *MetaSave->CurrentSave)
 			if (UGameplayStatics::DoesSaveGameExist(MetaSave->CurrentSave, 0))
 			{
 				SaveGame = Cast<UELSSaveGame>(UGameplayStatics::LoadGameFromSlot(MetaSave->CurrentSave, 0));
@@ -121,6 +126,13 @@ UELSSaveGame* USaveSubsystem::LoadGame(FString SlotName = "")
 
 void USaveSubsystem::DeleteSaveSlot(FString SlotName) const
 {
+	FString Path = FPaths::ProjectSavedDir() + "ScreenShots/" + SlotName + ".png";
+
+	if (IFileManager::Get().FileExists(*Path))
+	{
+		IFileManager::Get().Delete(*Path);
+	}
+	
 	if (MetaSave)
 	{
 		if (MetaSave->SaveSlotList.Contains(SlotName))
@@ -128,11 +140,11 @@ void USaveSubsystem::DeleteSaveSlot(FString SlotName) const
 			MetaSave->SaveSlotList.Remove(SlotName);
 			UGameplayStatics::DeleteGameInSlot(SlotName, 0);
 		}
-		else if (MetaSave->AutoSaveSlotList.Contains(SlotName))
+		else if (MetaSave->AutoSaveKeys.Contains(SlotName))
 		{
-			FDateTime Time = MetaSave->AutoSaveSlotList.FindAndRemoveChecked(SlotName);
+			MetaSave->AutoSaveKeys.Remove(SlotName);
 		
-			UGameplayStatics::DeleteGameInSlot(SlotName + "_" + Time.ToString() , 0);
+			UGameplayStatics::DeleteGameInSlot(SlotName, 0);
 		}
 		
 	}
@@ -147,14 +159,27 @@ void USaveSubsystem::CreateSaveGame()
 	}
 }
 
+/**
+ * 
+ * @param InTimeThreshold Time in seconds
+ */
 void USaveSubsystem::SetAutoSaveFrequency(float InTimeThreshold)
 {
 	if (InTimeThreshold == AutoSaveFrequency) return;
+	if (!MetaSave) return;
 	AutoSaveFrequency = InTimeThreshold;
 	
 	AutoSaveTimerDelegate.BindUFunction(this, FName("AutoSave"));
-
+	MetaSave->AutoSaveFrequency = AutoSaveFrequency;
+	SaveMeta();
 	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, AutoSaveTimerDelegate, AutoSaveFrequency, true);
+}
+
+void USaveSubsystem::SetMaxAutoSaves(int32 NewMax)
+{
+	MaxAutoSaves = NewMax;
+	MetaSave->MaxAutoSaves = MaxAutoSaves;
+	SaveMeta();
 }
 
 float USaveSubsystem::GetTimeTillAutoSave() const
@@ -169,7 +194,7 @@ float USaveSubsystem::GetTimeElapsedSinceAutoSave() const
 
 void USaveSubsystem::Deinitialize()
 {
-	SaveAllGameSubsystems(true);
+	
 	Super::Deinitialize();
 }
 
@@ -216,8 +241,12 @@ void USaveSubsystem::Save(const bool bInIsAutoSave, const FString& SlotName, con
 	SaveGame->bIsAutoSave = bInIsAutoSave;
 	SaveGame->World = GetWorld();
 	SaveGame->SlotName = SlotName;
-	MetaSave->SaveSlotList.Add(SlotName, Now);
-	MetaSave->CurrentSave = SlotName;
+	if (!bInIsAutoSave)
+	{
+		MetaSave->SaveSlotList.Add(SlotName, Now);
+	}
+	MetaSave->CurrentSave = SlotName; 
+	UE_LOG(FSaveSubsystemLog, Warning, TEXT("Saving to slot %s"), *SlotName)
 	SavePlayer();
 	SaveQuests();
 	SavePuzzleWorld();
@@ -352,64 +381,80 @@ bool USaveSubsystem::SaveAllGameSubsystems(bool bIsAutoSave, FString SlotName, b
 {
 	OnSaveStart.Broadcast();
 	CreateSaveIndicator();
+	//check if we are autosaving
 	if (bIsAutoSave)
 	{
-		
+		//check if metasave exists as thats where our slot info is
 		if (MetaSave)
 		{
-			if (MetaSave->AutoSaveSlotList.Num() + 1 >= MaxAutoSaves)
+			//if we are about to be above the max count, delete oldest and reindex
+			if (MetaSave->AutoSaveKeys.Num()>= MaxAutoSaves)
 			{
 				UE_LOG(LogTemp,Error, TEXT("We are above max auto saves, deleting and reindexing"))
 				FString OldestKey = MetaSave->AutoSaveKeys[0];
-				FDateTime OldestTimestamp = MetaSave->AutoSaveSlotList.FindAndRemoveChecked(OldestKey);
-				UGameplayStatics::DeleteGameInSlot(OldestKey + "_" + OldestTimestamp.ToString(), 0);
-				MetaSave->AutoSaveKeys.Empty();
+				//FDateTime OldestTimestamp = MetaSave->AutoSaveSlotList.FindAndRemoveChecked(OldestKey);
+				//FString OldestFile = OldestKey + "_" + OldestTimestamp.ToString(TEXT("%Y_%m_%d__%H_%M_%S"));
+				DeleteSaveSlot(OldestKey);
+				
+				
 				TMap<FString, FDateTime> NewList;
 				int count = 0;
-				for (auto AutoSaveSlot : MetaSave->AutoSaveSlotList)
+				
+				TArray<FString> NewKeys;
+
+				for (int32 i = 0; i < MetaSave->AutoSaveKeys.Num(); i++)
 				{
-					FString Number = AutoSaveSlot.Key;
-					Number = Number.Replace(TEXT("AutoSave"),TEXT(""));
-					Number = Number.Replace(TEXT("_"),TEXT(""));
+					FString OldSlotName = MetaSave->AutoSaveKeys[i];
+
+					// Extract the timestamp suffix — everything after the first underscore
+					FString Prefix, TimestampSuffix;
+					OldSlotName.Split(TEXT("_"), &Prefix, &TimestampSuffix, ESearchCase::IgnoreCase, ESearchDir::FromStart);
+
+					// Build the new slot name with the reindexed number
+					FString NewSlotName = FString::Printf(TEXT("AutoSave%d_%s"), i, *TimestampSuffix);
+
 					UELSSaveGame* OldSaveGame = nullptr;
-					if (UGameplayStatics::DoesSaveGameExist(AutoSaveSlot.Key + "_" + AutoSaveSlot.Value.ToString(),0))
+					if (UGameplayStatics::DoesSaveGameExist(OldSlotName, 0))
 					{
-						OldSaveGame = Cast<UELSSaveGame>(UGameplayStatics::LoadGameFromSlot(AutoSaveSlot.Key + "_" + AutoSaveSlot.Value.ToString(),0));
-						
+						OldSaveGame = Cast<UELSSaveGame>(UGameplayStatics::LoadGameFromSlot(OldSlotName, 0));
 					}
-					
-					FString Key = AutoSaveSlot.Key;
-					Key = Key.Replace(*Number,*FString::FromInt(count));
-					NewList.Add(Key,AutoSaveSlot.Value);
-					FString NewSlotName = Key + AutoSaveSlot.Value.ToString();
+
 					if (OldSaveGame)
 					{
-						UGameplayStatics::SaveGameToSlot(OldSaveGame,NewSlotName,0);
-						UGameplayStatics::DeleteGameInSlot(AutoSaveSlot.Key + "_" + AutoSaveSlot.Value.ToString(), 0);
+						UE_LOG(FSaveSubsystemLog, Warning, TEXT("Deleting and reindexing %s to %s"), *OldSlotName, *NewSlotName)
+						UGameplayStatics::SaveGameToSlot(OldSaveGame, NewSlotName, 0);
+						DeleteSaveSlot(OldSlotName);
 					}
-					MetaSave->AutoSaveKeys.Add(Key);
-					UE_LOG(LogTemp,Warning, TEXT("New name %s"), *NewSlotName);
-					count++;
+
+					NewKeys.Add(NewSlotName);
+					UE_LOG(LogTemp, Warning, TEXT("Reindexed: %s -> %s"), *OldSlotName, *NewSlotName);
 				}
-				MetaSave->AutoSaveSlotList = NewList;
+				
+				MetaSave->AutoSaveKeys = NewKeys;
 			}
+			
+			//do the autosave
 			const FDateTime Now = FDateTime::UtcNow();
 			CreateSaveGame();
 			UE_LOG(LogTemp,Warning, TEXT("Autosaving"))
 			SaveGame->StartDate = Now;
 			int NewIndex = MetaSave->AutoSaveKeys.Num();
 			FString AutoSaveKey = TEXT("AutoSave") + FString::FromInt(NewIndex) + TEXT("_");
-			MetaSave->AutoSaveSlotList.Add((AutoSaveKey), Now);
-			MetaSave->AutoSaveKeys.Add(AutoSaveKey);
-			FString SaveSlotName = AutoSaveKey + Now.ToString();
+			
+			
+			
 
-			Save(true, SlotName, SaveSlotName);
+			FString FullSlotName = FString::Printf(TEXT("AutoSave%d_%s"), NewIndex, *FDateTime::Now().ToString(TEXT("%Y_%m_%d__%H_%M_%S")));
+			MetaSave->AutoSaveKeys.Add(FullSlotName);
+			Save(true, FullSlotName, FullSlotName);
 		}
 	}
 	else
 	{
+		//check if metasave exists as thats where our slot info is
 		if (MetaSave)
 		{
+			//set date time to now if the slot is new or load the time.
 			const FDateTime Now = FDateTime::UtcNow();
 			if (!UGameplayStatics::DoesSaveGameExist(SlotName,0))
 			{
@@ -422,7 +467,7 @@ bool USaveSubsystem::SaveAllGameSubsystems(bool bIsAutoSave, FString SlotName, b
 				SaveGame = Cast<UELSSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName,0));
 			}
 			
-			
+			//save
 			FString SaveSlotName = SlotName;
 
 			Save(false, SlotName, SaveSlotName);
@@ -430,6 +475,7 @@ bool USaveSubsystem::SaveAllGameSubsystems(bool bIsAutoSave, FString SlotName, b
 			
 		}
 	}
+	//broadcast 
 	OnSaveFinish.Broadcast();
 	DestroySaveIndicator();
 	return true;
@@ -441,12 +487,12 @@ TArray<UELSSaveGame*> USaveSubsystem::GetAllGameSaves() const
 	UE_LOG(LogTemp,Warning, TEXT("GetAllGameSaves"))
 	if (MetaSave)
 	{
-		for (auto AutoSaveSlot : MetaSave->AutoSaveSlotList)
+		for (auto AutoSaveSlot : MetaSave->AutoSaveKeys)
 		{
-			UE_LOG(LogTemp,Warning, TEXT("AutoSaveSlot: %s"), *AutoSaveSlot.Key);
-			if (UGameplayStatics::DoesSaveGameExist(AutoSaveSlot.Key + AutoSaveSlot.Value.ToString(),0))
+			UE_LOG(LogTemp,Warning, TEXT("AutoSaveSlot: %s"), *AutoSaveSlot);
+			if (UGameplayStatics::DoesSaveGameExist(AutoSaveSlot,0))
 			{
-				UELSSaveGame* Slot = Cast<UELSSaveGame>(UGameplayStatics::LoadGameFromSlot(AutoSaveSlot.Key + AutoSaveSlot.Value.ToString(),0));
+				UELSSaveGame* Slot = Cast<UELSSaveGame>(UGameplayStatics::LoadGameFromSlot(AutoSaveSlot,0));
 				if (Slot)
 				{
 					GameSaves.Add(Slot);

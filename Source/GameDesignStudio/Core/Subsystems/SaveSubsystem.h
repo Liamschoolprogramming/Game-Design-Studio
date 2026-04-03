@@ -14,6 +14,8 @@
 #include "GameFramework/SaveGame.h"
 #include "SaveSubsystem.generated.h"
 
+DEFINE_LOG_CATEGORY_STATIC(FSaveSubsystemLog, Log, All)
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSaveStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSaveFinish);
 
@@ -111,6 +113,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Save")
 	void SetAutoSaveFrequency(float InTimeThreshold);
+	
+	UFUNCTION(BlueprintCallable, Category = "Save")
+	void SetMaxAutoSaves(int32 NewMax);
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Save")
 	//in seconds

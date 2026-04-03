@@ -22,7 +22,10 @@ public:
 	FString CurrentSave;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Meta", SaveGame)
-	TMap<FString, FDateTime> AutoSaveSlotList;
+	int32 MaxAutoSaves = 4;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Meta", SaveGame)
+	float AutoSaveFrequency = 600.f;
 	
 	TArray<FString> AutoSaveKeys;
 };
