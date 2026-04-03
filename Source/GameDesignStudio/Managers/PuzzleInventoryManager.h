@@ -16,7 +16,7 @@ enum class EPuzzleInventoryItem : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FPuzzleInventoryItem
+struct FPuzzleInventoryItem : public FTableRowBase
 {
 	GENERATED_BODY()
 	
@@ -25,6 +25,16 @@ struct FPuzzleInventoryItem
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	TSubclassOf<APuzzle> PuzzleItemClass;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSoftObjectPtr<UTexture2D> Icon;
+	
+	FPuzzleInventoryItem()
+	{
+		Name = EPuzzleInventoryItem::Boulder;
+		PuzzleItemClass = APuzzle::StaticClass();
+		Icon = nullptr;
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -43,6 +53,22 @@ struct FPuzzleInventorySlotItem
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	bool bInLevel;
+	
+	FPuzzleInventorySlotItem()
+	{
+		SlotIndex = 0;
+		PuzzleInventoryItem = FPuzzleInventoryItem();
+		PuzzleItemRef = nullptr;
+		bInLevel = false;
+	}
+	
+	FPuzzleInventorySlotItem(FPuzzleInventoryItem InventoryItem, int Index)
+	{
+		SlotIndex = Index;
+		PuzzleInventoryItem = InventoryItem;
+		PuzzleItemRef = nullptr;
+		bInLevel = false;
+	}
 };
 
 UCLASS()
@@ -53,7 +79,8 @@ class GAMEDESIGNSTUDIO_API UPuzzleInventoryManager : public UGameManagerBase
 public:
 	UPuzzleInventoryManager();
 	
-	int MaxSlots = 3;
+	UFUNCTION(BlueprintCallable)
+	int GetMaxSlots();
 	
 	UFUNCTION(BlueprintCallable)
 	void UnlockPuzzleItem(FPuzzleInventoryItem PuzzleItem);
@@ -78,6 +105,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	TArray<FPuzzleInventorySlotItem> GetPuzzleInventorySlots();
+	
+	UFUNCTION(BlueprintCallable)
+	TArray<FPuzzleInventoryItem> GetAvailablePuzzleItems();
 
 private:
 	// all available unlocked puzzle items
@@ -87,4 +117,6 @@ private:
 	// puzzle elements "equipped" by player or in level
 	UPROPERTY(SaveGame)
 	TArray<FPuzzleInventorySlotItem> PuzzleInventorySlots;
+	
+	int MaxSlots = 3;
 };
