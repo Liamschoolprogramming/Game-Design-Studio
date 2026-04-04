@@ -25,6 +25,11 @@
 		{
 			"headerPath": "Source/GameDesignStudio/SaveLoadIndicatorController.h",
 			"cppPath": "Source/GameDesignStudio/SaveLoadIndicatorController.cpp"
+		},
+		"/Game/GameDesignStudio/UI/SaveMenu/WBP_AutoSaveWarning.WBP_AutoSaveWarning":
+		{
+			"headerPath": "Source/GameDesignStudio/AutoSaveWarningController.h",
+			"cppPath": "Source/GameDesignStudio/AutoSaveWarningController.cpp"
 		}
 	}
 }

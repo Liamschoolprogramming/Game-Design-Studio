@@ -3,6 +3,7 @@
 
 #include "SaveSubsystem.h"
 
+#include "AutoSaveWarningController.h"
 #include "DialogueSubsystem.h"
 #include "GameManagerSubsystem.h"
 #include "IImageWrapper.h"
@@ -54,10 +55,13 @@ void USaveSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	AutoSaveTimerDelegate.BindUFunction(this, FName("AutoSave"));
 	GetWorld()->GetTimerManager().SetTimer(AutoSaveTimerHandle, AutoSaveTimerDelegate, AutoSaveFrequency, true);
 	
+	
+	
 }
 
 void USaveSubsystem::AutoSave()
 {
+	CreateSaveIndicator();
 	SaveAllGameSubsystems(true);
 	UE_LOG(LogTemp,Error,TEXT("AutoSave Saved"));
 }
@@ -184,6 +188,8 @@ void USaveSubsystem::SetMaxAutoSaves(int32 NewMax)
 
 float USaveSubsystem::GetTimeTillAutoSave() const
 {
+	if (!GetWorld())
+		return NAN;
 	return GetWorld()->GetTimerManager().GetTimerRemaining(AutoSaveTimerHandle);
 }
 
@@ -213,9 +219,14 @@ bool USaveSubsystem::DoesSaveExist(const FString& SaveName)
 
 void USaveSubsystem::CreateSaveIndicator()
 {
-	if (!GetWorld()->GetFirstPlayerController()) return;
-   SaveIndicator =	USaveLoadIndicatorController::CreateInstance(GetWorld()->GetFirstPlayerController());
-	SaveIndicator->AddToViewport();
+	if (!GetWorld()) return;
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		UE_LOG(FSaveSubsystemLog, Warning, TEXT("Creating save indicator"))
+		SaveIndicator =	USaveLoadIndicatorController::CreateInstance(PlayerController);
+		SaveIndicator->AddToViewport();
+	}
+	
 }
 
 void USaveSubsystem::DestroySaveIndicator()
@@ -380,7 +391,7 @@ UTexture2D* USaveSubsystem::LoadTexture2DFromFile(const FString& FilePath)
 bool USaveSubsystem::SaveAllGameSubsystems(bool bIsAutoSave, FString SlotName, bool bOverride)
 {
 	OnSaveStart.Broadcast();
-	CreateSaveIndicator();
+	
 	//check if we are autosaving
 	if (bIsAutoSave)
 	{
@@ -446,6 +457,7 @@ bool USaveSubsystem::SaveAllGameSubsystems(bool bIsAutoSave, FString SlotName, b
 
 			FString FullSlotName = FString::Printf(TEXT("AutoSave%d_%s"), NewIndex, *FDateTime::Now().ToString(TEXT("%Y_%m_%d__%H_%M_%S")));
 			MetaSave->AutoSaveKeys.Add(FullSlotName);
+			SaveMeta();
 			Save(true, FullSlotName, FullSlotName);
 		}
 	}
@@ -477,7 +489,10 @@ bool USaveSubsystem::SaveAllGameSubsystems(bool bIsAutoSave, FString SlotName, b
 	}
 	//broadcast 
 	OnSaveFinish.Broadcast();
-	DestroySaveIndicator();
+	FTimerHandle TimerHandle;
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindUFunction(this, FName("DestroySaveIndicator"));
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 1, true);
 	return true;
 }
 
@@ -589,4 +604,38 @@ bool USaveSubsystem::LoadQuests()
 		}
 	}
 	return false;
+}
+
+void USaveSubsystem::Tick(float DeltaTime)
+{
+	if (!GetWorld())
+	{
+		return;
+	}
+	if (GetTimeTillAutoSave() < 60)
+	{
+		
+		if (!HasNotifiedAutoSaveWarning)
+		{
+			UE_LOG(LogTemp,Warning, TEXT("Time till autosave less than a minute"))
+			AutoSaveWarning.Broadcast();
+			if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+			{
+				UE_LOG(FSaveSubsystemLog,Warning,TEXT("Creating Save Warning"))
+				UAutoSaveWarningController* Controller = UAutoSaveWarningController::CreateInstance(PlayerController);
+				Controller->AddToViewport();
+				HasNotifiedAutoSaveWarning = true;
+			}
+			else
+			{
+				UE_LOG(LogTemp,Error, TEXT("No Player Controller"))
+			}
+			
+		}
+		
+	}
+	else
+	{
+		HasNotifiedAutoSaveWarning = false;
+	}
 }

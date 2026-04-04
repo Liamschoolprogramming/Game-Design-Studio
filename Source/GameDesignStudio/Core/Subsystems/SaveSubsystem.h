@@ -18,6 +18,7 @@ DEFINE_LOG_CATEGORY_STATIC(FSaveSubsystemLog, Log, All)
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSaveStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSaveFinish);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAutoSaveWarning);
 
 USTRUCT(BlueprintType)
 struct FPlayerData
@@ -34,7 +35,7 @@ struct FPlayerData
  * 
  */
 UCLASS()
-class GAMEDESIGNSTUDIO_API USaveSubsystem : public UGameInstanceSubsystem
+class GAMEDESIGNSTUDIO_API USaveSubsystem : public UGameInstanceSubsystem, public FTickableGameObject	
 {
 	GENERATED_BODY()
 	
@@ -62,11 +63,16 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FOnSaveFinish OnSaveFinish;
 	USaveLoadIndicatorController* SaveIndicator;
+	
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	FAutoSaveWarning AutoSaveWarning;
 
 	UFUNCTION(BlueprintCallable, Category = "SaveSubsystem")
 	static bool DoesSaveExist(const FString& SaveName);
 
+	UFUNCTION(BlueprintCallable, Category = "SaveSubsystem")
 	void CreateSaveIndicator();
+	UFUNCTION()
 	void DestroySaveIndicator();
 	
 	void Save(bool bInIsAutoSave, const FString& SlotName, const FString& SaveSlotPath);
@@ -144,8 +150,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool LoadQuests();
 	
-	
-	
+private:
+	bool HasNotifiedAutoSaveWarning;
+protected:
+	// FTickableGameObject interface
+	virtual void Tick(float DeltaTime) override;
+	virtual TStatId GetStatId() const override { RETURN_QUICK_DECLARE_CYCLE_STAT(UMyTickableSubsystem, STATGROUP_Tickables); }
+
+	// Optional overrides
+	virtual bool IsTickable() const override { return !IsTemplate(); }
+	virtual ETickableTickType GetTickableTickType() const override { return ETickableTickType::Always; }
+
 };
 
 

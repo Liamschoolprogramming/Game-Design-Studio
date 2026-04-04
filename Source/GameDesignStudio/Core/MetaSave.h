@@ -27,5 +27,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Meta", SaveGame)
 	float AutoSaveFrequency = 600.f;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Meta", SaveGame)
 	TArray<FString> AutoSaveKeys;
 };
