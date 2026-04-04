@@ -98,6 +98,22 @@ void UELSGameInstance::LoadAudioSettings()
 	}
 }
 
+void UELSGameInstance::SaveOtherSettings(bool bUseLeftHanded)
+{
+	if (SettingsSaveGame)
+	{
+		SettingsSaveGame->bUseLeftHandedControls = bUseLeftHanded;
+		
+		UGameplayStatics::SaveGameToSlot(SettingsSaveGame,FString(TEXT("settings")), 0);
+	}
+}
+
+USettingsSaveGame* UELSGameInstance::LoadOtherSettings()
+{
+	LoadSettings();
+	return SettingsSaveGame;
+}
+
 void UELSGameInstance::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
 {
 	Super::OnWorldChanged(OldWorld, NewWorld);

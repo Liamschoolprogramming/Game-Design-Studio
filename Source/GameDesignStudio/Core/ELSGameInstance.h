@@ -28,7 +28,14 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Save")
 	void LoadAudioSettings();
+	
+	UFUNCTION(BlueprintCallable, Category = "Save")
+	void SaveOtherSettings(bool bUseLeftHanded);
 
+	UFUNCTION(BlueprintCallable, Category = "Save")
+	USettingsSaveGame* LoadOtherSettings();
+	
+	
 	virtual void OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld) override;
     
 	UFUNCTION()
@@ -74,6 +81,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Music")
 	UAudioComponent* FadeOutMusicPlayer;
+	
+	
+	
 protected:
 	virtual void Init() override;
 	
