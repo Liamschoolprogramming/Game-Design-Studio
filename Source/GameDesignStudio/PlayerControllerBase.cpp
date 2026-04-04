@@ -636,6 +636,7 @@ void APlayerControllerBase::BeginPlay()
 		
 		
 		APlayerCameraManager* pcm = PlayerCameraManager.Get();
+
 		
 		
 		CameraReference = GetWorld()->SpawnActor<ACustomCamera>(ACustomCamera::StaticClass(), _SpawnLocation, _SpawnRotation, SpawnParams);

@@ -3,6 +3,7 @@
 
 #include "PuzzleRiverManager.h"
 
+#include "GameDelegates.h"
 #include "Kismet/GameplayStatics.h"
 
 void UPuzzleRiverManager::Initialize(UGameManagerSubsystem* InstanceOwner)
@@ -10,6 +11,8 @@ void UPuzzleRiverManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 	Super::Initialize(InstanceOwner);
 	
 	NotBlueprintCreated = FName(TEXT("This wasn't created in blueprints"));
+
+
 	
 }
 

@@ -3,6 +3,7 @@
 
 #include "Puzzle.h"
 
+#include "PuzzleOwner.h"
 #include "Core/Subsystems/GameManagerSubsystem.h"
 #include "Managers/PuzzleRiverManager.h"
 #include "Core/Subsystems/PuzzleWorldSubsystem.h"
@@ -30,12 +31,27 @@ void APuzzle::BeginPlay()
 	//************************************************************************************//
 	SetState(PuzzleStatus);
 	
-	GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>()->RegisterPuzzleActor(this);
+	
 	
 	if (LinkedReceiver != nullptr)
 	{
 		LinkedReceiver->Signals.Add(this->PuzzleActorGuid, false);
 	}
+}
+
+void APuzzle::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+	
+	APuzzleOwner* PuzzleOwner = Cast<APuzzleOwner>(GetOwner());
+	if (PuzzleOwner)
+	{
+		if (bIsSolver)
+		{
+			PuzzleOwner->SetNewSolver(this);
+		}
+	}
+	
 }
 
 // Getting the name of the current enum state to store
