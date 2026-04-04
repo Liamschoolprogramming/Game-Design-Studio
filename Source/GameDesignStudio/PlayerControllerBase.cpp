@@ -245,6 +245,8 @@ void APlayerControllerBase::SetPossessIndexByNumber(FString NewIndex)
 
 void APlayerControllerBase::CyclePossessionUp()
 {
+	if (IsPuzzleInventoryOpen) return;
+	
 	if (IndexForPossessables + 1 >= ClosestPossessableEntities.Num())
 	{
 		IndexForPossessables = -1;
@@ -258,6 +260,8 @@ void APlayerControllerBase::CyclePossessionUp()
 
 void APlayerControllerBase::CyclePossessionDown()
 {
+	if (IsPuzzleInventoryOpen) return;
+	
 	if (IndexForPossessables - 1 < -1)
 	{
 		if (CanWeCyclePossessableEntity(ClosestPossessableEntities.Num() - 1))
@@ -290,6 +294,8 @@ void APlayerControllerBase::PossessIndex(int IndexToPossess)
 
 void APlayerControllerBase::ConfirmPossession()
 {
+	if (IsPuzzleInventoryOpen) return;
+	
 	if (IndexForPossessables == -1)
 	{
 		// will always set the possessing bool to false if trying to go back to player

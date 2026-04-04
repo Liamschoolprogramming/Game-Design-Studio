@@ -68,6 +68,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Possession")
 	TSubclassOf<UUserWidget> PossessionWidget;
 	
+	//If the puzzle inventory is opened with ctrl, then tab should be used for it instead of possession menu
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Possession")
+	bool IsPuzzleInventoryOpen;
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Possession")
 	void OnCyclePossessionTarget();
 	
