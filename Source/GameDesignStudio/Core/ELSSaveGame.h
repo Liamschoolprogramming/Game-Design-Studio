@@ -7,6 +7,7 @@
 #include "GameFramework/SaveGame.h"
 #include "Puzzles/Puzzle.h"
 #include "Data/PuzzleWorldData.h"
+#include "Puzzles/SaveStation.h"
 #include "ELSSaveGame.generated.h"
 
 USTRUCT()
@@ -65,5 +66,10 @@ public:
 	
 	UPROPERTY(SaveGame)
 	TMap<FName, FPuzzleWorldData> AllWorldData;
+
+
+	UPROPERTY(SaveGame)
+	FSoftObjectPath ActiveSaveStationFile;
+
 	
 };

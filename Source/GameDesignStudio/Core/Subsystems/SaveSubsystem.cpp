@@ -14,6 +14,7 @@
 #include "SaveLoadIndicatorController.h"
 #include "Core/ELSGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "Managers/SaveStationManager.h"
 
 void USaveSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -283,6 +284,7 @@ void USaveSubsystem::SavePlayer()
 			SaveGame->PlayerRotation = PlayerController->PlayerReference->GetActorRotation();
 		}
 	}
+	SaveRespawn();
 	
 }
 
@@ -558,6 +560,8 @@ void USaveSubsystem::SavePuzzleWorld()
 void USaveSubsystem::LoadPuzzles()
 {
 	LoadGame();
+	if (!GetWorld()) return;
+	if (!GetWorld()->GetOutermost()) return;
 	if (SaveGame)
 	{
 		PuzzleWorldData = SaveGame->AllWorldData;
@@ -566,6 +570,7 @@ void USaveSubsystem::LoadPuzzles()
 		if (PuzzleWorldSubsystem)
 		{
 			const FName LevelKey = FName(GetWorld()->GetOutermost()->GetFName());
+			if (!PuzzleWorldData.Find(LevelKey)) return;
 			FPuzzleWorldData Data = *PuzzleWorldData.Find(LevelKey);
 			PuzzleWorldSubsystem->RestoreAllStates(Data.PuzzleOwners);
 			UE_LOG(LogTemp,Warning, TEXT("RestoredAllStates"))
@@ -601,6 +606,48 @@ bool USaveSubsystem::LoadQuests()
 		{
 			QuestManager->Quests = LoadGame()->Quests;
 			return true;
+		}
+	}
+	return false;
+}
+
+void USaveSubsystem::SaveRespawn()
+{
+	if (!GetGameInstance()) return;
+	if (!GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()) return;
+	if (SaveGame)
+	{
+		if (USaveStationManager* SaveStationManager = GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetSaveStationManager())
+		{
+			FSoftObjectPath ActiveSaveStationFile = SaveStationManager->ActiveSaveStation;
+			
+			
+			SaveGame->ActiveSaveStationFile = ActiveSaveStationFile;
+			
+		}
+	}
+}
+
+bool USaveSubsystem::LoadRespawn()
+{
+	if (LoadGame())
+	{
+		if (SaveGame)
+		{
+			if (!GetGameInstance()) return false;
+			if (!GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()) return false;
+			if (USaveStationManager* SaveStationManager = GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetSaveStationManager())
+			{
+				TSoftObjectPtr<ASaveStation> SoftRef(SaveGame->ActiveSaveStationFile);
+				
+				SaveStationManager->ActiveSaveStation = Cast<ASaveStation>(SoftRef.Get());
+
+				if (SaveStationManager->ActiveSaveStation)
+				{
+					return true;
+				}
+				
+			}
 		}
 	}
 	return false;
