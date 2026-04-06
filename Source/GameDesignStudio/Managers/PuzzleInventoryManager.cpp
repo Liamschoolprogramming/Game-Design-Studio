@@ -100,13 +100,19 @@ void UPuzzleInventoryManager::PlacePuzzleItemInLevel(int index)
 	{
 		APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(),0));
 		FVector PlayerLocation = PlayerCharacter->GetActorLocation();
-		FVector Location(PlayerLocation.X + 10, PlayerLocation.Y + 10, PlayerLocation.Z);
+		FVector Location(PlayerLocation.X + 30, PlayerLocation.Y + 30, PlayerLocation.Z);
 		FRotator Rotation(0.0f, 0.0f, 0.0f);
 		FActorSpawnParameters SpawnInfo;
+		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 		
 		// spawn new puzzle element in level and attach to player
 		APuzzle* PuzzleItemSpawned = GetWorld()->SpawnActor<APuzzle>(PuzzleItem.PuzzleInventoryItem.PuzzleItemClass, Location, Rotation, SpawnInfo);
-		PuzzleItemSpawned->OwningManager = UPuzzleRiverManager::StaticClass();
+		if (PuzzleItemSpawned == nullptr) return;
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Could not spawn puzzle actor!"));
+			return;
+		}
+
 		APuzzleInteractive_Pickupable* PickupablePuzzleItem = Cast<APuzzleInteractive_Pickupable>(PuzzleItemSpawned);
 		
 		if (PickupablePuzzleItem != nullptr)
