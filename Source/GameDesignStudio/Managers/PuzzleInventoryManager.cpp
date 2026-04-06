@@ -68,6 +68,7 @@ int UPuzzleInventoryManager::GetMaxSlots()
 void UPuzzleInventoryManager::AddPuzzleInventorySlot()
 {
 	MaxSlots++;
+	PuzzleInventorySlots.Add(FPuzzleInventorySlotItem(PuzzleInventorySlots.Num()));
 }
 
 void UPuzzleInventoryManager::PickupPuzzleItem_Implementation(APuzzle* PuzzleItem)
