@@ -7,6 +7,10 @@
 UPuzzleInventoryManager::UPuzzleInventoryManager()
 {
 	PuzzleInventorySlots = TArray<FPuzzleInventorySlotItem>();
+	for (int i = 0; i < MaxSlots; i++)
+	{
+		PuzzleInventorySlots.Add(FPuzzleInventorySlotItem(i));
+	}
 }
 
 void UPuzzleInventoryManager::UnlockPuzzleItem(FPuzzleInventoryItem PuzzleItem)

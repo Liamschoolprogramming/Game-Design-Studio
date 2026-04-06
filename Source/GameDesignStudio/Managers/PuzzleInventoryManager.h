@@ -62,6 +62,14 @@ struct FPuzzleInventorySlotItem
 		bInLevel = false;
 	}
 	
+	FPuzzleInventorySlotItem(int Index)
+	{
+		SlotIndex = Index;
+		PuzzleInventoryItem = FPuzzleInventoryItem();
+		PuzzleItemRef = nullptr;
+		bInLevel = false;
+	}
+	
 	FPuzzleInventorySlotItem(FPuzzleInventoryItem InventoryItem, int Index)
 	{
 		SlotIndex = Index;
