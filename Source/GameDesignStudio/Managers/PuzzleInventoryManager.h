@@ -12,7 +12,8 @@ enum class EPuzzleInventoryItem : uint8
 	Preserver UMETA(DisplayName = "Preserver"),
 	Inverter UMETA(DisplayName = "Inverter"),
 	Prism UMETA(DisplayName = "Prism"),
-	Boulder UMETA(DisplayName = "Boulder")
+	Boulder UMETA(DisplayName = "Boulder"),
+	None UMETA(DisplayName = "None")
 };
 
 USTRUCT(BlueprintType)
@@ -31,7 +32,7 @@ struct FPuzzleInventoryItem : public FTableRowBase
 	
 	FPuzzleInventoryItem()
 	{
-		Name = EPuzzleInventoryItem::Boulder;
+		Name = EPuzzleInventoryItem::None;
 		PuzzleItemClass = APuzzle::StaticClass();
 		Icon = nullptr;
 	}

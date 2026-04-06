@@ -103,10 +103,12 @@ void UPuzzleInventoryManager::PlacePuzzleItemInLevel(int index)
 		FVector Location(PlayerLocation.X + 10, PlayerLocation.Y + 10, PlayerLocation.Z);
 		FRotator Rotation(0.0f, 0.0f, 0.0f);
 		FActorSpawnParameters SpawnInfo;
+		
 		// spawn new puzzle element in level and attach to player
 		APuzzle* PuzzleItemSpawned = GetWorld()->SpawnActor<APuzzle>(PuzzleItem.PuzzleInventoryItem.PuzzleItemClass, Location, Rotation, SpawnInfo);
 		PuzzleItemSpawned->OwningManager = UPuzzleRiverManager::StaticClass();
 		APuzzleInteractive_Pickupable* PickupablePuzzleItem = Cast<APuzzleInteractive_Pickupable>(PuzzleItemSpawned);
+		
 		if (PickupablePuzzleItem != nullptr)
 		{
 			PickupablePuzzleItem->SetActorLocation(*(new FVector(PlayerCharacter->GetActorLocation().X + 10, PlayerCharacter->GetActorLocation().Y + 10, PlayerCharacter->GetActorLocation().Z)));
