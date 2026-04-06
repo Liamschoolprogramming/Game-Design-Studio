@@ -3,6 +3,8 @@
 
 #include "PuzzleInventoryManager.h"
 #include "Macros.h"
+#include "Core/Puzzles/Pickups/PuzzleInteractive_Pickupable.h"
+#include "Kismet/GameplayStatics.h"
 
 UPuzzleInventoryManager::UPuzzleInventoryManager()
 {
@@ -69,6 +71,52 @@ void UPuzzleInventoryManager::AddPuzzleInventorySlot()
 {
 	MaxSlots++;
 	PuzzleInventorySlots.Add(FPuzzleInventorySlotItem(PuzzleInventorySlots.Num()));
+}
+
+void UPuzzleInventoryManager::PlacePuzzleItemInLevel(int index)
+{
+	if (index >= PuzzleInventorySlots.Num()) return;
+	
+	FPuzzleInventorySlotItem PuzzleItem = PuzzleInventorySlots[index];
+	if (PuzzleItem.bInLevel)
+	{
+		// snap position of puzzle ref to player pickup point
+		// and set player to holding item
+		// they can they use E as normal to place down
+		// and B to put back in inventory
+		// use PuzzleInteractive_Pickupable functions
+		if (PuzzleItem.PuzzleItemRef != nullptr)
+		{
+			APuzzleInteractive_Pickupable* PickupablePuzzleItem = Cast<APuzzleInteractive_Pickupable>(PuzzleItem.PuzzleItemRef);
+			if (PickupablePuzzleItem != nullptr)
+			{
+				APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(),0));
+				PickupablePuzzleItem->SetActorLocation(*(new FVector(PlayerCharacter->GetActorLocation().X + 10, PlayerCharacter->GetActorLocation().Y + 10, PlayerCharacter->GetActorLocation().Z)));
+				PickupablePuzzleItem->Interact(PlayerCharacter);
+			}
+		}
+	}
+	else
+	{
+		APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(),0));
+		FVector PlayerLocation = PlayerCharacter->GetActorLocation();
+		FVector Location(PlayerLocation.X + 10, PlayerLocation.Y + 10, PlayerLocation.Z);
+		FRotator Rotation(0.0f, 0.0f, 0.0f);
+		FActorSpawnParameters SpawnInfo;
+		// spawn new puzzle element in level and attach to player
+		APuzzle* PuzzleItemSpawned = GetWorld()->SpawnActor<APuzzle>(PuzzleItem.PuzzleInventoryItem.PuzzleItemClass, Location, Rotation, SpawnInfo);
+		PuzzleItemSpawned->OwningManager = UPuzzleRiverManager::StaticClass();
+		APuzzleInteractive_Pickupable* PickupablePuzzleItem = Cast<APuzzleInteractive_Pickupable>(PuzzleItemSpawned);
+		if (PickupablePuzzleItem != nullptr)
+		{
+			PickupablePuzzleItem->SetActorLocation(*(new FVector(PlayerCharacter->GetActorLocation().X + 10, PlayerCharacter->GetActorLocation().Y + 10, PlayerCharacter->GetActorLocation().Z)));
+			PickupablePuzzleItem->Interact(PlayerCharacter);
+		}
+
+		// update slot info
+		PuzzleInventorySlots[index].bInLevel = true;
+		PuzzleInventorySlots[index].PuzzleItemRef = PuzzleItemSpawned;
+	}
 }
 
 void UPuzzleInventoryManager::PickupPuzzleItem_Implementation(APuzzle* PuzzleItem)

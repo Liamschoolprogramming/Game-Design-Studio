@@ -102,6 +102,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ResetAllPuzzleSlotsToNotInLevel();
 	
+	UFUNCTION(BlueprintCallable)
+	void PlacePuzzleItemInLevel(int index);
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void PickupPuzzleItem(APuzzle* PuzzleItem);
 	

@@ -51,9 +51,6 @@ void APuzzleInteractive_Pickupable::Interact(APlayerCharacter* PlayerCharacter)
 				FTimerDelegate TimerDelegate;
 				TimerDelegate.BindUFunction(this, FName("ResetCollision"));
 				GetWorld()->GetTimerManager().SetTimerForNextTick(TimerDelegate);
-				
-				
-				
 			}
 		}
 	}
