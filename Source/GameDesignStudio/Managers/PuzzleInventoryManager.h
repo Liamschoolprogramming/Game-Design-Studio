@@ -109,9 +109,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlacePuzzleItemInLevel(int index);
 	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void PickupPuzzleItem(APuzzle* PuzzleItem);
-	
 	UFUNCTION(BlueprintCallable)
 	void AddPuzzleInventorySlot();
 	

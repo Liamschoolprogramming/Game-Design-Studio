@@ -89,13 +89,14 @@ void UPuzzleInventoryManager::PlacePuzzleItemInLevel(int index)
 		// and set player to holding item
 		// they can they use E as normal to place down
 		// and B to put back in inventory
-		// use PuzzleInteractive_Pickupable functions
 		if (PuzzleItem.PuzzleItemRef != nullptr)
 		{
 			APuzzleInteractive_Pickupable* PickupablePuzzleItem = Cast<APuzzleInteractive_Pickupable>(PuzzleItem.PuzzleItemRef);
 			if (PickupablePuzzleItem != nullptr)
 			{
 				APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(),0));
+				// do not pickup a second object
+				if (PlayerCharacter->PickupableObject) return;
 				PickupablePuzzleItem->SetActorLocation(*(new FVector(PlayerCharacter->GetActorLocation().X + 10, PlayerCharacter->GetActorLocation().Y + 10, PlayerCharacter->GetActorLocation().Z)));
 				PickupablePuzzleItem->Interact(PlayerCharacter);
 			}
@@ -104,6 +105,9 @@ void UPuzzleInventoryManager::PlacePuzzleItemInLevel(int index)
 	else
 	{
 		APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(),0));
+		// do not pickup a second object
+		if (PlayerCharacter->PickupableObject) return;
+		
 		FVector PlayerLocation = PlayerCharacter->GetActorLocation();
 		FVector Location(PlayerLocation.X + 30, PlayerLocation.Y + 30, PlayerLocation.Z);
 		FRotator Rotation(0.0f, 0.0f, 0.0f);
@@ -131,29 +135,6 @@ void UPuzzleInventoryManager::PlacePuzzleItemInLevel(int index)
 		// update slot info
 		PuzzleInventorySlots[index].bInLevel = true;
 		PuzzleInventorySlots[index].PuzzleItemRef = PuzzleItemSpawned;
-	}
-}
-
-void UPuzzleInventoryManager::PickupPuzzleItem_Implementation(APuzzle* PuzzleItem)
-{
-	// check if is in level 
-	// if not then instantiate and attach to player
-	
-	// get player hold item location 
-	// FVector Location(0.0f, 0.0f, 0.0f);
-	// FRotator Rotation(0.0f, 0.0f, 0.0f);
-	// FActorSpawnParameters SpawnInfo;
-	// GetWorld()->SpawnActor<APuzzle>(
-	// PuzzleItemToSpawn.PuzzleInventoryItem.PuzzleItemClass, Location, Rotation, SpawnInfo);
-	//PuzzleInventorySlots[SlotIndex].PuzzleItemRef = 
-	
-	if (PuzzleItem != nullptr)
-	{
-		int PuzzleItemSlotIndex = PuzzleItem->GetInventorySlotIndex();
-		if (PuzzleInventorySlots.Num() > PuzzleItemSlotIndex && PuzzleInventorySlots[PuzzleItemSlotIndex].bInLevel)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("IS IN LEVEL"));
-		}
 	}
 }
 
