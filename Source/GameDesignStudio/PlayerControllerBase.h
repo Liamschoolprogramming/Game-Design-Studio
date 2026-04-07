@@ -56,6 +56,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Possession")
 	bool IsPossessing = false;
 	
+	UPROPERTY(BlueprintReadWrite, Category="Possession")
+	TArray<EPlayerCharacterType> UnlockedPossessables;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Possession")
 	bool CanSwitchToOthersWhilePossessed = false;
 	
@@ -64,6 +67,10 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Possession")
 	TSubclassOf<UUserWidget> PossessionWidget;
+	
+	//If the puzzle inventory is opened with ctrl, then tab should be used for it instead of possession menu
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Possession")
+	bool IsPuzzleInventoryOpen;
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Possession")
 	void OnCyclePossessionTarget();
@@ -196,6 +203,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Possession")
 	void SetPossessIndexByNumber(FString NewIndex);
+	
+	UFUNCTION(BlueprintCallable, Category="Possession")
+	void UnlockPossession(EPlayerCharacterType EntityType);
+	
+	UFUNCTION(BlueprintCallable, Category="Possession")
+	void LockPossession(EPlayerCharacterType EntityType);
 	
 	//Essentially a toggle for if we want to be able to move the pawn without always point and click
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Movement")

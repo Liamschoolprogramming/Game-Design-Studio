@@ -16,42 +16,40 @@ void UPuzzleWorldSubsystem::Deinitialize()
 	Super::Deinitialize();
 }
 
-void UPuzzleWorldSubsystem::RegisterPuzzleActor(APuzzle* Actor)
-{
-	
-	UGameManagerSubsystem* Subsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>();
-	
-	if (!RuntimeActors.Contains(Actor->PuzzleActorGuid))
-	{
-		// Registering actor references with the PuzzleWorldSubsystem
-		RuntimeActors.Add(Actor->PuzzleActorGuid, Actor);
-		
-		// Registering actor with the manager set in the editor and storing initial data
-		Subsystem->RegisterActorToManager(Actor->OwningManager, Actor->PuzzleActorGuid, Actor->ActorValues);
-		UE_LOG(LogTemp, Warning, TEXT("Puzzle Actor Registered %d"), RuntimeActors.Num());
-	
-	}
-}
 
-TArray<APuzzle*> UPuzzleWorldSubsystem::GetActorsOfManagerType(TSubclassOf<UGameManagerBase> Manager)
-{
-	TArray<APuzzle*> Actors;
-	
-	for (const TPair<FGuid, TWeakObjectPtr<APuzzle>>& Pair : RuntimeActors)
-	{
-		APuzzle* Actor = Pair.Value.Get();
-		
-		if (Actor->OwningManager == Manager)
-		{
-			Actors.Add(Actor);
-		}
-	}
-	
-	return Actors;
-}
 
 void UPuzzleWorldSubsystem::PostInitialize()
 {
 	Super::PostInitialize();
 	
+}
+
+void UPuzzleWorldSubsystem::RegisterPuzzleOwner(APuzzleOwner* InPuzzleOwner)
+{
+	PuzzleOwners.Add(InPuzzleOwner);
+}
+
+TArray<FPuzzleOwnerData> UPuzzleWorldSubsystem::CaptureAllStates()
+{
+	TArray<FPuzzleOwnerData> States;
+	for (auto* PuzzleOwner : PuzzleOwners)
+	{
+		States.Add(PuzzleOwner->CaptureState());
+	}
+	return States;
+}
+
+void UPuzzleWorldSubsystem::RestoreAllStates(const TArray<FPuzzleOwnerData>& AllStates)
+{
+	for (auto Data : AllStates)
+	{
+		for (auto* PuzzleOwner : PuzzleOwners)
+		{
+			if (PuzzleOwner->PuzzleName == Data.PuzzleName)
+			{
+				PuzzleOwner->RestoreState(Data);
+				break;
+			}
+		}
+	}
 }

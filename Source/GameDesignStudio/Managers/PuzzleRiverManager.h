@@ -27,6 +27,7 @@ public:
 	UFUNCTION(BlueprintPure)
 	int CalculateValues(int a, int b);
 	
+	
 	UFUNCTION(BlueprintCallable)
 	void TestingPuzzleNonBlueprint();
 	

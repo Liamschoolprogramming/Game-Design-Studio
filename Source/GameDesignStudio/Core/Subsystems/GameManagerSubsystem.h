@@ -64,6 +64,9 @@ public:
 	UInventoryManager* GetInventoryManager() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Managers")
+	UPuzzleInventoryManager* GetPuzzleInventoryManager() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Managers")
 	UGearManager* GetGearManager() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Managers")

@@ -7,6 +7,10 @@
 #include "Debug/DebugUtils.h"
 #include "GameFramework/GameUserSettings.h"
 #include "Kismet/GameplayStatics.h"
+#include "Managers/PuzzleRiverManager.h"
+#include "Puzzles/Puzzle.h"
+#include "Subsystems/PuzzleWorldSubsystem.h"
+#include "Subsystems/SaveSubsystem.h"
 
 void UELSGameInstance::PlayMusic(USoundBase* Music, float InFadeOutTimeOld, float InFadeInTimeNew)
 {
@@ -94,6 +98,49 @@ void UELSGameInstance::LoadAudioSettings()
 	}
 }
 
+void UELSGameInstance::SaveOtherSettings(bool bUseLeftHanded)
+{
+	if (SettingsSaveGame)
+	{
+		SettingsSaveGame->bUseLeftHandedControls = bUseLeftHanded;
+		
+		UGameplayStatics::SaveGameToSlot(SettingsSaveGame,FString(TEXT("settings")), 0);
+	}
+}
+
+USettingsSaveGame* UELSGameInstance::LoadOtherSettings()
+{
+	LoadSettings();
+	return SettingsSaveGame;
+}
+
+void UELSGameInstance::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
+{
+	Super::OnWorldChanged(OldWorld, NewWorld);
+	UE_LOG(LogTemp, Warning, TEXT("OnMapChangeFinished"));
+	if (!NewWorld) return;
+	for (TObjectIterator<APuzzle> It; It; ++It)
+	{
+		if (It->GetWorld() != NewWorld)
+			continue;
+
+		if (It)
+		{
+			It->OwningManager = UPuzzleRiverManager::StaticClass();
+		}
+	}
+	
+	
+
+	LoadDone();
+}
+
+
+void UELSGameInstance::OnMapChangeFinished(const UWorld* World)
+{
+	
+}
+
 void UELSGameInstance::LoadSettings()
 {
 	
@@ -143,6 +190,7 @@ void UELSGameInstance::ResumeMusic()
 	}
 }
 
+
 void UELSGameInstance::Init()
 {
 	Super::Init();
@@ -153,5 +201,16 @@ void UELSGameInstance::Init()
 	FTimerDelegate TimerDelegate;
 	TimerDelegate.BindUFunction(this, FName("LoadAudioSettings"));
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, .1f, false);
+	
+	if (GEngine)
+	{
+		// Example delegate for when a travel is requested (before the actual map load starts)
+		
+        
+		// Example delegate for when a map has finished loading
+		FWorldDelegates::OnPostWorldCreation.AddUFunction(this, "OnMapChangeFinished");
+	}
+	
+
 	
 }

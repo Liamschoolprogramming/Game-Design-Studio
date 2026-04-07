@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "SettingsSaveGame.h"
 #include "Engine/GameInstance.h"
+#include "Puzzles/Puzzle.h"
 #include "ELSGameInstance.generated.h"
 
 /**
@@ -27,7 +28,20 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Save")
 	void LoadAudioSettings();
+	
+	UFUNCTION(BlueprintCallable, Category = "Save")
+	void SaveOtherSettings(bool bUseLeftHanded);
 
+	UFUNCTION(BlueprintCallable, Category = "Save")
+	USettingsSaveGame* LoadOtherSettings();
+	
+	
+	virtual void OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld) override;
+    
+	UFUNCTION()
+	void OnMapChangeFinished(const UWorld* World);
+
+	
 	UFUNCTION(BlueprintCallable, Category = "Save")
 	void LoadSettings();
 
@@ -38,6 +52,12 @@ public:
 	void PauseMusic();
 	UFUNCTION(BlueprintCallable, Category = "Music")
 	void ResumeMusic();
+
+	
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void LoadDone();
+
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Music")
 	USoundBase* CurrentMusic;
@@ -58,11 +78,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Music")
 	UAudioComponent* ActiveMusicPlayer;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Music")
 	UAudioComponent* FadeOutMusicPlayer;
+	
+	
+	
 protected:
 	virtual void Init() override;
-	
 	
 };

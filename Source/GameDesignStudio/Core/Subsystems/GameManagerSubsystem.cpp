@@ -9,6 +9,7 @@
 #include "Misc/MessageDialog.h"
 #include "Managers/InventoryManager.h"
 #include "Managers/PlayerStatManager.h"
+#include "Managers/PuzzleInventoryManager.h"
 #include "Managers/QuestManager.h"
 #include "Managers/SaveStationManager.h"
 #include "Managers/TutorialManager.h"
@@ -57,6 +58,8 @@ void UGameManagerSubsystem::RegisterManagers()
 	RegisterManager<UPuzzleGriefManager>();
 	RegisterManager<UPuzzleTutorialGriefManager>();
 	RegisterManager<UInventoryManager>();
+	RegisterManager<UInventoryManager>();
+	RegisterManager<UPuzzleInventoryManager>();
 	RegisterManager<UGearManager>();
 	RegisterManager<UQuestManager>();
 	RegisterManager<UPlayerStatManager>();
@@ -127,6 +130,16 @@ UInventoryManager* UGameManagerSubsystem::GetInventoryManager() const
 	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UInventoryManager::StaticClass()))
 	{
 		return Cast<UInventoryManager>(Found->Get());
+	}
+	
+	return nullptr;
+}
+
+UPuzzleInventoryManager* UGameManagerSubsystem::GetPuzzleInventoryManager() const
+{
+	if (const TObjectPtr<UGameManagerBase>* Found = Managers.Find(UPuzzleInventoryManager::StaticClass()))
+	{
+		return Cast<UPuzzleInventoryManager>(Found->Get());
 	}
 	
 	return nullptr;
@@ -206,22 +219,7 @@ void UGameManagerSubsystem::RegisterActorToManager(TSubclassOf<UGameManagerBase>
 
 void UGameManagerSubsystem::SnapshotActorValues(APuzzle* Actor)
 {
-	FString ActorName = FString::Printf(TEXT("%s needs to have their owning manager set"), *Actor->GetName());
+	//FString ActorName = FString::Printf(TEXT("%s needs to have their owning manager set"), *Actor->GetName());
 	
-	// Called on every actor on it's beginplay
-	if (Actor->OwningManager == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Snapshot Actor is nullptr"));
-		FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(ActorName));
-		
-		// Editor calls really shouldn't be put in runtime code but for now it's fine
-		#if WITH_EDITOR
-		GEditor->RequestEndPlayMap();
-		#endif
-	}
 	
-	else if (Actor->OwningManager != nullptr)
-	{
-		this->GetManager(Actor->OwningManager)->Snapshot(Actor->PuzzleActorGuid, Actor->ActorValues);
-	}
 }

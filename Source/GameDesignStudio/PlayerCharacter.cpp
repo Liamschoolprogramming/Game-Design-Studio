@@ -3,6 +3,7 @@
 
 #include "PlayerCharacter.h"
 
+#include "EngineUtils.h"
 #include "Macros.h"
 #include "PossessableEntity.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -17,6 +18,7 @@
 #include "StructUtils/PropertyBag.h"
 #include "VerseVM/VBPVMRuntimeType.h"
 #include "Core/Puzzles/Pickups/PuzzleInteractive_Pickupable.h"
+#include "Engine/PlayerStartPIE.h"
 
 
 // Sets default values
@@ -150,6 +152,7 @@ void APlayerCharacter::BeginPlay()
 		}
 	}
 	
+
 	
 	
 	FTimerDelegate TimerDelegate;
@@ -188,6 +191,11 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 void APlayerCharacter::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
                                             UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (!PlayerController) return;
+	if (!PlayerController->GetPawn()) return;
+	
+	if (PlayerController->GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass())) return;
+	
 	if (OtherActor && OtherActor != this && OtherComp)
 	{
 		if (OtherActor->GetClass()->IsChildOf(APossessableEntity::StaticClass()))
@@ -196,7 +204,10 @@ void APlayerCharacter::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComp,
 			if (PlayerController && PossessableEntity && OtherComp->ComponentHasTag("HitBox"))
 			{
 				//Debug::PrintToScreen(PossessableEntity->GetName(), 10.0f);
-				PlayerController->AddPossessableEntity(PossessableEntity);
+				if (PlayerController->UnlockedPossessables.Contains(PossessableEntity->PlayerCharacterType))
+				{
+					PlayerController->AddPossessableEntity(PossessableEntity);
+				}
 			}
 			
 		}

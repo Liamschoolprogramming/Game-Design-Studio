@@ -1,10 +1,12 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "Core/ELSSaveGame.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "data/PersistentActorId.h"
 #include "Core/Debug/DebugUtils.h"
 #include "core/Puzzles/Puzzle.h"
+#include "Core/Puzzles/PuzzleOwner.h"
 #include "PuzzleWorldSubsystem.generated.h"
 
 // Maybe rename to something broad since I think this will be spawned each level
@@ -27,21 +29,17 @@ public:
 	
 	virtual void PostInitialize();
 	
-	// Actor needs to call this method
-	void RegisterPuzzleActor(APuzzle* Actor);
+	UFUNCTION(BlueprintCallable)
+	void RegisterPuzzleOwner(APuzzleOwner* InPuzzleOwner);
 	
-	// A helper method to search through the list of actors in the WorldSubsystem
-	// and return a map of them that is a local variable
+	UPROPERTY()
+	TArray<APuzzleOwner*> PuzzleOwners;
 	
-	// for (declaration : range)
-	// declaration->action()
+	TArray<FPuzzleOwnerData> CaptureAllStates();
 	
-	// Make blueprintable
-	TArray<APuzzle*> GetActorsOfManagerType(TSubclassOf<UGameManagerBase> Manager);
-
+	void RestoreAllStates(const TArray<FPuzzleOwnerData>& AllStates);
+	
 private:
 	
-	// Key will be the unique actor key
-	TMap<FGuid, TWeakObjectPtr<APuzzle>> RuntimeActors;
 	
 };

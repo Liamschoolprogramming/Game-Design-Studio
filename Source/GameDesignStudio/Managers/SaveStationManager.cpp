@@ -8,16 +8,16 @@
 #include "Core/Subsystems/GameManagerSubsystem.h"
 #include "Blueprint/UserWidget.h"
 #include "EngineUtils.h"
+#include "Core/Subsystems/SaveSubsystem.h"
 #include "Engine/RendererSettings.h"
 #include "Kismet/GameplayStatics.h"
 
 void USaveStationManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 {
 	Super::Initialize(InstanceOwner);
+
 	
-	ActiveSaveStation = nullptr;
-	SaveStations = GetSaveStations();
-	CurrentSaveStationIndex = 0;
+	
 }
 
 /**
@@ -65,6 +65,34 @@ void USaveStationManager::NextSaveStation()
 	}
 	
 	SetActiveSaveStation(SaveStations[NextIndex]);
+}
+
+void USaveStationManager::LoadSaveStations()
+{
+	if (!GetWorld()) return;
+	if (!GetWorld()->GetGameInstance()) return;
+	if (!GetWorld()->GetGameInstance()->GetSubsystem<USaveSubsystem>()) return;
+	GetWorld()->GetGameInstance()->GetSubsystem<USaveSubsystem>()->LoadRespawn();
+	SaveStations = GetSaveStations();
+	int32 count = 0;
+	bool HaveActiveStations = false;
+	for (auto SaveStation : SaveStations)
+	{
+		if (SaveStation == ActiveSaveStation)
+		{
+			CurrentSaveStationIndex = count;
+			ActiveSaveStation->ActivateFromSave();
+			HaveActiveStations = true;
+			break;
+		}
+		count++;
+	}
+	if (!HaveActiveStations)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No saved stations"));
+		ActiveSaveStation = nullptr;
+		CurrentSaveStationIndex = 0;
+	}
 }
 
 /* *
