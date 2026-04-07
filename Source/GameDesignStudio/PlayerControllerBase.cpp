@@ -152,6 +152,16 @@ void APlayerControllerBase::InteractWithClosestObject()
 	}
 }
 
+void APlayerControllerBase::PutAwayHeldObject()
+{
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+	
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->PutAwayHeldObject();
+	}
+}
+
 /**
  * Enables possession of entities of the passed PlayerCharacterType
  * @param EntityType 
@@ -791,6 +801,10 @@ void APlayerControllerBase::SetupInputComponent()
 			EnhancedInputComponent->BindAction(ConfirmPossessionAction, ETriggerEvent::Completed, this, &APlayerControllerBase::ConfirmPossession);
 		}
 		if (InteractAction)
+		{
+			EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &APlayerControllerBase::InteractWithClosestObject);
+		}
+		if (PutAwayAction)
 		{
 			EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &APlayerControllerBase::InteractWithClosestObject);
 		}

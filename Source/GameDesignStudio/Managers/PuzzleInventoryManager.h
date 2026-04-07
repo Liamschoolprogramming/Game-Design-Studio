@@ -12,7 +12,8 @@ enum class EPuzzleInventoryItem : uint8
 	Preserver UMETA(DisplayName = "Preserver"),
 	Inverter UMETA(DisplayName = "Inverter"),
 	Prism UMETA(DisplayName = "Prism"),
-	Boulder UMETA(DisplayName = "Boulder")
+	Boulder UMETA(DisplayName = "Boulder"),
+	None UMETA(DisplayName = "None")
 };
 
 USTRUCT(BlueprintType)
@@ -31,7 +32,7 @@ struct FPuzzleInventoryItem : public FTableRowBase
 	
 	FPuzzleInventoryItem()
 	{
-		Name = EPuzzleInventoryItem::Boulder;
+		Name = EPuzzleInventoryItem::None;
 		PuzzleItemClass = APuzzle::StaticClass();
 		Icon = nullptr;
 	}
@@ -57,6 +58,14 @@ struct FPuzzleInventorySlotItem
 	FPuzzleInventorySlotItem()
 	{
 		SlotIndex = 0;
+		PuzzleInventoryItem = FPuzzleInventoryItem();
+		PuzzleItemRef = nullptr;
+		bInLevel = false;
+	}
+	
+	FPuzzleInventorySlotItem(int Index)
+	{
+		SlotIndex = Index;
 		PuzzleInventoryItem = FPuzzleInventoryItem();
 		PuzzleItemRef = nullptr;
 		bInLevel = false;
@@ -92,10 +101,13 @@ public:
 	void ClearPuzzleSlots();
 	
 	UFUNCTION(BlueprintCallable)
+	void RemovePuzzleSlotElementFromLevel(int index);
+	
+	UFUNCTION(BlueprintCallable)
 	void ResetAllPuzzleSlotsToNotInLevel();
 	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void PickupPuzzleItem(APuzzle* PuzzleItem);
+	UFUNCTION(BlueprintCallable)
+	void PlacePuzzleItemInLevel(int index);
 	
 	UFUNCTION(BlueprintCallable)
 	void AddPuzzleInventorySlot();
