@@ -219,22 +219,7 @@ void UGameManagerSubsystem::RegisterActorToManager(TSubclassOf<UGameManagerBase>
 
 void UGameManagerSubsystem::SnapshotActorValues(APuzzle* Actor)
 {
-	FString ActorName = FString::Printf(TEXT("%s needs to have their owning manager set"), *Actor->GetName());
+	//FString ActorName = FString::Printf(TEXT("%s needs to have their owning manager set"), *Actor->GetName());
 	
-	// Called on every actor on it's beginplay
-	// if (Actor->OwningManager == nullptr)
-	// {
-	// 	UE_LOG(LogTemp, Warning, TEXT("Snapshot Actor is nullptr"));
-	// 	FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(ActorName));
-	// 	
-	// 	// Editor calls really shouldn't be put in runtime code but for now it's fine
-	// 	#if WITH_EDITOR
-	// 	GEditor->RequestEndPlayMap();
-	// 	#endif
-	// }
 	
-	if (Actor->OwningManager != nullptr)
-	{
-		this->GetManager(Actor->OwningManager)->Snapshot(Actor->PuzzleActorGuid, Actor->ActorValues);
-	}
 }
