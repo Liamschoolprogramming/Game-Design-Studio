@@ -17,6 +17,7 @@
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "DialogueSystemPlayer.h"
+#include "Core/Puzzles/PrismPedestal.h"
 #include "Kismet/KismetStringLibrary.h"
 
 DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
@@ -45,7 +46,22 @@ void APlayerControllerBase::Jump(const FInputActionValue& Value)
 		}
 		else
 		{
-			OurCharacter->Jump();
+			if (OurCharacter->PickupableObject)
+			{
+				APrismPedestal* PrismPedestalPointer = Cast<APrismPedestal>(OurCharacter->PickupableObject);
+				if (PrismPedestalPointer)
+				{
+					PrismPedestalPointer->SetRotationMode(true);
+				}
+				else
+				{
+					OurCharacter->Jump();
+				}
+			}
+			else
+			{
+				OurCharacter->Jump();
+			}
 		}
 	}
 }
@@ -54,13 +70,31 @@ void APlayerControllerBase::StopJumping(const FInputActionValue& Value)
 {
 	//Get the pawn we are possessing, if it is a character we can just call Jump, if not, add custom jump logic
 	APlayerCharacter* OurCharacter = Cast<APlayerCharacter>(GetPawn());
-	if (OurCharacter->PlayerCharacterType == EPlayerCharacterType::Beetle)
-	{
-		Cast<APossessableEntity>(GetPawn())->SetRotationMode(false);
-	}
 	if (OurCharacter)
 	{
-		OurCharacter->StopJumping();
+		if (OurCharacter->PlayerCharacterType == EPlayerCharacterType::Beetle)
+		{
+			Cast<APossessableEntity>(GetPawn())->SetRotationMode(false);
+		}
+		else
+		{
+			if (OurCharacter->PickupableObject)
+			{
+				APrismPedestal* PrismPedestalPointer = Cast<APrismPedestal>(OurCharacter->PickupableObject);
+				if (PrismPedestalPointer)
+				{
+					PrismPedestalPointer->SetRotationMode(false);
+				}
+				else
+				{
+					OurCharacter->StopJumping();
+				}
+			}
+			else
+			{
+				OurCharacter->StopJumping();
+			}
+		}
 	}
 }
 
