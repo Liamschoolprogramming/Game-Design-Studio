@@ -54,11 +54,16 @@ void UPuzzleInventoryManager::ClearPuzzleSlots()
 	PuzzleInventorySlots = TArray<FPuzzleInventorySlotItem>();
 }
 
+void UPuzzleInventoryManager::RemovePuzzleSlotElementFromLevel(int index)
+{
+	PuzzleInventorySlots[index].bInLevel = false;
+}
+
 void UPuzzleInventoryManager::ResetAllPuzzleSlotsToNotInLevel()
 {
 	for (int i = 0; i < PuzzleInventorySlots.Num(); i++)
 	{
-		PuzzleInventorySlots[i].bInLevel = false;
+		RemovePuzzleSlotElementFromLevel(i);
 	}
 }
 
@@ -107,11 +112,13 @@ void UPuzzleInventoryManager::PlacePuzzleItemInLevel(int index)
 		
 		// spawn new puzzle element in level and attach to player
 		APuzzle* PuzzleItemSpawned = GetWorld()->SpawnActor<APuzzle>(PuzzleItem.PuzzleInventoryItem.PuzzleItemClass, Location, Rotation, SpawnInfo);
-		if (PuzzleItemSpawned == nullptr) return;
+		if (PuzzleItemSpawned == nullptr)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Could not spawn puzzle actor!"));
 			return;
 		}
+		
+		PuzzleItemSpawned->SetInventorySlotIndex(index);
 
 		APuzzleInteractive_Pickupable* PickupablePuzzleItem = Cast<APuzzleInteractive_Pickupable>(PuzzleItemSpawned);
 		

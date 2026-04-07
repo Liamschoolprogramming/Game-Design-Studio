@@ -101,6 +101,9 @@ public:
 	void ClearPuzzleSlots();
 	
 	UFUNCTION(BlueprintCallable)
+	void RemovePuzzleSlotElementFromLevel(int index);
+	
+	UFUNCTION(BlueprintCallable)
 	void ResetAllPuzzleSlotsToNotInLevel();
 	
 	UFUNCTION(BlueprintCallable)
