@@ -509,6 +509,7 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 	}
 	
 	// do not move possessable turrets
+	APlayerCharacter* OurCharacter = Cast<APlayerCharacter>(GetPawn());
 	APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
 	if (PossessableEntity)
 	{
@@ -519,6 +520,15 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 		if (PossessableEntity->PlayerCharacterType == EPlayerCharacterType::Beetle && !(PossessableEntity->bCanMove))
 		{
 			PossessableEntity->RotatePrism(Value.Get<FVector2D>());
+			return;
+		}
+	}
+	else if (OurCharacter->PickupableObject)
+	{
+		APrismPedestal* PrismPedestalPointer = Cast<APrismPedestal>(OurCharacter->PickupableObject);
+		if (PrismPedestalPointer)
+		{
+			PrismPedestalPointer->RotatePrism(Value.Get<FVector2D>());
 			return;
 		}
 	}
