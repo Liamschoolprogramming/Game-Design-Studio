@@ -2,11 +2,12 @@
 
 
 #include "PuzzleOwner.h"
-
-#include "LevelEditorViewport.h"
 #include "Core/Subsystems/PuzzleWorldSubsystem.h"
 #include "Engine/OverlapResult.h"
 #include "Kismet/GameplayStatics.h"
+#if WITH_EDITOR
+	#include "LevelEditorViewport.h"
+#endif
 
 
 // Sets default values
@@ -95,11 +96,10 @@ void APuzzleOwner::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 void APuzzleOwner::FaceTextToCamera()
 {
 	if (!TextRenderComponent) return;
-	
-	FVector CameraLocation;
-	
 
 #if WITH_EDITOR
+	FVector CameraLocation;
+	
 	if (!GetWorld()->IsGameWorld())
 	{
 		// Find the active editor viewport camera
