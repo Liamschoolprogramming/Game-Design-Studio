@@ -155,18 +155,6 @@ void APuzzleOwner::RestoreState(const FPuzzleOwnerData& Data)
 {
 	UE_LOG(LogTemp,Warning, TEXT("RestoreState"))
 	
-	int32 Index = 0;
-	for (auto Puzzle : Puzzles)
-	{
-		if (Puzzle)
-		{
-			FPersistantActorValues Values = *PuzzleDefaults.Find(Index);
-			Puzzle->SetActorTransform(Values.ActorLocation);
-			UE_LOG(LogTemp,Warning, TEXT("Reset Position %s"), *Puzzle->GetName())
-			DebugUtils::LogToFile(this,FString::Printf(TEXT("Reset Position %s"), *Puzzle->GetName()));
-		}
-		Index ++;
-	}
 	
 	if (PuzzleName == Data.PuzzleName)
 	{
