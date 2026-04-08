@@ -1,5 +1,6 @@
 #include "PuzzleInteractive_Pickupable.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Managers/PuzzleInventoryManager.h"
 
 APuzzleInteractive_Pickupable::APuzzleInteractive_Pickupable()
 {
@@ -43,6 +44,7 @@ void APuzzleInteractive_Pickupable::Interact(APlayerCharacter* PlayerCharacter)
 			if (bPickupable)
 			{
 				CarryingCharacter = PlayerCharacter;
+				PlayerCharacter->PickupableObject = this;
 				bBeingCarried = true;
 				SetActorEnableCollision(false);
 				
@@ -51,11 +53,19 @@ void APuzzleInteractive_Pickupable::Interact(APlayerCharacter* PlayerCharacter)
 				FTimerDelegate TimerDelegate;
 				TimerDelegate.BindUFunction(this, FName("ResetCollision"));
 				GetWorld()->GetTimerManager().SetTimerForNextTick(TimerDelegate);
-				
-				
-				
 			}
 		}
+	}
+}
+
+void APuzzleInteractive_Pickupable::PutAway()
+{
+	if (bBeingCarried)
+	{
+		int index = GetInventorySlotIndex();
+		UPuzzleInventoryManager* PuzzleInventoryManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPuzzleInventoryManager();
+		PuzzleInventoryManager->RemovePuzzleSlotElementFromLevel(index);
+		Destroy();
 	}
 }
 
