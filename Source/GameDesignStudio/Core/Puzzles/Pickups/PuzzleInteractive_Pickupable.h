@@ -18,6 +18,9 @@ public:
 	virtual void Interact(APlayerCharacter* PlayerCharacter) override;
 	
 	UFUNCTION(BlueprintCallable)
+	void PutAway();
+	
+	UFUNCTION(BlueprintCallable)
 	virtual void Drop();
 	
 	virtual void Tick(float DeltaTime) override;

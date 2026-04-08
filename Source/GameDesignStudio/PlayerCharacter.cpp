@@ -79,6 +79,15 @@ void APlayerCharacter::RemoveInteractableObject(APuzzleInteractive* Object)
 	}
 }
 
+void APlayerCharacter::PutAwayHeldObject()
+{
+	if (PickupableObject && PickupableObject->GetInventorySlotIndex() != -1)
+	{
+		PickupableObject->PutAway();
+		PickupableObject = nullptr;
+	}
+}
+
 void APlayerCharacter::InteractWithClosestObject()
 {
 	

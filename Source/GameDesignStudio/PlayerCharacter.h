@@ -53,7 +53,10 @@ public:
 	UDialogueSpeakerComponent* DialogueSpeakerComponent;
 	
 	UFUNCTION(BlueprintCallable, Category="Interaction")
-	void InteractWithClosestObject();	
+	void InteractWithClosestObject();
+	
+	UFUNCTION(BlueprintCallable, Category="Interaction")
+	void PutAwayHeldObject();
 	
 	//Storage for any pickupable or pushable item already being interacted with by the player
 	UPROPERTY(BlueprintReadWrite, Category="Interaction")
