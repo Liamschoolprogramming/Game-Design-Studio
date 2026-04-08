@@ -49,6 +49,10 @@ void APuzzleOwner::RegisterPuzzleActor(APuzzle* InPuzzle)
 	{
 	
 		InPuzzle->SetOwner(this);
+		if (InPuzzle->bIsSolver)
+		{
+			SetNewSolver(InPuzzle);
+		}
 		Puzzles.AddUnique(InPuzzle);
 		UE_LOG(LogTemp, Warning, TEXT("Puzzle %s Registered"), *InPuzzle->GetName());
 		
@@ -59,6 +63,12 @@ void APuzzleOwner::RegisterPuzzleActor(APuzzle* InPuzzle)
 void APuzzleOwner::SetNewSolver(APuzzle* NewSolver)
 {
 	if (!NewSolver) return;
+	
+	if (Solver && Solver != NewSolver)
+	{
+		Solver->OnPuzzleSolved.RemoveDynamic(this, &APuzzleOwner::PuzzleSolved);
+	}
+	
 	for (APuzzle* Puzzle : Puzzles)
 	{
 		if (Puzzle && Puzzle != NewSolver)
@@ -68,7 +78,10 @@ void APuzzleOwner::SetNewSolver(APuzzle* NewSolver)
 		}
 	}
 	Solver = NewSolver;
-	Solver->OnPuzzleSolved.AddDynamic(this, &APuzzleOwner::PuzzleSolved);
+	if (!Solver->OnPuzzleSolved.IsAlreadyBound(this, &APuzzleOwner::PuzzleSolved))
+	{
+		Solver->OnPuzzleSolved.AddDynamic(this, &APuzzleOwner::PuzzleSolved);
+	}
 }
 
 void APuzzleOwner::OnOverlap( UPrimitiveComponent* OverlappedComponent,
@@ -89,7 +102,7 @@ void APuzzleOwner::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 {
 	if (OtherComp->ComponentHasTag("PlayerHitBox"))
 	{
-		bPlayerInPuzzle = true;
+		bPlayerInPuzzle = false;
 	}
 }
 
@@ -123,6 +136,7 @@ void APuzzleOwner::PuzzleSolved(bool bIsSolved)
 {
 	FString PuzzleState = bIsSolved ? TEXT("Solved") : TEXT("Unsolved");
 	UE_LOG(LogTemp, Warning, TEXT("Puzzle %s: %s"),*PuzzleName.ToString(),*PuzzleState);
+	DebugUtils::LogToFile(this,"Solved: " + FString::Printf(TEXT("Puzzle %s: %s"),*PuzzleName.ToString(),*PuzzleState));
 	bSolved = bIsSolved;
 	OnSolved();
 }
@@ -133,22 +147,14 @@ FPuzzleOwnerData APuzzleOwner::CaptureState() const
 	Result.PuzzleName = PuzzleName;
 	Result.bIsSolved = bSolved;
 	UE_LOG(LogTemp,Warning, TEXT("Capture State %s, %s"), *PuzzleName.ToString(), bSolved ? TEXT("Solved") : TEXT("Not Solved"))
+	DebugUtils::LogToFile(this,FString::Printf(TEXT("Capture State %s, %s"), *PuzzleName.ToString(), bSolved ? TEXT("Solved") : TEXT("Not Solved")));
 	return Result;
 }
 
 void APuzzleOwner::RestoreState(const FPuzzleOwnerData& Data)
 {
 	UE_LOG(LogTemp,Warning, TEXT("RestoreState"))
-	if (PuzzleName == Data.PuzzleName)
-	{
-		UE_LOG(LogTemp,Warning, TEXT("FoundPuzzle %s"), *PuzzleName.ToString())
-		bSolved = Data.bIsSolved;
-		if (bSolved)
-		{
-			UE_LOG(LogTemp,Warning, TEXT("PuzzleWasSolved"))
-			OnSolved();
-		}
-	}
+	
 	int32 Index = 0;
 	for (auto Puzzle : Puzzles)
 	{
@@ -157,9 +163,24 @@ void APuzzleOwner::RestoreState(const FPuzzleOwnerData& Data)
 			FPersistantActorValues Values = *PuzzleDefaults.Find(Index);
 			Puzzle->SetActorTransform(Values.ActorLocation);
 			UE_LOG(LogTemp,Warning, TEXT("Reset Position %s"), *Puzzle->GetName())
+			DebugUtils::LogToFile(this,FString::Printf(TEXT("Reset Position %s"), *Puzzle->GetName()));
 		}
 		Index ++;
 	}
+	
+	if (PuzzleName == Data.PuzzleName)
+	{
+		UE_LOG(LogTemp,Warning, TEXT("FoundPuzzle %s"), *PuzzleName.ToString())
+		bSolved = Data.bIsSolved;
+		if (bSolved)
+		{
+			UE_LOG(LogTemp,Warning, TEXT("PuzzleWasSolved"))
+			DebugUtils::LogToFile(this,FString::Printf( TEXT("PuzzleWasSolved")));
+			DebugUtils::LogToFile(this,FString::Printf(TEXT("Puzzle count %i"), Puzzles.Num()));
+			OnSolved();
+		}
+	}
+	
 }
 
 // Called when the game starts or when spawned
@@ -170,37 +191,21 @@ void APuzzleOwner::BeginPlay()
 	BoxComponent->OnComponentEndOverlap.AddDynamic(this, &APuzzleOwner::OnEndOverlap);
 	
 	
-	Puzzles.Empty();
-	TArray<AActor*> PuzzlesToCheck;
-	BoxComponent->GetOverlappingActors(PuzzlesToCheck, APuzzle::StaticClass());
-	
 	UPuzzleWorldSubsystem* PuzzleWorldSubsystem = GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>();
 	if (PuzzleWorldSubsystem)
 	{
 		PuzzleWorldSubsystem->RegisterPuzzleOwner(this);
 	}
 	
-	int32 Index = 0;
-	for (AActor* Actor : PuzzlesToCheck)
-	{
-		if (Actor)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Found Actor"));
-			APuzzle* Puzzle = Cast<APuzzle>(Actor);
-			if (Puzzle)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Found Puzzle"));
-				PuzzleDefaults.Add(Index,Puzzle->ActorValues);
-				RegisterPuzzleActor(Puzzle);
-				Index ++;
-			}
-		}
-	}
+	GetPuzzles();
 	
 	if (!Puzzles.IsEmpty())
 	{
 		if (!Solver)
 		{
+			
+			DebugUtils::LogToFile(this,"No solver");
+			
 #if WITH_EDITOR
 
 
@@ -215,6 +220,10 @@ void APuzzleOwner::BeginPlay()
 			
 			
 		}
+		else
+		{
+			DebugUtils::LogToFile(this,"Solver found");
+		}
 	}
 }
 
@@ -224,8 +233,9 @@ void APuzzleOwner::OnConstruction(const FTransform& Transform)
 	
 	TextRenderComponent->SetText(FText::FromName(PuzzleName));
 	
-	
+#if WITH_EDITOR
 	GetPuzzles();
+	#endif
 }
 void APuzzleOwner::GetPuzzles()
 {
@@ -237,6 +247,7 @@ void APuzzleOwner::GetPuzzles()
 		//Set puzzle elements in editor
 		
 		Puzzles.Empty();
+		PuzzleDefaults.Empty();
 		
 		TArray<FOverlapResult> Overlaps;
 		FCollisionShape CollisionBox = FCollisionShape::MakeBox(BoxExtent);
@@ -250,14 +261,17 @@ void APuzzleOwner::GetPuzzles()
 				CollisionBox,
 				Params
 			);
-
+		
+		int32 Index = 0;
 		for (FOverlapResult& Overlap : Overlaps)
 		{
 			APuzzle* Puzzle = Cast<APuzzle>(Overlap.GetActor());
 			if (Puzzle)
 			{
+				PuzzleDefaults.Add(Index, Puzzle->ActorValues);
 				UE_LOG(LogTemp, Warning, TEXT("Found Puzzle"));
 				RegisterPuzzleActor(Puzzle);
+				Index++;
 			}
 		}
 
