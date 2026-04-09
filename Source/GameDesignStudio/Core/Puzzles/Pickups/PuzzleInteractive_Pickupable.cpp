@@ -81,3 +81,10 @@ void APuzzleInteractive_Pickupable::AttachPickupAble_Implementation(bool Attach)
 {
 	
 }
+
+void APuzzleInteractive_Pickupable::RotatePrism_Implementation(FVector2D InputValue) { }
+
+void APuzzleInteractive_Pickupable::SetRotationMode(bool RotationModeActive)
+{
+	isRotating = RotationModeActive;
+}
