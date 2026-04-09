@@ -149,6 +149,12 @@ public:
 	void SaveQuests();
 	UFUNCTION(BlueprintCallable)
 	bool LoadQuests();
+
+	UFUNCTION(BlueprintCallable)
+	void SaveRespawn();
+
+	UFUNCTION(BlueprintCallable)
+	bool LoadRespawn();
 	
 private:
 	bool HasNotifiedAutoSaveWarning;

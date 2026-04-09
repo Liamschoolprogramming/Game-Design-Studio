@@ -4,5 +4,5 @@
 UTexture2D* UFlipbookBlueprintLibrary::GetSpriteTexture(UPaperSprite* Sprite)
 {
 	if (!Sprite) return nullptr;
-	return Sprite->GetSourceTexture();
+	return Sprite->GetBakedTexture();
 }

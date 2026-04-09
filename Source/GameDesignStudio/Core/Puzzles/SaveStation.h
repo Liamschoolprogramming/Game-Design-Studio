@@ -18,4 +18,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config", meta = (InstanceEditable = "true", MakeEditWidget))
 	FVector SpawnLocation;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "SaveStation")
+	void ActivateFromSave();
 };

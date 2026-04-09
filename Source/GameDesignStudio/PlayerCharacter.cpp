@@ -79,6 +79,15 @@ void APlayerCharacter::RemoveInteractableObject(APuzzleInteractive* Object)
 	}
 }
 
+void APlayerCharacter::PutAwayHeldObject()
+{
+	if (PickupableObject && PickupableObject->GetInventorySlotIndex() != -1)
+	{
+		PickupableObject->PutAway();
+		PickupableObject = nullptr;
+	}
+}
+
 void APlayerCharacter::InteractWithClosestObject()
 {
 	
@@ -115,8 +124,8 @@ void APlayerCharacter::InteractWithClosestObject()
 	if (ClosestObject.IsValid())
 	{
 		
-		
-		//Debug::PrintToScreen(FString::Printf(TEXT("%s is interacting with %s"), *GetName(), *ClosestObject->GetName()), 10.0f, FColor::Cyan);
+		FString objName = ClosestObject->GetName();
+		UE_LOG(LogTemp, Warning, TEXT("Interacting with %s"), *objName);
 		//call BP first as some things need it first (big boulder)
 		ClosestObject->OnInteract(this);
 		//then try the Cpp file

@@ -3,10 +3,16 @@
 
 #include "PuzzleInventoryManager.h"
 #include "Macros.h"
+#include "Core/Puzzles/Pickups/PuzzleInteractive_Pickupable.h"
+#include "Kismet/GameplayStatics.h"
 
 UPuzzleInventoryManager::UPuzzleInventoryManager()
 {
 	PuzzleInventorySlots = TArray<FPuzzleInventorySlotItem>();
+	for (int i = 0; i < MaxSlots; i++)
+	{
+		PuzzleInventorySlots.Add(FPuzzleInventorySlotItem(i));
+	}
 }
 
 void UPuzzleInventoryManager::UnlockPuzzleItem(FPuzzleInventoryItem PuzzleItem)
@@ -48,11 +54,16 @@ void UPuzzleInventoryManager::ClearPuzzleSlots()
 	PuzzleInventorySlots = TArray<FPuzzleInventorySlotItem>();
 }
 
+void UPuzzleInventoryManager::RemovePuzzleSlotElementFromLevel(int index)
+{
+	PuzzleInventorySlots[index].bInLevel = false;
+}
+
 void UPuzzleInventoryManager::ResetAllPuzzleSlotsToNotInLevel()
 {
 	for (int i = 0; i < PuzzleInventorySlots.Num(); i++)
 	{
-		PuzzleInventorySlots[i].bInLevel = false;
+		RemovePuzzleSlotElementFromLevel(i);
 	}
 }
 
@@ -64,28 +75,66 @@ int UPuzzleInventoryManager::GetMaxSlots()
 void UPuzzleInventoryManager::AddPuzzleInventorySlot()
 {
 	MaxSlots++;
+	PuzzleInventorySlots.Add(FPuzzleInventorySlotItem(PuzzleInventorySlots.Num()));
 }
 
-void UPuzzleInventoryManager::PickupPuzzleItem_Implementation(APuzzle* PuzzleItem)
+void UPuzzleInventoryManager::PlacePuzzleItemInLevel(int index)
 {
-	// check if is in level 
-	// if not then instantiate and attach to player
+	if (index >= PuzzleInventorySlots.Num()) return;
 	
-	// get player hold item location 
-	// FVector Location(0.0f, 0.0f, 0.0f);
-	// FRotator Rotation(0.0f, 0.0f, 0.0f);
-	// FActorSpawnParameters SpawnInfo;
-	// GetWorld()->SpawnActor<APuzzle>(
-	// PuzzleItemToSpawn.PuzzleInventoryItem.PuzzleItemClass, Location, Rotation, SpawnInfo);
-	//PuzzleInventorySlots[SlotIndex].PuzzleItemRef = 
-	
-	if (PuzzleItem != nullptr)
+	FPuzzleInventorySlotItem PuzzleItem = PuzzleInventorySlots[index];
+	if (PuzzleItem.bInLevel)
 	{
-		int PuzzleItemSlotIndex = PuzzleItem->GetInventorySlotIndex();
-		if (PuzzleInventorySlots.Num() > PuzzleItemSlotIndex && PuzzleInventorySlots[PuzzleItemSlotIndex].bInLevel)
+		// snap position of puzzle ref to player pickup point
+		// and set player to holding item
+		// they can they use E as normal to place down
+		// and B to put back in inventory
+		if (PuzzleItem.PuzzleItemRef != nullptr)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("IS IN LEVEL"));
+			APuzzleInteractive_Pickupable* PickupablePuzzleItem = Cast<APuzzleInteractive_Pickupable>(PuzzleItem.PuzzleItemRef);
+			if (PickupablePuzzleItem != nullptr)
+			{
+				APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(),0));
+				// do not pickup a second object
+				if (PlayerCharacter->PickupableObject) return;
+				PickupablePuzzleItem->SetActorLocation(*(new FVector(PlayerCharacter->GetActorLocation().X + 10, PlayerCharacter->GetActorLocation().Y + 10, PlayerCharacter->GetActorLocation().Z)));
+				PickupablePuzzleItem->Interact(PlayerCharacter);
+			}
 		}
+	}
+	else
+	{
+		APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(),0));
+		// do not pickup a second object
+		if (PlayerCharacter->PickupableObject) return;
+		
+		FVector PlayerLocation = PlayerCharacter->GetActorLocation();
+		FVector Location(PlayerLocation.X + 30, PlayerLocation.Y + 30, PlayerLocation.Z);
+		FRotator Rotation(0.0f, 0.0f, 0.0f);
+		FActorSpawnParameters SpawnInfo;
+		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+		
+		// spawn new puzzle element in level and attach to player
+		APuzzle* PuzzleItemSpawned = GetWorld()->SpawnActor<APuzzle>(PuzzleItem.PuzzleInventoryItem.PuzzleItemClass, Location, Rotation, SpawnInfo);
+		if (PuzzleItemSpawned == nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Could not spawn puzzle actor!"));
+			return;
+		}
+		
+		PuzzleItemSpawned->SetInventorySlotIndex(index);
+
+		APuzzleInteractive_Pickupable* PickupablePuzzleItem = Cast<APuzzleInteractive_Pickupable>(PuzzleItemSpawned);
+		
+		if (PickupablePuzzleItem != nullptr)
+		{
+			PickupablePuzzleItem->SetActorLocation(*(new FVector(PlayerCharacter->GetActorLocation().X + 10, PlayerCharacter->GetActorLocation().Y + 10, PlayerCharacter->GetActorLocation().Z)));
+			PickupablePuzzleItem->Interact(PlayerCharacter);
+		}
+
+		// update slot info
+		PuzzleInventorySlots[index].bInLevel = true;
+		PuzzleInventorySlots[index].PuzzleItemRef = PuzzleItemSpawned;
 	}
 }
 
