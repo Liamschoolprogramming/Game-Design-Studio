@@ -154,6 +154,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
 	UInputAction* InteractAction;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
+	UInputAction* PutAwayAction;
+	
 	UFUNCTION(BlueprintCallable, Category="Input")
 	void CheckControlDevice(FPlatformUserId PlatformUserId, FInputDeviceId InputDeviceId);
 
@@ -232,6 +235,9 @@ public:
 	void StopMove(const FInputActionValue& Value);
 
 	void InteractWithClosestObject();
+	
+	UFUNCTION(BlueprintCallable)
+	void PutAwayHeldObject();
 	
 	UFUNCTION()
 	void CyclePossessionUp();

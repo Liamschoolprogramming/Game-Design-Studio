@@ -29,6 +29,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void NextSaveStation();
+
+	UFUNCTION(BlueprintCallable)
+	void LoadSaveStations();
 	
 	UFUNCTION(BlueprintCallable)
 	void PreviousSaveStation();
