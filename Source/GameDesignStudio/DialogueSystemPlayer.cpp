@@ -203,7 +203,12 @@ void UDialogueSystemPlayer::EndDialogue()
 	}
 	CurrentSpeakerComponent = nullptr;
 	UDialogueSubsystem* Subsystem = GetWorld()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>();
-	Subsystem->OnDialogueEnded.Broadcast(EDialogueNodeAction::None, "");
+	if (Subsystem)
+	{
+		Subsystem->OnDialogueEnded.Broadcast(EDialogueNodeAction::None, "");
+		Subsystem->bInDialogue = false;
+	}
+	
 }
 
 TArray<int> UDialogueSystemPlayer::GetQuestProgress(FName QuestKey)
