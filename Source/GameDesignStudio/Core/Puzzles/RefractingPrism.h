@@ -6,7 +6,7 @@
 #include "RefractingPrism.generated.h"
 
 UCLASS()
-class GAMEDESIGNSTUDIO_API ARefractingPrism : public APuzzleInteractive_Pickupable
+class GAMEDESIGNSTUDIO_API ARefractingPrism : public AActor
 {
 	GENERATED_BODY()
 	

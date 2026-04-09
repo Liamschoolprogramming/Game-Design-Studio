@@ -40,6 +40,17 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void AttachPickupAble(bool Attach);
 	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bHasRotationMode = false;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool isRotating = false;
+	
+	UFUNCTION(BlueprintNativeEvent)
+	void RotatePrism(FVector2D InputValue);
+	
+	void SetRotationMode(bool RotationModeActive);
+	
 protected:
 	FVector Offset = FVector(200,200,0);
 	

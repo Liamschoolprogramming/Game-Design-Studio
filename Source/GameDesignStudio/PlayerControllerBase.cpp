@@ -17,7 +17,8 @@
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "DialogueSystemPlayer.h"
-#include "Core/Puzzles/PrismPedestal.h"
+//#include "Core/Puzzles/PrismPedestal.h"
+#include "Core/Puzzles/Pickups/PuzzleInteractive_Pickupable.h"
 #include "Kismet/KismetStringLibrary.h"
 
 DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
@@ -46,20 +47,14 @@ void APlayerControllerBase::Jump(const FInputActionValue& Value)
 		}
 		else
 		{
-			if (OurCharacter->PickupableObject)
+			if (OurCharacter->PickupableObject != nullptr && OurCharacter->PickupableObject->bHasRotationMode)
 			{
-				APrismPedestal* PrismPedestalPointer = Cast<APrismPedestal>(OurCharacter->PickupableObject);
-				if (PrismPedestalPointer)
-				{
-					PrismPedestalPointer->SetRotationMode(true);
-				}
-				else
-				{
-					OurCharacter->Jump();
-				}
+				UE_LOG(LogTemp, Warning, TEXT("Pickupable object has rotation mode, now set to true"));
+				OurCharacter->PickupableObject->SetRotationMode(true);
 			}
 			else
 			{
+				UE_LOG(LogTemp, Warning, TEXT("Not holding object and / or object has no rotation mode"));
 				OurCharacter->Jump();
 			}
 		}
@@ -78,20 +73,14 @@ void APlayerControllerBase::StopJumping(const FInputActionValue& Value)
 		}
 		else
 		{
-			if (OurCharacter->PickupableObject)
+			if (OurCharacter->PickupableObject != nullptr && OurCharacter->PickupableObject->bHasRotationMode)
 			{
-				APrismPedestal* PrismPedestalPointer = Cast<APrismPedestal>(OurCharacter->PickupableObject);
-				if (PrismPedestalPointer)
-				{
-					PrismPedestalPointer->SetRotationMode(false);
-				}
-				else
-				{
-					OurCharacter->StopJumping();
-				}
+				UE_LOG(LogTemp, Warning, TEXT("Pickupable object has rotation mode, now set to false"));
+				OurCharacter->PickupableObject->SetRotationMode(false);
 			}
 			else
 			{
+				UE_LOG(LogTemp, Warning, TEXT("Not holding object and / or object has no rotation mode"));
 				OurCharacter->StopJumping();
 			}
 		}
@@ -523,14 +512,10 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 			return;
 		}
 	}
-	else if (OurCharacter->PickupableObject)
+	else if (OurCharacter->PickupableObject != nullptr && OurCharacter->PickupableObject->bHasRotationMode && OurCharacter->PickupableObject->isRotating)
 	{
-		APrismPedestal* PrismPedestalPointer = Cast<APrismPedestal>(OurCharacter->PickupableObject);
-		if (PrismPedestalPointer)
-		{
-			PrismPedestalPointer->RotatePrism(Value.Get<FVector2D>());
-			return;
-		}
+		OurCharacter->PickupableObject->RotatePrism(Value.Get<FVector2D>());
+		return;
 	}
 	
 	//move the camera if we have a reference to it
