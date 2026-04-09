@@ -95,7 +95,6 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 		
 		PlayerInventory.Add(ItemName, ItemToAdd);
 		QuestManager->UpdateQuestProgress(ItemName);
-		IInventoryInterface::Execute_OnItemAdded(QuestInventoryMenu, ItemName);
 		return Amount;
 	}
 	
@@ -104,14 +103,12 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 	{
 		FoundItem-> CurrentAmount = Maximum;
 		QuestManager->UpdateQuestProgress(ItemName);
-		IInventoryInterface::Execute_OnItemAdded(QuestInventoryMenu, ItemName);
 		
 		return Maximum;
 	}
 	
 	FoundItem-> CurrentAmount += Amount;
 	QuestManager->UpdateQuestProgress(ItemName);
-	IInventoryInterface::Execute_OnItemAdded(QuestInventoryMenu, ItemName);
 	
 	return FoundItem-> CurrentAmount;
 }
@@ -137,13 +134,11 @@ int UInventoryManager::RemoveFromInventory(FName ItemName, int Amount)
 	{
 		FoundItem-> CurrentAmount -= Amount;
 		QuestManager->UpdateQuestProgress(ItemName);
-		IInventoryInterface::Execute_OnItemRemoved(QuestInventoryMenu, ItemName);
 		
 		return FoundItem-> CurrentAmount;
 	}
 	FoundItem->CurrentAmount = 0;
 	QuestManager->UpdateQuestProgress(ItemName);
-	IInventoryInterface::Execute_OnItemRemoved(QuestInventoryMenu, ItemName);
 	
 	return 0;
 }
