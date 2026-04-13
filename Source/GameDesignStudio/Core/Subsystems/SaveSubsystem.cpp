@@ -282,6 +282,7 @@ void USaveSubsystem::SavePlayer()
 		{
 			SaveGame->PlayerLocation = PlayerController->PlayerReference->GetActorLocation();
 			SaveGame->PlayerRotation = PlayerController->PlayerReference->GetActorRotation();
+			SaveGame->UnlockedPossessables = PlayerController->UnlockedPossessables;
 		}
 	}
 	SaveRespawn();
@@ -301,11 +302,14 @@ FPlayerData USaveSubsystem::LoadPlayer()
 	 	}
 		 PlayerData.PlayerLocation = LoadGame()->PlayerLocation;
 	 	PlayerData.PlayerRotation = LoadGame()->PlayerRotation;
+	 	PlayerData.UnlockedPossessables = LoadGame()->UnlockedPossessables;
 	 }
 	else
 	{
 		PlayerData.PlayerLocation = FVector(0, 0, 0);
 		PlayerData.PlayerRotation = FRotator(-180,-180,-180);
+		PlayerData.UnlockedPossessables.Add(EPlayerCharacterType::Default);
+		PlayerData.UnlockedPossessables.Add(EPlayerCharacterType::Golem);
 	}
 	return PlayerData;
 }
