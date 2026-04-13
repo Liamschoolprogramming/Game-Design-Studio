@@ -12,6 +12,7 @@ ANiagaraCollider::ANiagaraCollider()
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
 	RootComponent = StaticMesh;
 	
+	
 
 }
 
@@ -20,6 +21,22 @@ ANiagaraCollider::ANiagaraCollider()
 void ANiagaraCollider::BeginPlay()
 {
 	Super::BeginPlay();
+	
+}
+
+void ANiagaraCollider::SetSize(FVector StartPoint, FVector EndPoint)
+{
+	
+	
+	FVector Dir = EndPoint - StartPoint;
+	float Dist = Dir.Size();
+	FRotator Rot = (StartPoint - EndPoint).GetSafeNormal().Rotation();
+	Rot.Pitch += 90.f;
+	
+	
+	StaticMesh->SetWorldLocation((StartPoint));
+	StaticMesh->SetWorldRotation(Rot);
+	StaticMesh->SetWorldScale3D(FVector(4.f, 4.f, Dist / CapsuleHalfHeight));
 	
 }
 
