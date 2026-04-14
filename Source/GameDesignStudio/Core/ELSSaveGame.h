@@ -66,6 +66,9 @@ public:
 	
 	UPROPERTY(SaveGame)
 	TMap<FName, FPuzzleWorldData> AllWorldData;
+	
+	UPROPERTY(SaveGame)
+	TArray<EPlayerCharacterType> UnlockedPossessables;
 
 
 	UPROPERTY(SaveGame)

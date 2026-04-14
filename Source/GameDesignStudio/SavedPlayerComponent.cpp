@@ -3,6 +3,7 @@
 
 #include "SavedPlayerComponent.h"
 
+#include "PlayerControllerBase.h"
 #include "Core/Subsystems/SaveSubsystem.h"
 
 
@@ -34,6 +35,16 @@ void USavedPlayerComponent::BeginPlay()
 		if (PlayerData.PlayerRotation != FRotator(-180,-180,-180))
 		{
 			GetOwner()->SetActorRotation(PlayerData.PlayerRotation);
+		}
+		if (PlayerData.UnlockedPossessables.Num() > 0)
+		{
+			if (APlayerControllerBase* PlayerControllerBase = Cast<APlayerControllerBase>(GetWorld()->GetFirstPlayerController()))
+			{
+				for (auto Possesable : PlayerData.UnlockedPossessables)
+				{
+					PlayerControllerBase->UnlockPossession(Possesable);
+				}
+			}
 		}
 	
 	}

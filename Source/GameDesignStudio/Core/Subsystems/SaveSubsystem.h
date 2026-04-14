@@ -29,6 +29,8 @@ struct FPlayerData
 	FVector PlayerLocation;
 	UPROPERTY(BlueprintReadWrite)
 	FRotator PlayerRotation;
+	UPROPERTY(BlueprintReadWrite)
+	TArray<EPlayerCharacterType> UnlockedPossessables;
 };
 
 /**

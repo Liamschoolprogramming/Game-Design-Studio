@@ -18,6 +18,7 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "DialogueSystemPlayer.h"
 //#include "Core/Puzzles/PrismPedestal.h"
+#include "DialogueSubsystem.h"
 #include "Core/Puzzles/Pickups/PuzzleInteractive_Pickupable.h"
 #include "Kismet/KismetStringLibrary.h"
 
@@ -39,6 +40,8 @@ void APlayerControllerBase::Jump(const FInputActionValue& Value)
 {
 	//Get the pawn we are possessing, if it is a character we can just call Jump, if not, add custom jump logic
 	APlayerCharacter* OurCharacter = Cast<APlayerCharacter>(GetPawn());
+	// Also get DialogueSubsystem so player will not jump if they are in dialogue
+	UDialogueSubsystem* DialogueSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>();
 	if (OurCharacter)
 	{
 		if (OurCharacter->PlayerCharacterType == EPlayerCharacterType::Beetle)
@@ -49,12 +52,12 @@ void APlayerControllerBase::Jump(const FInputActionValue& Value)
 		{
 			if (OurCharacter->PickupableObject != nullptr && OurCharacter->PickupableObject->bHasRotationMode)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Pickupable object has rotation mode, now set to true"));
+				//UE_LOG(LogTemp, Warning, TEXT("Pickupable object has rotation mode, now set to true"));
 				OurCharacter->PickupableObject->SetRotationMode(true);
 			}
-			else
+			else if (!DialogueSubsystem->bInDialogue)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Not holding object and / or object has no rotation mode"));
+				//UE_LOG(LogTemp, Warning, TEXT("Not holding object and / or object has no rotation mode"));
 				OurCharacter->Jump();
 			}
 		}
@@ -65,6 +68,8 @@ void APlayerControllerBase::StopJumping(const FInputActionValue& Value)
 {
 	//Get the pawn we are possessing, if it is a character we can just call Jump, if not, add custom jump logic
 	APlayerCharacter* OurCharacter = Cast<APlayerCharacter>(GetPawn());
+	// Also get DialogueSubsystem so player will not jump if they are in dialogue
+	UDialogueSubsystem* DialogueSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>();
 	if (OurCharacter)
 	{
 		if (OurCharacter->PlayerCharacterType == EPlayerCharacterType::Beetle)
@@ -75,12 +80,12 @@ void APlayerControllerBase::StopJumping(const FInputActionValue& Value)
 		{
 			if (OurCharacter->PickupableObject != nullptr && OurCharacter->PickupableObject->bHasRotationMode)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Pickupable object has rotation mode, now set to false"));
+				//UE_LOG(LogTemp, Warning, TEXT("Pickupable object has rotation mode, now set to false"));
 				OurCharacter->PickupableObject->SetRotationMode(false);
 			}
-			else
+			else if (!DialogueSubsystem->bInDialogue)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Not holding object and / or object has no rotation mode"));
+				//UE_LOG(LogTemp, Warning, TEXT("Not holding object and / or object has no rotation mode"));
 				OurCharacter->StopJumping();
 			}
 		}
@@ -327,6 +332,9 @@ void APlayerControllerBase::PossessIndex(int IndexToPossess)
 
 void APlayerControllerBase::ConfirmPossession()
 {
+	UDialogueSubsystem* DialogueSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>();
+	
+	if (DialogueSubsystem->bInDialogue) return;
 	if (IsPuzzleInventoryOpen) return;
 	
 	if (IndexForPossessables == -1)
