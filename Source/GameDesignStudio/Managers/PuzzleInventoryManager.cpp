@@ -30,6 +30,7 @@ void UPuzzleInventoryManager::UnlockPuzzleItem(FPuzzleInventoryItem PuzzleItem)
 
 void UPuzzleInventoryManager::SetPuzzleSlot(FPuzzleInventoryItem PuzzleItem, int SlotIndex)
 {
+	if (SlotIndex < 0) return;
 
 	if (SlotIndex < PuzzleInventorySlots.Num())
 	{
@@ -140,6 +141,7 @@ void UPuzzleInventoryManager::PlacePuzzleItemInLevel(int index)
 
 FPuzzleInventorySlotItem UPuzzleInventoryManager::GetPuzzleInventorySlotItem(int SlotIndex)
 {
+	if (SlotIndex < 0) return FPuzzleInventorySlotItem();
 	return PuzzleInventorySlots[SlotIndex];
 }
 
