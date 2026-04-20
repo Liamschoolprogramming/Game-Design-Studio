@@ -1,4 +1,6 @@
 #include "PuzzleInteractive_Pickupable.h"
+
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Managers/PuzzleInventoryManager.h"
 
@@ -31,7 +33,7 @@ void APuzzleInteractive_Pickupable::Interact(APlayerCharacter* PlayerCharacter)
 	}
 	else
 	{
-		if (IsInRange(PlayerCharacter))
+		if (IsInRange(PlayerCharacter) && CanPickup())
 		{
 			bool bPickupable = false;
 			for (int i = 0; i < InteractableCharacterTypes.Num(); i++)
@@ -80,6 +82,34 @@ void APuzzleInteractive_Pickupable::Drop()
 void APuzzleInteractive_Pickupable::AttachPickupAble_Implementation(bool Attach)
 {
 	
+}
+
+bool APuzzleInteractive_Pickupable::CanPickup()
+{
+	FHitResult HitResult;
+	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	FVector Start = PlayerCharacter->GetActorLocation();
+	Start.Z = Start.Z + 50;
+	FVector End = GetActorLocation() + (PlayerCharacter->GetActorForwardVector() * 5000.f);
+	
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);      
+	Params.AddIgnoredActor(PlayerCharacter);
+	Params.bTraceComplex = true;          
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Camera,Params );
+	if (bHit)
+	{
+		AActor* HitActor = HitResult.GetActor();
+
+		if (HitActor != nullptr && HitActor->ActorHasTag("PickupBlocker"))
+		{
+			return false;
+		}
+	}
+	
+	// otherwise
+	return true;
 }
 
 void APuzzleInteractive_Pickupable::RotatePrism_Implementation(FVector2D InputValue) { }
