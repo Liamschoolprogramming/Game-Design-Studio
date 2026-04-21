@@ -8,6 +8,7 @@
 #include "InventoryManager.h"
 #include "PlayerStatManager.h"
 #include "Macros.h"
+#include "PuzzleInventoryManager.h"
 #include "Core/Subsystems/GameManagerSubsystem.h"
 #include "Managers/QuestInterface.h"
 #include "Blueprint/UserWidget.h"
@@ -181,22 +182,8 @@ void UQuestManager::ProvideReward(FName ItemName)
 		return;
 	}
 	
-	if (Quest->StatRewardAmount != 0)
-	{
-		UPlayerStatManager* PlayerStatManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPlayerStatManager();
-		
-		PlayerStatManager->BoostPlayerStat(Quest->StatReward, Quest->StatRewardAmount);
-	}
-	
-	if (Quest->GearReward != "None")
-	{
-		UInventoryManager* InventoryManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetInventoryManager();
-		
-		if (InventoryManager->AllItems.Find(Quest->GearReward))
-		{
-			InventoryManager->AddToInventory(Quest->GearReward, 1);
-		}
-	}
+	UPuzzleInventoryManager* PuzzleInventoryManager = GetWorld()->GetGameInstance()->GetSubsystem<UGameManagerSubsystem>()->GetPuzzleInventoryManager();
+	PuzzleInventoryManager->AddPuzzleInventorySlot();
 }
 
 /**
