@@ -54,6 +54,9 @@ public:
 	
 	void SetRotationMode(bool RotationModeActive);
 	
+	UFUNCTION()
+	bool CanPickup();
+	
 protected:
 	FVector Offset = FVector(200,200,0);
 	
