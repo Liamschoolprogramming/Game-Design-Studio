@@ -60,7 +60,7 @@ inline void UQuestManager::InitializeQuests()
 			"Sunstone",
 			FQuest(
 				"Flower Spirit Sundew",
-				"Summary",
+				"Find a sunstone",
 				"A cheery sunflower spirit wants to live closer to the goddess but it's too cold. Find a Sunstone to heat up its living space.",
 				"Sunstone",
 				1
@@ -71,7 +71,7 @@ inline void UQuestManager::InitializeQuests()
 			"Golem",
 			FQuest(
 				"Self-Aware Golem",
-				"Summary",
+				"The golem wants someone to talk to.",
 				"The Golem wants someone to talk to.",
 				"Golem",
 				1
@@ -82,7 +82,7 @@ inline void UQuestManager::InitializeQuests()
 			"Owl Child",
 			FQuest(
 				"Whistlebranch's Missing Children",
-				"Summary",
+				"Help Whistlebranch find her children.",
 				"Whistlebranch can't seem to find her children. Help her find all 4 of them.",
 				"Owl Child",
 				4
@@ -94,7 +94,7 @@ inline void UQuestManager::InitializeQuests()
 			"Berry",
 			FQuest(
 				"Verdan's Request",
-				"Summary",
+				"Collect berries to help the wildlife.",
 				"Verdan wants you to collect 10 berries to help the local wildlife.",
 				"Berry",
 				10
