@@ -45,6 +45,27 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 			EInventoryItemType::Quest
 			)
 		},
+		{"Woodpecker", FPlayerInventoryItem(
+			"Woodpecker Family",
+			"A family of woodpeckers.",
+			0, 1,
+			EInventoryItemType::Quest
+			)
+		},
+		{"Veilspore", FPlayerInventoryItem(
+			"Veilspore",
+			"The almighty Veilspore.",
+			0, 1,
+			EInventoryItemType::Quest
+			)
+		},
+		{"Mushroom", FPlayerInventoryItem(
+			"Mushroom",
+			"A mushroom.",
+			0, 10,
+			EInventoryItemType::Quest
+			)
+		},
 		
 		//Gear
 		{"AegisCharm", FPlayerInventoryItem(
