@@ -30,11 +30,15 @@ struct FPuzzleInventoryItem : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftObjectPtr<UTexture2D> Icon;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString ItemDescription;
+	
 	FPuzzleInventoryItem()
 	{
 		Name = EPuzzleInventoryItem::None;
 		PuzzleItemClass = APuzzle::StaticClass();
 		Icon = nullptr;
+		ItemDescription = "";
 	}
 };
 
@@ -99,6 +103,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void ClearPuzzleSlots();
+	
+	UFUNCTION(BlueprintCallable)
+	void ClearPuzzleSlot(int index);
 	
 	UFUNCTION(BlueprintCallable)
 	void RemovePuzzleSlotElementFromLevel(int index);
