@@ -50,6 +50,14 @@ void UPuzzleInventoryManager::SetPuzzleSlot(FPuzzleInventoryItem PuzzleItem, int
 	}
 }
 
+void UPuzzleInventoryManager::ClearPuzzleSlot(int index)
+{
+	if (index < PuzzleInventorySlots.Num())
+	{
+		PuzzleInventorySlots[index] = FPuzzleInventorySlotItem();
+	}
+}
+
 void UPuzzleInventoryManager::ClearPuzzleSlots()
 {
 	PuzzleInventorySlots = TArray<FPuzzleInventorySlotItem>();
