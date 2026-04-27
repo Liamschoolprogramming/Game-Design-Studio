@@ -148,9 +148,26 @@ void UDialogueSubsystem::StartDialogue(UDialogueAsset* InDialogueAsset, AActor* 
 		if (IDialogueExecutionHandler* InterfacePtr = Cast<IDialogueExecutionHandler>(Instance))
 		{
 			InterfacePtr->PlayDialogue(InOwner, InDialogueAsset, InPlayerController);
+			bInDialogue = true;
 		}
 	}
 
+}
+
+void UDialogueSubsystem::ChooseOptionAtIndex(int32 Index)
+{
+	for (UObject* Instance : AutoCreatedInstances)
+	{
+		if (Instance && bInDialogue)
+		{
+			if (IDialogueExecutionHandler* InterfacePtr = Cast<IDialogueExecutionHandler>(Instance))
+			{
+				InterfacePtr->ChooseOption(Index);
+			}
+		}
+		
+	
+	}
 }
 
 void UDialogueSubsystem::SaveDialogue()

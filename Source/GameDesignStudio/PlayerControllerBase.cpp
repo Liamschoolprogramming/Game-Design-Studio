@@ -17,6 +17,9 @@
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "DialogueSystemPlayer.h"
+//#include "Core/Puzzles/PrismPedestal.h"
+#include "DialogueSubsystem.h"
+#include "Core/Puzzles/Pickups/PuzzleInteractive_Pickupable.h"
 #include "Kismet/KismetStringLibrary.h"
 
 DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
@@ -37,6 +40,8 @@ void APlayerControllerBase::Jump(const FInputActionValue& Value)
 {
 	//Get the pawn we are possessing, if it is a character we can just call Jump, if not, add custom jump logic
 	APlayerCharacter* OurCharacter = Cast<APlayerCharacter>(GetPawn());
+	// Also get DialogueSubsystem so player will not jump if they are in dialogue
+	UDialogueSubsystem* DialogueSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>();
 	if (OurCharacter)
 	{
 		if (OurCharacter->PlayerCharacterType == EPlayerCharacterType::Beetle)
@@ -45,7 +50,16 @@ void APlayerControllerBase::Jump(const FInputActionValue& Value)
 		}
 		else
 		{
-			OurCharacter->Jump();
+			if (OurCharacter->PickupableObject != nullptr && OurCharacter->PickupableObject->bHasRotationMode)
+			{
+				//UE_LOG(LogTemp, Warning, TEXT("Pickupable object has rotation mode, now set to true"));
+				OurCharacter->PickupableObject->SetRotationMode(true);
+			}
+			else if (!DialogueSubsystem->bInDialogue)
+			{
+				//UE_LOG(LogTemp, Warning, TEXT("Not holding object and / or object has no rotation mode"));
+				OurCharacter->Jump();
+			}
 		}
 	}
 }
@@ -54,13 +68,27 @@ void APlayerControllerBase::StopJumping(const FInputActionValue& Value)
 {
 	//Get the pawn we are possessing, if it is a character we can just call Jump, if not, add custom jump logic
 	APlayerCharacter* OurCharacter = Cast<APlayerCharacter>(GetPawn());
-	if (OurCharacter->PlayerCharacterType == EPlayerCharacterType::Beetle)
-	{
-		Cast<APossessableEntity>(GetPawn())->SetRotationMode(false);
-	}
+	// Also get DialogueSubsystem so player will not jump if they are in dialogue
+	UDialogueSubsystem* DialogueSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>();
 	if (OurCharacter)
 	{
-		OurCharacter->StopJumping();
+		if (OurCharacter->PlayerCharacterType == EPlayerCharacterType::Beetle)
+		{
+			Cast<APossessableEntity>(GetPawn())->SetRotationMode(false);
+		}
+		else
+		{
+			if (OurCharacter->PickupableObject != nullptr && OurCharacter->PickupableObject->bHasRotationMode)
+			{
+				//UE_LOG(LogTemp, Warning, TEXT("Pickupable object has rotation mode, now set to false"));
+				OurCharacter->PickupableObject->SetRotationMode(false);
+			}
+			else if (!DialogueSubsystem->bInDialogue)
+			{
+				//UE_LOG(LogTemp, Warning, TEXT("Not holding object and / or object has no rotation mode"));
+				OurCharacter->StopJumping();
+			}
+		}
 	}
 }
 
@@ -149,6 +177,16 @@ void APlayerControllerBase::InteractWithClosestObject()
 	if (PlayerCharacter)
 	{
 		PlayerCharacter->InteractWithClosestObject();
+	}
+}
+
+void APlayerControllerBase::PutAwayHeldObject()
+{
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+	
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->PutAwayHeldObject();
 	}
 }
 
@@ -294,6 +332,9 @@ void APlayerControllerBase::PossessIndex(int IndexToPossess)
 
 void APlayerControllerBase::ConfirmPossession()
 {
+	UDialogueSubsystem* DialogueSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>();
+	
+	if (DialogueSubsystem->bInDialogue) return;
 	if (IsPuzzleInventoryOpen) return;
 	
 	if (IndexForPossessables == -1)
@@ -475,6 +516,7 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 	}
 	
 	// do not move possessable turrets
+	APlayerCharacter* OurCharacter = Cast<APlayerCharacter>(GetPawn());
 	APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
 	if (PossessableEntity)
 	{
@@ -487,6 +529,11 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 			PossessableEntity->RotatePrism(Value.Get<FVector2D>());
 			return;
 		}
+	}
+	else if (OurCharacter->PickupableObject != nullptr && OurCharacter->PickupableObject->bHasRotationMode && OurCharacter->PickupableObject->isRotating)
+	{
+		OurCharacter->PickupableObject->RotatePrism(Value.Get<FVector2D>());
+		return;
 	}
 	
 	//move the camera if we have a reference to it
@@ -791,6 +838,10 @@ void APlayerControllerBase::SetupInputComponent()
 			EnhancedInputComponent->BindAction(ConfirmPossessionAction, ETriggerEvent::Completed, this, &APlayerControllerBase::ConfirmPossession);
 		}
 		if (InteractAction)
+		{
+			EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &APlayerControllerBase::InteractWithClosestObject);
+		}
+		if (PutAwayAction)
 		{
 			EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &APlayerControllerBase::InteractWithClosestObject);
 		}

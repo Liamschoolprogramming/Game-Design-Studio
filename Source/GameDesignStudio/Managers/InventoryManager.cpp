@@ -45,6 +45,27 @@ void UInventoryManager::Initialize(UGameManagerSubsystem* InstanceOwner)
 			EInventoryItemType::Quest
 			)
 		},
+		{"Woodpecker", FPlayerInventoryItem(
+			"Woodpecker Family",
+			"A family of woodpeckers.",
+			0, 1,
+			EInventoryItemType::Quest
+			)
+		},
+		{"Veilspore", FPlayerInventoryItem(
+			"Veilspore",
+			"The almighty Veilspore.",
+			0, 1,
+			EInventoryItemType::Quest
+			)
+		},
+		{"Mushroom", FPlayerInventoryItem(
+			"Mushroom",
+			"A mushroom.",
+			0, 10,
+			EInventoryItemType::Quest
+			)
+		},
 		
 		//Gear
 		{"AegisCharm", FPlayerInventoryItem(
@@ -92,11 +113,9 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 			return 0;
 		}
 		
+		
 		PlayerInventory.Add(ItemName, ItemToAdd);
 		QuestManager->UpdateQuestProgress(ItemName);
-		IInventoryInterface::Execute_OnItemAdded(InventoryMenu, ItemName);
-		IInventoryInterface::Execute_OnItemAdded(QuestInventoryMenu, ItemName);
-		
 		return Amount;
 	}
 	
@@ -105,16 +124,12 @@ int UInventoryManager::AddToInventory(FName ItemName, int Amount)
 	{
 		FoundItem-> CurrentAmount = Maximum;
 		QuestManager->UpdateQuestProgress(ItemName);
-		IInventoryInterface::Execute_OnItemAdded(InventoryMenu, ItemName);
-		IInventoryInterface::Execute_OnItemAdded(QuestInventoryMenu, ItemName);
 		
 		return Maximum;
 	}
 	
 	FoundItem-> CurrentAmount += Amount;
 	QuestManager->UpdateQuestProgress(ItemName);
-	IInventoryInterface::Execute_OnItemAdded(InventoryMenu, ItemName);
-	IInventoryInterface::Execute_OnItemAdded(QuestInventoryMenu, ItemName);
 	
 	return FoundItem-> CurrentAmount;
 }
@@ -140,15 +155,11 @@ int UInventoryManager::RemoveFromInventory(FName ItemName, int Amount)
 	{
 		FoundItem-> CurrentAmount -= Amount;
 		QuestManager->UpdateQuestProgress(ItemName);
-		IInventoryInterface::Execute_OnItemRemoved(InventoryMenu, ItemName);
-		IInventoryInterface::Execute_OnItemRemoved(QuestInventoryMenu, ItemName);
 		
 		return FoundItem-> CurrentAmount;
 	}
 	FoundItem->CurrentAmount = 0;
 	QuestManager->UpdateQuestProgress(ItemName);
-	IInventoryInterface::Execute_OnItemRemoved(InventoryMenu, ItemName);
-	IInventoryInterface::Execute_OnItemRemoved(QuestInventoryMenu, ItemName);
 	
 	return 0;
 }
