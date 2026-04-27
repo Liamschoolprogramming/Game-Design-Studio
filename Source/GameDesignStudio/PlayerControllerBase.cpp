@@ -17,6 +17,9 @@
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "DialogueSystemPlayer.h"
+//#include "Core/Puzzles/PrismPedestal.h"
+#include "DialogueSubsystem.h"
+#include "Core/Puzzles/Pickups/PuzzleInteractive_Pickupable.h"
 #include "Kismet/KismetStringLibrary.h"
 
 DECLARE_DELEGATE_OneParam(FHardwareDelegate, FHardwareInputDeviceChanged);
@@ -37,6 +40,8 @@ void APlayerControllerBase::Jump(const FInputActionValue& Value)
 {
 	//Get the pawn we are possessing, if it is a character we can just call Jump, if not, add custom jump logic
 	APlayerCharacter* OurCharacter = Cast<APlayerCharacter>(GetPawn());
+	// Also get DialogueSubsystem so player will not jump if they are in dialogue
+	UDialogueSubsystem* DialogueSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>();
 	if (OurCharacter)
 	{
 		if (OurCharacter->PlayerCharacterType == EPlayerCharacterType::Beetle)
@@ -45,7 +50,16 @@ void APlayerControllerBase::Jump(const FInputActionValue& Value)
 		}
 		else
 		{
-			OurCharacter->Jump();
+			if (OurCharacter->PickupableObject != nullptr && OurCharacter->PickupableObject->bHasRotationMode)
+			{
+				//UE_LOG(LogTemp, Warning, TEXT("Pickupable object has rotation mode, now set to true"));
+				OurCharacter->PickupableObject->SetRotationMode(true);
+			}
+			else if (!DialogueSubsystem->bInDialogue)
+			{
+				//UE_LOG(LogTemp, Warning, TEXT("Not holding object and / or object has no rotation mode"));
+				OurCharacter->Jump();
+			}
 		}
 	}
 }
@@ -54,13 +68,27 @@ void APlayerControllerBase::StopJumping(const FInputActionValue& Value)
 {
 	//Get the pawn we are possessing, if it is a character we can just call Jump, if not, add custom jump logic
 	APlayerCharacter* OurCharacter = Cast<APlayerCharacter>(GetPawn());
-	if (OurCharacter->PlayerCharacterType == EPlayerCharacterType::Beetle)
-	{
-		Cast<APossessableEntity>(GetPawn())->SetRotationMode(false);
-	}
+	// Also get DialogueSubsystem so player will not jump if they are in dialogue
+	UDialogueSubsystem* DialogueSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>();
 	if (OurCharacter)
 	{
-		OurCharacter->StopJumping();
+		if (OurCharacter->PlayerCharacterType == EPlayerCharacterType::Beetle)
+		{
+			Cast<APossessableEntity>(GetPawn())->SetRotationMode(false);
+		}
+		else
+		{
+			if (OurCharacter->PickupableObject != nullptr && OurCharacter->PickupableObject->bHasRotationMode)
+			{
+				//UE_LOG(LogTemp, Warning, TEXT("Pickupable object has rotation mode, now set to false"));
+				OurCharacter->PickupableObject->SetRotationMode(false);
+			}
+			else if (!DialogueSubsystem->bInDialogue)
+			{
+				//UE_LOG(LogTemp, Warning, TEXT("Not holding object and / or object has no rotation mode"));
+				OurCharacter->StopJumping();
+			}
+		}
 	}
 }
 
@@ -87,6 +115,7 @@ void APlayerControllerBase::AddPossessableEntity(APossessableEntity* Entity)
 	{
 		ClosestPossessableEntities.Add(Entity);
 	}
+	
 	AddPossessableToHotbar();
 }
 //This removes a possessable entity from our array only if the Entity given is not a null pointer. 
@@ -95,6 +124,12 @@ void APlayerControllerBase::RemovePossessableEntity(APossessableEntity* Entity)
 	if (Entity)
 	{
 		int IndexToRemove = ClosestPossessableEntities.Find(Entity);
+		//Cycle down if the possessable being removed is the one they had selected
+		if (IndexForPossessables == IndexToRemove)
+		{
+			CyclePossessionDown();
+		}
+		
 		RemovePossessableFromHotbar(IndexToRemove);
 		ClosestPossessableEntities.Remove(Entity);
 	}
@@ -145,12 +180,56 @@ void APlayerControllerBase::InteractWithClosestObject()
 	}
 }
 
+void APlayerControllerBase::PutAwayHeldObject()
+{
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+	
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->PutAwayHeldObject();
+	}
+}
+
+/**
+ * Enables possession of entities of the passed PlayerCharacterType
+ * @param EntityType 
+ */
+void APlayerControllerBase::UnlockPossession(EPlayerCharacterType EntityType)
+{
+	if (!UnlockedPossessables.Contains(EntityType))
+	{
+		UnlockedPossessables.Add(EntityType);
+	}
+}
+
+/**
+ * Disables possession of entities of the passed PlayerCharacterType
+ * @param EntityType 
+ */
+void APlayerControllerBase::LockPossession(EPlayerCharacterType EntityType)
+{
+	if (UnlockedPossessables.Contains(EntityType))
+	{
+		UnlockedPossessables.Remove(EntityType);
+	}
+	
+	//Remove any entities of EntityType 
+	for (APossessableEntity* Entity : ClosestPossessableEntities)
+	{
+		if (Entity->PlayerCharacterType == EntityType)
+		{
+			RemovePossessableEntity(Entity);
+		}
+	}
+}
+
 //check if we can possess an entity
 bool APlayerControllerBase::CanPossessEntity(APossessableEntity* entity)
 {
 	if (!ClosestPossessableEntities.Contains(entity)) return false;
 	if (!PlayerReference) return false;
 	if (PlayerReference->PickupableObject != nullptr) return false;
+	if (!UnlockedPossessables.Contains(entity->PlayerCharacterType)) return false;
 	//if (!CameraReference->CanSeeObject(entity)) return false;
 	if (!Macros::CanActorSeeActor(PlayerReference, entity)) return false;
 	if (GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass()) &&
@@ -204,6 +283,8 @@ void APlayerControllerBase::SetPossessIndexByNumber(FString NewIndex)
 
 void APlayerControllerBase::CyclePossessionUp()
 {
+	if (IsPuzzleInventoryOpen) return;
+	
 	if (IndexForPossessables + 1 >= ClosestPossessableEntities.Num())
 	{
 		IndexForPossessables = -1;
@@ -217,6 +298,8 @@ void APlayerControllerBase::CyclePossessionUp()
 
 void APlayerControllerBase::CyclePossessionDown()
 {
+	if (IsPuzzleInventoryOpen) return;
+	
 	if (IndexForPossessables - 1 < -1)
 	{
 		if (CanWeCyclePossessableEntity(ClosestPossessableEntities.Num() - 1))
@@ -249,6 +332,11 @@ void APlayerControllerBase::PossessIndex(int IndexToPossess)
 
 void APlayerControllerBase::ConfirmPossession()
 {
+	UDialogueSubsystem* DialogueSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UDialogueSubsystem>();
+	
+	if (DialogueSubsystem->bInDialogue) return;
+	if (IsPuzzleInventoryOpen) return;
+	
 	if (IndexForPossessables == -1)
 	{
 		// will always set the possessing bool to false if trying to go back to player
@@ -428,6 +516,7 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 	}
 	
 	// do not move possessable turrets
+	APlayerCharacter* OurCharacter = Cast<APlayerCharacter>(GetPawn());
 	APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
 	if (PossessableEntity)
 	{
@@ -440,6 +529,11 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 			PossessableEntity->RotatePrism(Value.Get<FVector2D>());
 			return;
 		}
+	}
+	else if (OurCharacter->PickupableObject != nullptr && OurCharacter->PickupableObject->bHasRotationMode && OurCharacter->PickupableObject->isRotating)
+	{
+		OurCharacter->PickupableObject->RotatePrism(Value.Get<FVector2D>());
+		return;
 	}
 	
 	//move the camera if we have a reference to it
@@ -595,6 +689,7 @@ void APlayerControllerBase::BeginPlay()
 		
 		
 		APlayerCameraManager* pcm = PlayerCameraManager.Get();
+
 		
 		
 		CameraReference = GetWorld()->SpawnActor<ACustomCamera>(ACustomCamera::StaticClass(), _SpawnLocation, _SpawnRotation, SpawnParams);
@@ -627,7 +722,8 @@ void APlayerControllerBase::BeginPlay()
 	bShowMouseCursor = false;
 	bEnableClickEvents = true;
 	
-	
+	//default unlocked possessable entities
+	UnlockedPossessables = {EPlayerCharacterType::Default, EPlayerCharacterType::Golem};
 }
 
 void APlayerControllerBase::Tick(float DeltaTime)
@@ -742,6 +838,10 @@ void APlayerControllerBase::SetupInputComponent()
 			EnhancedInputComponent->BindAction(ConfirmPossessionAction, ETriggerEvent::Completed, this, &APlayerControllerBase::ConfirmPossession);
 		}
 		if (InteractAction)
+		{
+			EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &APlayerControllerBase::InteractWithClosestObject);
+		}
+		if (PutAwayAction)
 		{
 			EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &APlayerControllerBase::InteractWithClosestObject);
 		}

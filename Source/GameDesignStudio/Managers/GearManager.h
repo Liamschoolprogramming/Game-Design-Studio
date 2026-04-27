@@ -17,7 +17,7 @@ public:
 	TMap<FName, FPlayerInventoryItem> PlayerGear;
 	
 	UFUNCTION(BlueprintCallable)
-	FPlayerInventoryItem EquipGear(FPlayerInventoryItem Gear);
+	FPlayerInventoryItem EquipGear(FName GearName);
 	
 	UFUNCTION(BlueprintCallable)
 	FPlayerInventoryItem UnequipGear(EGearType GearType);

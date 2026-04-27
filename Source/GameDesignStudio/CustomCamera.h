@@ -43,9 +43,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom")
 	float MaxPitchSpeed = 50.0f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom")
-	float PitchMin = -25.0f;
+	float PitchMin = -45.0f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom")
-	float PitchMax = 20.0f;
+	float PitchMax = 45.0f;
 
 	UFUNCTION(BlueprintCallable, Category = "Camera")
 	bool CanSeeObject(AActor* Actor);
@@ -81,6 +81,18 @@ public:
 	float CameraHeight;
 
 	float SetCameraHeight();
+	
+	//Toggle to use a custom z offset for specific possessables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	bool bUseCustomHeight = false;
+
+	//Custom z offset for specific possessables
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
+	float CustomHeightOffset = 0.0f;
+	
+	//Call to enable the use of the custom camera height
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void SetCustomCameraHeight(float CustomHeight);
 	
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void MoveCamera(FVector2D ActionValue);

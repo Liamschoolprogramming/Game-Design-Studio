@@ -3,6 +3,7 @@
 
 #include "Puzzle.h"
 
+#include "PuzzleOwner.h"
 #include "Core/Subsystems/GameManagerSubsystem.h"
 #include "Managers/PuzzleRiverManager.h"
 #include "Core/Subsystems/PuzzleWorldSubsystem.h"
@@ -12,7 +13,7 @@ APuzzle::APuzzle()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
+	InventorySlotIndex = -1;
 }
 
 // Called when the game starts or when spawned
@@ -30,12 +31,27 @@ void APuzzle::BeginPlay()
 	//************************************************************************************//
 	SetState(PuzzleStatus);
 	
-	GetWorld()->GetSubsystem<UPuzzleWorldSubsystem>()->RegisterPuzzleActor(this);
+	
 	
 	if (LinkedReceiver != nullptr)
 	{
 		LinkedReceiver->Signals.Add(this->PuzzleActorGuid, false);
 	}
+}
+
+void APuzzle::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+	
+	APuzzleOwner* PuzzleOwner = Cast<APuzzleOwner>(GetOwner());
+	if (PuzzleOwner)
+	{
+		if (bIsSolver)
+		{
+			PuzzleOwner->SetNewSolver(this);
+		}
+	}
+	
 }
 
 // Getting the name of the current enum state to store
@@ -53,7 +69,16 @@ void APuzzle::ApplyPuzzleState_Implementation()
 	
 }
 
-// Called every frame
+void APuzzle::SetInventorySlotIndex(int NewSlotIndex)
+{
+	InventorySlotIndex = NewSlotIndex;
+}
+
+int APuzzle::GetInventorySlotIndex()
+{
+	return InventorySlotIndex;
+}
+
 void APuzzle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

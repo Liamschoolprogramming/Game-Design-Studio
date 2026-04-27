@@ -21,4 +21,7 @@ public:
 	float SFXVolume = 0.75f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings", SaveGame)
 	float MasterVolume =1.0f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings", SaveGame)
+	bool bUseLeftHandedControls = false;
 };

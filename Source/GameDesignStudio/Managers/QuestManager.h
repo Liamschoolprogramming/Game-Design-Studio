@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "QuestManager.generated.h"
 
+class UELSSaveGame;
+
 UCLASS()
 class GAMEDESIGNSTUDIO_API UQuestManager : public UGameManagerBase
 {
@@ -20,6 +22,8 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UUserWidget* QuestMenu;
+	
+	void InitializeQuests();
 	
 	UFUNCTION(BlueprintCallable)
 	bool IsQuestForItemActive(FName ItemName); 
@@ -44,4 +48,93 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	EQuestState GetQuestState(FName ItemName);
+	
+	
 };
+
+inline void UQuestManager::InitializeQuests()
+{
+	Quests = {
+		//Day Quest - Sundew
+		{
+			"Sunstone",
+			FQuest(
+				"Flower Spirit Sundew",
+				"Find a sunstone",
+				"A cheery sunflower spirit wants to live closer to the goddess but it's too cold. Find a Sunstone to heat up its living space.",
+				"Sunstone",
+				1
+			)
+		},
+		//Night Quest - Stoneface
+		{
+			"Golem",
+			FQuest(
+				"Self-Aware Golem",
+				"The golem wants someone to talk to.",
+				"The Golem wants someone to talk to.",
+				"Golem",
+				1
+			)
+		},
+		//Lehan Quest - Whistlebranch
+		{
+			"Owl Child",
+			FQuest(
+				"Whistlebranch's Missing Children",
+				"Help Whistlebranch find her children.",
+				"Whistlebranch can't seem to find her children. Help her find all 4 of them.",
+				"Owl Child",
+				4
+			)
+		},
+		
+		//Lehan Quest - Verdan
+		{
+			"Berry",
+			FQuest(
+				"Verdan's Request",
+				"Collect berries to help the wildlife.",
+				"Verdan wants you to collect 10 berries to help the local wildlife.",
+				"Berry",
+				10
+			)
+		},
+		
+		//Quest - Rootwhisper
+		{
+			"Woodpecker",
+			FQuest(
+				"Rootwhisper's Problem",
+				"Find the woodpecker family.",
+				"Every year a family of woodpeckers helps groom Rootwhisper, but this year they are nowhere to be seen. Rootwhisper has asked you to find them.",
+				"Woodpecker",
+				1
+			)
+		},
+		
+		//Quest - Moldred
+		{
+			"Veilspore",
+			FQuest(
+				"Moldred's Ascension",
+				"Find the Veilspore.",
+				"You angered Moldred by failing to comprehend his power. If you wish to be forgiven bring the Veilspore to him.",
+				"Veilspore",
+				1
+			)
+		},
+		
+		//Quest - Sporax
+		{
+			"Mushroom",
+			FQuest(
+				"Friends for Sporax",
+				"Find company for Sporax.",
+				"Sporax spent most of their life in solitude but now desires companionship. Sporax asked you to find 10 mushrooms to comfort them.",
+				"Mushroom",
+				10
+			)
+		},
+	};
+}

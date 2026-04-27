@@ -34,6 +34,8 @@ public:
 
 	bool RegisterStateData(const TSoftObjectPtr<UDialogueAsset>& Tree, const FStateData& StateData);
 	bool UnregisterStateData(TSoftObjectPtr<UDialogueAsset> Tree);
+	
+	bool bInDialogue;
 
 	UPROPERTY()
 	UDialogueSave* DialogueSave = nullptr;
@@ -56,6 +58,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Dialogue")
 	void StartDialogue(class UDialogueAsset* InDialogueAsset = nullptr, AActor* InOwner = nullptr, APlayerController* InPlayerController =
 		                   nullptr);
+	
+	UFUNCTION(BlueprintCallable, Category = "Dialogue")
+	/**
+	 * @param Index the index of the option to choose (based on left to right of visual)
+	 * @param DialoguePlayerReference the Dialogue Player to pass in (must implement IDialogueExecutionHandler)
+	 **/
+	void ChooseOptionAtIndex(int32 Index);
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
 	void DialogueBPFunction(const FString& ActionData);

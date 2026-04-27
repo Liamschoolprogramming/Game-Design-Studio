@@ -18,16 +18,16 @@ struct FPersistantActorValues
 {
 	GENERATED_BODY()
 	
-	UPROPERTY()
+	UPROPERTY(SaveGame)
 	FTransform ActorLocation;
 	
 	//UPROPERTY()
 	//FName CurrentState;
 	
-	UPROPERTY()
+	UPROPERTY(SaveGame)
 	EPuzzleState PuzzleState;
 	
-	UPROPERTY()
+	UPROPERTY(SaveGame)
 	FName StateId;
 	
 	FPersistantActorValues() {

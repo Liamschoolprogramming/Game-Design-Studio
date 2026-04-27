@@ -3,6 +3,7 @@
 
 #include "PlayerCharacter.h"
 
+#include "EngineUtils.h"
 #include "Macros.h"
 #include "PossessableEntity.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -17,6 +18,7 @@
 #include "StructUtils/PropertyBag.h"
 #include "VerseVM/VBPVMRuntimeType.h"
 #include "Core/Puzzles/Pickups/PuzzleInteractive_Pickupable.h"
+#include "Engine/PlayerStartPIE.h"
 
 
 // Sets default values
@@ -77,6 +79,15 @@ void APlayerCharacter::RemoveInteractableObject(APuzzleInteractive* Object)
 	}
 }
 
+void APlayerCharacter::PutAwayHeldObject()
+{
+	if (PickupableObject && PickupableObject->GetInventorySlotIndex() != -1)
+	{
+		PickupableObject->PutAway();
+		PickupableObject = nullptr;
+	}
+}
+
 void APlayerCharacter::InteractWithClosestObject()
 {
 	
@@ -113,8 +124,8 @@ void APlayerCharacter::InteractWithClosestObject()
 	if (ClosestObject.IsValid())
 	{
 		
-		
-		//Debug::PrintToScreen(FString::Printf(TEXT("%s is interacting with %s"), *GetName(), *ClosestObject->GetName()), 10.0f, FColor::Cyan);
+		FString objName = ClosestObject->GetName();
+		UE_LOG(LogTemp, Warning, TEXT("Interacting with %s"), *objName);
 		//call BP first as some things need it first (big boulder)
 		ClosestObject->OnInteract(this);
 		//then try the Cpp file
@@ -150,6 +161,7 @@ void APlayerCharacter::BeginPlay()
 		}
 	}
 	
+
 	
 	
 	FTimerDelegate TimerDelegate;
@@ -188,6 +200,11 @@ void APlayerCharacter::PossessedBy(AController* NewController)
 void APlayerCharacter::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
                                             UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (!PlayerController) return;
+	if (!PlayerController->GetPawn()) return;
+	
+	if (PlayerController->GetPawn()->GetClass()->IsChildOf(APossessableEntity::StaticClass())) return;
+	
 	if (OtherActor && OtherActor != this && OtherComp)
 	{
 		if (OtherActor->GetClass()->IsChildOf(APossessableEntity::StaticClass()))
@@ -196,7 +213,10 @@ void APlayerCharacter::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComp,
 			if (PlayerController && PossessableEntity && OtherComp->ComponentHasTag("HitBox"))
 			{
 				//Debug::PrintToScreen(PossessableEntity->GetName(), 10.0f);
-				PlayerController->AddPossessableEntity(PossessableEntity);
+				if (PlayerController->UnlockedPossessables.Contains(PossessableEntity->PlayerCharacterType))
+				{
+					PlayerController->AddPossessableEntity(PossessableEntity);
+				}
 			}
 			
 		}

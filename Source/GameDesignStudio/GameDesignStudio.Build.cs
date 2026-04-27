@@ -6,12 +6,12 @@ public class GameDesignStudio : ModuleRules
 {
 	public GameDesignStudio(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "Niagara"});
+		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "Niagara", "Paper2D" });
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		PublicIncludePaths.Add("GameDesignStudio");
 		
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" , "UMG", "DialogueAssetEditorRuntime"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" , "UMG", "DialogueAssetEditorRuntime", "ImageWrapper"});
 		
 
 		if(Target.bBuildEditor){
