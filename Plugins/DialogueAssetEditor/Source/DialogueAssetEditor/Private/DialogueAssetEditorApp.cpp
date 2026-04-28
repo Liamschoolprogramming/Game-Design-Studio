@@ -11,6 +11,7 @@
 #include "DialogueGraphSchema.h"
 #include "DialogueAssetEditor.h"
 #include "DialogueGraphNodeFactory.h"
+#include "DialogueMacros.h"
 #include "DialogueNodeInfo.h"
 #include "QuestProgressGraphNode.h"
 #include "RandomDialogueGraphNode.h"
@@ -231,6 +232,11 @@ void FDialogueAssetEditorApp::UpdateWorkingAssetFromGraph()
 		
 	
 		UDialogueGraphNodeBase* UiDialogueNode = Cast<UDialogueGraphNodeBase>(UiNode);
+		if (!UiDialogueNode)
+		{
+			UE_LOG(FDialogueAssetEditorAppSub, Error, TEXT("CompileGraph: UiNode is not a UDialogueGraphNodeBase — skipping node."));
+			continue; // or return, depending on your loop context
+		}
 
 		// Ensure NodeBehaviour exists
 		if (UiDialogueNode->GetNodeBehaviour() == nullptr)
@@ -238,8 +244,27 @@ void FDialogueAssetEditorApp::UpdateWorkingAssetFromGraph()
 			UiDialogueNode->InitNodeBehaviour(UiDialogueNode);
 		}
 
-		RuntimeNode->NodeBehaviour = DuplicateObject(UiDialogueNode->GetNodeBehaviour(), RuntimeNode);
-		RuntimeNode->NodeInfo = DuplicateObject(UiDialogueNode->GetNodeInfo(), RuntimeNode);
+		 UDialogueNodeBehaviour* Behaviour = UiDialogueNode->GetNodeBehaviour();
+		 UDialogueNodeInfoBase* NodeInfo  = UiDialogueNode->GetNodeInfo();
+		
+		if (!Behaviour)
+		{
+			UE_LOG(FDialogueAssetEditorAppSub, Error,
+				TEXT("CompileGraph: NodeBehaviour is null after init on node '%s' — skipping."),
+				*UiDialogueNode->GetName());
+			continue;
+		}
+
+		if (!NodeInfo)
+		{
+			UE_LOG(FDialogueAssetEditorAppSub, Error,
+				TEXT("CompileGraph: NodeInfo is null on node '%s' — skipping."),
+				*UiDialogueNode->GetName());
+			continue;
+		}
+
+		RuntimeNode->NodeBehaviour = DuplicateObject(Behaviour, RuntimeNode);
+		RuntimeNode->NodeInfo = DuplicateObject(NodeInfo, RuntimeNode);
 		RuntimeNode->NodeType = UiDialogueNode->GetDialogueNodeType();
 			
 		
