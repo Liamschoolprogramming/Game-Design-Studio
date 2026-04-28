@@ -87,7 +87,7 @@ public:
 	virtual void SetDialogueText(FText InText) override;
 	virtual void ClearResponses() override;
 	virtual void AddResponseButton(FText InResponseText, int InOptionIndex) override;
-	virtual void SetupCameraAndSpeaker(FName CameraName, FName InSpeakerName, UTexture2D* Portrait) override;
+	virtual void SetupCameraAndSpeaker(FName CameraName, FName InSpeakerName, const TSoftObjectPtr<UObject> Portrait) override;
 	virtual void EndDialogue() override;
 	virtual TArray<int> GetQuestProgress(FName QuestKey) override;
 	virtual void StartQuest(FName QuestKey) override;

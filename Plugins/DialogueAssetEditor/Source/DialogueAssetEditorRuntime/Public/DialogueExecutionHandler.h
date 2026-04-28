@@ -71,7 +71,7 @@ public:
 	virtual void SetDialogueText(FText InText) = 0;
 	virtual void ClearResponses() = 0;
 	virtual void AddResponseButton(FText InResponseText, int InOptionIndex) = 0;
-	virtual void SetupCameraAndSpeaker(FName CameraName, FName InSpeakerName, UTexture2D* Portrait) = 0;
+	virtual void SetupCameraAndSpeaker(FName CameraName, FName InSpeakerName, const TSoftObjectPtr<UObject> Portrait) = 0;
 	virtual void EndDialogue() = 0;
 	virtual TArray<int> GetQuestProgress(FName QuestKey) = 0;
 	virtual void StartQuest(FName QuestKey) = 0;

@@ -148,25 +148,61 @@ void UDialogueSystemPlayer::AddResponseButton(FText InResponseText, int InOption
 	Slot->SetPadding(FMargin(10));
 }
 
-void UDialogueSystemPlayer::SetupCameraAndSpeaker(FName CameraName, FName InSpeakerName, UTexture2D* Portrait)
+void UDialogueSystemPlayer::SetupCameraAndSpeaker(FName CameraName, FName InSpeakerName, const TSoftObjectPtr<UObject> Portrait)
 {
 	ADialogueCineCamera* Camera = FindCineCamera(GetWorld(), CameraName);
 	UDialogueSpeakerComponent* Speaker = FindSpeakerComponent(GetWorld(), InSpeakerName);
 
+	if (!Camera)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No Camera"))
+	}
+	if (!Speaker)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No Speaker"))
+	}
+	
+	
 	if (Camera && Speaker)
 	{
+		UObject* Asset = Portrait.LoadSynchronous();
+
+		if (UTexture2D* AsTexture = Cast<UTexture2D>(Asset))
+		{
+			
+			DialogueWidget->CharacterPortrait->SetBrushFromTexture(AsTexture);
+		}
+		else if (UMaterialInterface* AsMaterial = Cast<UMaterialInterface>(Asset))
+		{
+			DialogueWidget->CharacterPortrait->SetBrushFromMaterial(AsMaterial);
+		}
+		else
+		{
+			DialogueWidget->CharacterPortrait->SetBrushFromTexture(DefaultCharacterIcon);
+		}
 		Camera->ActivateCamera();
 		DialogueWidget->CharacterName->SetText(FText::FromString(InSpeakerName.ToString()));
-		Speaker->SpeakerImage = Portrait ? Portrait : DefaultCharacterIcon;
-		DialogueWidget->CharacterPortrait->SetBrushFromTexture(Speaker->SpeakerImage);
+		
 		CurrentSpeakerComponent = Speaker;
 	}
 	else if (Speaker)
 	{
 		Speaker->ActivateSpeakerCamera();
 		DialogueWidget->CharacterName->SetText(FText::FromString(InSpeakerName.ToString()));
-		Speaker->SpeakerImage = Portrait ? Portrait : DefaultCharacterIcon;
-		DialogueWidget->CharacterPortrait->SetBrushFromTexture(Speaker->SpeakerImage);
+		UObject* Asset = Portrait.LoadSynchronous();
+		
+		if (UTexture2D* AsTexture = Cast<UTexture2D>(Asset))
+		{
+			DialogueWidget->CharacterPortrait->SetBrushFromTexture(AsTexture);
+		}
+		else if (UMaterialInterface* AsMaterial = Cast<UMaterialInterface>(Asset))
+		{
+			DialogueWidget->CharacterPortrait->SetBrushFromMaterial(AsMaterial);
+		}
+		else
+		{
+			DialogueWidget->CharacterPortrait->SetBrushFromTexture(DefaultCharacterIcon);
+		}
 		CurrentSpeakerComponent = Speaker;
 	}
 }
