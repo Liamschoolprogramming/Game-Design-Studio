@@ -200,6 +200,14 @@ void APlayerControllerBase::UnlockPossession(EPlayerCharacterType EntityType)
 	{
 		UnlockedPossessables.Add(EntityType);
 	}
+	
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+	
+	//Check if any newly unlocked possessables are already in range
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->CheckForPossessablesInRange();
+	}
 }
 
 /**
