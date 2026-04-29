@@ -61,6 +61,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FGuid, bool> Signals;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bHasActivatingElement;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	//Only one solver per puzzle owner
