@@ -63,6 +63,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category="Interaction")
 	APuzzleInteractive_Pickupable* PickupableObject = nullptr;
 	
+	UFUNCTION(BlueprintCallable)
+	void CheckForPossessablesInRange();
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
