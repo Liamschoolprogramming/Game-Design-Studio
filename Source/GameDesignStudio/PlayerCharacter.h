@@ -55,12 +55,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Interaction")
 	void InteractWithClosestObject();
 	
+	// returns true if successfully put away, false otherwise
 	UFUNCTION(BlueprintCallable, Category="Interaction")
-	void PutAwayHeldObject();
+	bool PutAwayHeldObject();
 	
 	//Storage for any pickupable or pushable item already being interacted with by the player
 	UPROPERTY(BlueprintReadWrite, Category="Interaction")
 	APuzzleInteractive_Pickupable* PickupableObject = nullptr;
+	
+	UFUNCTION(BlueprintCallable)
+	void CheckForPossessablesInRange();
 	
 protected:
 	// Called when the game starts or when spawned
