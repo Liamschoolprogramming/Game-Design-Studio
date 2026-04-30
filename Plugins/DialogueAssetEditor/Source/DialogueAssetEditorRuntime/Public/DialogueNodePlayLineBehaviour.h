@@ -18,7 +18,8 @@ virtual void Execute(UDialogueNodeInfoBase* NodeInfoBase, IDialogueExecutionHand
 {
     UDialogueNodeInfo* NodeInfo = Cast<UDialogueNodeInfo>(NodeInfoBase);
     if(!NodeInfo) return;
-    
+
+    Handler->PlayAudio(NodeInfo->AudioForLine, NodeInfo->bAudioPerWord);
     Handler->SetDialogueText(NodeInfo->DialogueText);
     Handler->ClearResponses();
     

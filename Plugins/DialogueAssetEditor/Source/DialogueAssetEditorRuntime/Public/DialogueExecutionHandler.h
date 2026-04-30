@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "DialogueSharedTypes.h"
+#include "Sound/SoundBase.h"
 #include "DialogueExecutionHandler.generated.h"
 UENUM(BlueprintType)
 enum class EDialogueParamType : uint8
@@ -85,6 +86,7 @@ public:
 	virtual UWorld* GetWorldFromPlayer() = 0;
 	virtual void CheckDialogueState() = 0;
 	virtual void PlayDialogue(AActor* InOwner, class UDialogueAsset* InDialogueAsset, APlayerController* InPlayerController) = 0;
+	virtual void PlayAudio(USoundBase* AudioIn, bool bPerWord);
 	
 
 	

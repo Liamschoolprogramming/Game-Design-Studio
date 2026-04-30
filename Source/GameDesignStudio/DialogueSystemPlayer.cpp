@@ -408,6 +408,28 @@ void UDialogueSystemPlayer::PlayDialogue(AActor* InOwner, class UDialogueAsset* 
 	PlayDialogue(InDialogueAsset, InPlayerController);
 }
 
+
+void UDialogueSystemPlayer::SetUpPlayAudioPerWord(USoundBase* AudioToPlay)
+{
+	if (AudioToPlay)
+	{
+		DialogueSound = AudioToPlay;
+		
+	}
+	else
+	{
+		DialogueSound = nullptr;
+	}
+}
+
+void UDialogueSystemPlayer::PlayAudio(USoundBase* AudioIn, bool bPerWord)
+{
+	DialogueSound = AudioIn;
+	bPlayAudioPerWord = bPerWord;
+	
+	
+}
+
 /*
 void UDialogueSystemPlayer::CallCustomFunctionWithParams(FString FunctionName, const FDialogueParameters& Parameters)
 {

@@ -81,6 +81,13 @@ private:
 	UFUNCTION()
 	void ChooseFirstOptionAndEnableDialogue();
 
+	UPROPERTY()
+	bool bPlayAudioPerWord;
+
+	UPROPERTY()
+	USoundBase* DialogueSound;
+
+	void SetUpPlayAudioPerWord(USoundBase* AudioToPlay);
 	
 	
 public:
@@ -101,5 +108,6 @@ public:
 	virtual UWorld* GetWorldFromPlayer() override;
 	virtual void CheckDialogueState() override;
 	virtual void PlayDialogue(AActor* InOwner, class UDialogueAsset* InDialogueAsset, APlayerController* InPlayerController) override;
+	virtual void PlayAudio(USoundBase* AudioIn, bool bPerWord) override;
 	//virtual void CallCustomFunctionWithParams(FString FunctionName, const FDialogueParameters& Parameters) override;
 };

@@ -27,7 +27,11 @@ public:
 	//Leave empty to use SpeakerName for the camera
 	FName CameraName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue", meta =(AllowedClasses = "/Script/Engine.Texture2D,/Script/Engine.MaterialInterface", DisplayThumbnail = "true"))
-	TSoftObjectPtr<UObject> CharacterPortrait = nullptr;
-	
+	UPROPERTY(EditAnywhere)
+	bool bAudioPerWord;
+	UPROPERTY(EditAnywhere)
+	USoundBase* AudioForLine;
+
+	UPROPERTY(EditAnywhere)
+	UTexture2D* CharacterPortrait;
 };
