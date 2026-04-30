@@ -28,6 +28,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	// Will replace instances of $total and $current with the actual proper value from the quest manager
 	FString Dialogue; 
+	UPROPERTY(EditAnywhere)
+	FDialogueAudio DialogueAudio;
+
+	UPROPERTY(EditAnywhere)
+	//bigger means faster
+	float DialogueSpeed = 3.5f;
 	
 	UPROPERTY(EditAnywhere)
 	UTexture2D* CharacterPortrait;

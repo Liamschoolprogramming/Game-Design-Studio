@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "DialogueAudio.h"
 #include "DialogueNodeInfoBase.h"
 #include "DialogueSpeakerComponent.h"
 #include "DialogueNodeInfo.generated.h"
@@ -28,9 +29,11 @@ public:
 	FName CameraName;
 
 	UPROPERTY(EditAnywhere)
-	bool bAudioPerWord;
+	FDialogueAudio DialogueAudio;
+	
 	UPROPERTY(EditAnywhere)
-	USoundBase* AudioForLine;
+	//bigger means faster
+	float DialogueSpeed =3.5f;
 
 	UPROPERTY(EditAnywhere)
 	UTexture2D* CharacterPortrait;

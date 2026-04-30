@@ -18,10 +18,12 @@
 #include "RandomDialogueNodeInfo.h"
 #include "StateBranchNodeInfo.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Components/AudioComponent.h"
 #include "Components/Image.h"
 
 #include "Components/VerticalBoxSlot.h"
 #include "Core/Subsystems/GameManagerSubsystem.h"
+#include "Kismet/GameplayStatics.h"
 #include "Managers/QuestManager.h"
 
 DEFINE_LOG_CATEGORY_STATIC(DialoguePlayerSub, Log, All);
@@ -40,13 +42,26 @@ UDialogueSystemPlayer::UDialogueSystemPlayer()
 void UDialogueSystemPlayer::PlayDialogue(class UDialogueAsset* InDialogueAsset, APlayerController* InPlayerController)
 {
 	if (!bCanStartDialogue) return;
+	if (!InDialogueAsset)
+	{
+		UE_LOG(DialoguePlayerSub, Error, TEXT("PlayDialogue called with null asset"));
+		return;
+	}
+
+	UDialogueRuntimeGraph* RuntimeGraph = InDialogueAsset->Graph;
+	if (!RuntimeGraph || RuntimeGraph->Nodes.IsEmpty())
+	{
+		UE_LOG(DialoguePlayerSub, Error, 
+			TEXT("RuntimeGraph is null or empty for asset: %s. Was it compiled?"), 
+			*InDialogueAsset->GetName());
+		return;
+	}
 	bCanStartDialogue = false;
 	PlayerController = Cast<APlayerControllerBase>(InPlayerController);
 	
 	PlayerController->SetCanMove(false);
 	UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PlayerController,nullptr);
 	PlayerController->SetShowMouseCursor(true);
-	UDialogueRuntimeGraph* RuntimeGraph = InDialogueAsset->Graph;
 	DialogueAsset = InDialogueAsset;
 	
 	//get start node
@@ -60,7 +75,7 @@ void UDialogueSystemPlayer::PlayDialogue(class UDialogueAsset* InDialogueAsset, 
 	}
 	if (CurrentNode == nullptr)
 	{
-		UE_LOG(DialoguePlayerSub, Fatal, TEXT("No start node in graph. How did you do this?"));
+		UE_LOG(DialoguePlayerSub, Error, TEXT("No start node in graph. How did you do this?"));
 		return;
 	}
 	//create and display dialogue UI
@@ -123,12 +138,82 @@ void UDialogueSystemPlayer::ChooseFirstOptionAndEnableDialogue()
 	ChooseOptionAtIndex(0);
 }
 
-void UDialogueSystemPlayer::SetDialogueText(FText InText)
+void UDialogueSystemPlayer::RevealNextWord()
 {
+	if (!TextArray.IsValidIndex(CurrentWordIndex))
+	{
+		// All words revealed — stop the timer
+		GetWorld()->GetTimerManager().ClearTimer(DialogueTimerHandle);
+		bIsPlaying = false;
+		return;
+	}
+
+	// Append a space between words
+	if (CurrentWordIndex > 0)
+	{
+		DialogueText.Append(TEXT(" "));
+	}
+
+	if (bPlayAudioPerWord)
+	{
+		LoadAndPlayDialogueSound();
+	}
+	
+	DialogueText.Append(TextArray[CurrentWordIndex]);
+	CurrentWordIndex++;
+
 	if (DialogueWidget)
 	{
-		DialogueWidget->DialogueText->SetText(InText);
+		DialogueWidget->DialogueText->SetText(FText::FromString(DialogueText));
 	}
+}
+void UDialogueSystemPlayer::RevealAllWords()
+{
+	GetWorld()->GetTimerManager().ClearTimer(DialogueTimerHandle);
+	bIsPlaying = false;
+	DialogueText.Empty();
+	CurrentWordIndex = 0;
+	for (auto Line : TextArray)
+	{
+		if (CurrentWordIndex > 0)
+		{
+			DialogueText.Append(TEXT(" "));
+		}
+		DialogueText.Append(Line);
+		CurrentWordIndex++;
+	}
+	if (DialogueWidget)
+	{
+		DialogueWidget->DialogueText->SetText(FText::FromString(DialogueText));
+	}
+}
+
+void UDialogueSystemPlayer::SetDialogueText(FText InText, float TextSpeed)
+{
+	FString EditText = InText.ToString();
+	EditText.ParseIntoArray(TextArray,TEXT(" "),true);
+	
+	DialogueSpeed = 1/TextSpeed;
+	if (DialogueWidget)
+	{
+		DialogueWidget->DialogueText->SetText(FText::FromString(TEXT("")));
+	}
+	
+	CurrentWordIndex = 0;
+	DialogueText.Empty();
+	if (!bPlayAudioPerWord)
+	{
+		LoadAndPlayDialogueSound();
+	}
+
+	bIsPlaying = true;
+	GetWorld()->GetTimerManager().SetTimer(
+		DialogueTimerHandle,
+		this,
+		&UDialogueSystemPlayer::RevealNextWord,
+		DialogueSpeed,
+		true // looping
+	);
 }
 
 void UDialogueSystemPlayer::ClearResponses()
@@ -209,6 +294,11 @@ void UDialogueSystemPlayer::SetupCameraAndSpeaker(FName CameraName, FName InSpea
 
 void UDialogueSystemPlayer::EndDialogue()
 {
+	if (CurrentDialogueAudio != nullptr)
+	{
+		CurrentDialogueAudio->Stop();
+		CurrentDialogueAudio = nullptr;
+	}
 	DialogueWidget->RemoveFromParent();
 	DialogueWidget->Destruct();
 	FTimerHandle TimerHandle;
@@ -422,12 +512,49 @@ void UDialogueSystemPlayer::SetUpPlayAudioPerWord(USoundBase* AudioToPlay)
 	}
 }
 
-void UDialogueSystemPlayer::PlayAudio(USoundBase* AudioIn, bool bPerWord)
+void UDialogueSystemPlayer::LoadAndPlayDialogueSound()
 {
-	DialogueSound = AudioIn;
-	bPlayAudioPerWord = bPerWord;
+	if (DialogueSound != nullptr)
+	{
+		// Stop previous line if still playing
+		if (CurrentDialogueAudio != nullptr)
+		{
+			CurrentDialogueAudio->Stop();
+			CurrentDialogueAudio = nullptr;
+		}
+
+		DialogueSound->ConditionalPostLoad();
+		CurrentDialogueAudio = UGameplayStatics::SpawnSound2D(GetWorld(), DialogueSound);
+	}
+}
+
+void UDialogueSystemPlayer::PlayAudio(FDialogueAudio AudioIn)
+{
+	
+	bPlayAudioPerWord = AudioIn.bPerWord;
+	
+	if (!AudioIn.Audio.IsNull())
+	{
+		DialogueSound = AudioIn.Audio.LoadSynchronous();
+	}
+	else
+	{
+		DialogueSound = nullptr;
+	}
 	
 	
+}
+
+void UDialogueSystemPlayer::SkipLine(int32 Index, bool bContinueToNextLine)
+{
+	if (bIsPlaying)
+	{
+		RevealAllWords();
+	}
+	else if (bContinueToNextLine)
+	{
+		ChooseOptionAtIndex(Index);
+	}
 }
 
 /*
