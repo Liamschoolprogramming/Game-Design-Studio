@@ -170,6 +170,22 @@ void UDialogueSubsystem::ChooseOptionAtIndex(int32 Index)
 	}
 }
 
+void UDialogueSubsystem::SkipLine(int32 Index, bool bContinueToNextLine)
+{
+	for (UObject* Instance : AutoCreatedInstances)
+	{
+		if (Instance && bInDialogue)
+		{
+			if (IDialogueExecutionHandler* InterfacePtr = Cast<IDialogueExecutionHandler>(Instance))
+			{
+				InterfacePtr->SkipLine(Index, bContinueToNextLine);
+			}
+		}
+		
+	
+	}
+}
+
 void UDialogueSubsystem::SaveDialogue()
 {
 
