@@ -24,7 +24,7 @@ public:
 	void StopMusic(float FadeOutTime);
 
 	UFUNCTION(BlueprintCallable, Category = "Save")
-	void SaveAudioSettings(float MusicVolumeIn, float SFXVolumeIn, float MasterVolumeIn);
+	void SaveAudioSettings(float MusicVolumeIn, float SFXVolumeIn, float MasterVolumeIn, float DialogueVolumeIn);
 
 	UFUNCTION(BlueprintCallable, Category = "Save")
 	void LoadAudioSettings();
@@ -66,6 +66,8 @@ public:
 	USoundMix* MasterSoundMix;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Music")
 	USoundClass* MasterSoundClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Music")
+	USoundClass* DialogueSoundClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Music")
 	USoundClass* MusicSoundClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Music")

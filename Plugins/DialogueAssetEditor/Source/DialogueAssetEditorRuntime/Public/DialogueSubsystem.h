@@ -66,6 +66,9 @@ public:
 	 **/
 	void ChooseOptionAtIndex(int32 Index);
 	
+	UFUNCTION(BlueprintCallable, Category = "Dialogue")
+	void SkipLine(int32 Index, bool bContinueToNextLine);
+	
 	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
 	void DialogueBPFunction(const FString& ActionData);
 	

@@ -59,6 +59,8 @@ private:
 	UPROPERTY()
 	class UEdGraph* WorkingGraph = nullptr;
 	
+
+	bool bGraphFullyLoaded = false;
 	
 	// working graph UI (slate widget)
 	TSharedPtr<SGraphEditor> WorkingGraphUI = nullptr;

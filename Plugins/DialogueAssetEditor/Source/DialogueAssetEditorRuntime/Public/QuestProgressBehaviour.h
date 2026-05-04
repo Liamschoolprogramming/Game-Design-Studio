@@ -39,8 +39,8 @@ class DIALOGUEASSETEDITORRUNTIME_API UQuestProgressBehaviour : public UDialogueN
 					
 		}
 		
-		Handler->SetDialogueText(FText::FromString(DialogueText));
-		Handler->ClearResponses();
+		Handler->SetDialogueText(FText::FromString(DialogueText), NodeInfo->DialogueSpeed, NodeInfo->SpeedVariance);
+		Handler->PlayAudio(NodeInfo->DialogueAudio);
 		Handler->AddResponseButton(FText::FromString(TEXT("Continue")),0);
 				
 				
