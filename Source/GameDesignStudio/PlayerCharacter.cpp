@@ -79,13 +79,15 @@ void APlayerCharacter::RemoveInteractableObject(APuzzleInteractive* Object)
 	}
 }
 
-void APlayerCharacter::PutAwayHeldObject()
+bool APlayerCharacter::PutAwayHeldObject()
 {
-	if (PickupableObject && PickupableObject->GetInventorySlotIndex() != -1)
+	if (PickupableObject && PickupableObject->GetInventorySlotIndex() != -1 && !(PickupableObject->bHasActivatingElement))
 	{
 		PickupableObject->PutAway();
 		PickupableObject = nullptr;
+		return true;
 	}
+	return false;
 }
 
 void APlayerCharacter::InteractWithClosestObject()
@@ -230,6 +232,29 @@ void APlayerCharacter::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComp,
 			}
 		}
 	}
+}
+
+//Calls to refresh possessable actors overlapping with the player when new possessables are unlocked
+void APlayerCharacter::CheckForPossessablesInRange()
+{
+	TArray<AActor*> PossessableActors;
+	TriggerSphere->GetOverlappingActors(PossessableActors,APossessableEntity::StaticClass());
+	for (AActor* Overlap : PossessableActors)
+	{
+		if (Overlap->GetClass()->IsChildOf(APossessableEntity::StaticClass()))
+		{
+			APossessableEntity* PossessableEntity = Cast<APossessableEntity>(Overlap);
+			if (PlayerController && PossessableEntity )
+			{
+				if (PlayerController->UnlockedPossessables.Contains(PossessableEntity->PlayerCharacterType))
+				{
+					PlayerController->AddPossessableEntity(PossessableEntity);
+				}
+			}
+			
+		}
+	}
+	
 }
 
 void APlayerCharacter::OnSphereOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
