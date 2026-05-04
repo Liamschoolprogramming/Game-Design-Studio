@@ -44,7 +44,7 @@ class DIALOGUEASSETEDITORRUNTIME_API URandomDialogueBehaviour : public UDialogue
 			
 		}
 		
-		Handler->SetDialogueText(DialogueText, Speed);
+		Handler->SetDialogueText(DialogueText, Speed, NodeInfo->SpeedVariance);
 		Handler->PlayAudio(Sound);
 		Handler->ClearResponses();
     

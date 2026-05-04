@@ -34,6 +34,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	//bigger means faster
 	float DialogueSpeed =3.5f;
+	
+	UPROPERTY(EditAnywhere)
+	//random variation between words
+	float SpeedVariance = .1f;
 
 	UPROPERTY(EditAnywhere)
 	UTexture2D* CharacterPortrait;

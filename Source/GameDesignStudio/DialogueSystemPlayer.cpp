@@ -142,7 +142,6 @@ void UDialogueSystemPlayer::RevealNextWord()
 {
 	if (!TextArray.IsValidIndex(CurrentWordIndex))
 	{
-		// All words revealed — stop the timer
 		GetWorld()->GetTimerManager().ClearTimer(DialogueTimerHandle);
 		bIsPlaying = false;
 		return;
@@ -166,6 +165,19 @@ void UDialogueSystemPlayer::RevealNextWord()
 	{
 		DialogueWidget->DialogueText->SetText(FText::FromString(DialogueText));
 	}
+		
+
+	// Schedule next word with slight random variance
+	float Variance = FMath::RandRange(-DialogueSpeedVariance, DialogueSpeedVariance);
+	float NextDelay = FMath::Max(0.05f, DialogueSpeed + Variance);
+    
+	GetWorld()->GetTimerManager().SetTimer(
+		DialogueTimerHandle,
+		this,
+		&UDialogueSystemPlayer::RevealNextWord,
+		NextDelay,
+		false // not looping, reschedule each word
+	);
 }
 void UDialogueSystemPlayer::RevealAllWords()
 {
@@ -188,7 +200,7 @@ void UDialogueSystemPlayer::RevealAllWords()
 	}
 }
 
-void UDialogueSystemPlayer::SetDialogueText(FText InText, float TextSpeed)
+void UDialogueSystemPlayer::SetDialogueText(FText InText, float TextSpeed, float SpeedVariance)
 {
 	FString EditText = InText.ToString();
 	EditText.ParseIntoArray(TextArray,TEXT(" "),true);
@@ -198,6 +210,7 @@ void UDialogueSystemPlayer::SetDialogueText(FText InText, float TextSpeed)
 	{
 		DialogueWidget->DialogueText->SetText(FText::FromString(TEXT("")));
 	}
+	DialogueSpeedVariance = SpeedVariance;
 	
 	CurrentWordIndex = 0;
 	DialogueText.Empty();
@@ -212,7 +225,7 @@ void UDialogueSystemPlayer::SetDialogueText(FText InText, float TextSpeed)
 		this,
 		&UDialogueSystemPlayer::RevealNextWord,
 		DialogueSpeed,
-		true // looping
+		false // looping
 	);
 }
 

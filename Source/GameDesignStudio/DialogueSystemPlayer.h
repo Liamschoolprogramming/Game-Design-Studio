@@ -98,6 +98,8 @@ private:
 	void LoadAndPlayDialogueSound();
 	void RevealAllWords();
 	
+	float DialogueSpeedVariance = .1f;
+	
 	TArray<FString> TextArray;
 	FString DialogueText;
 	int32 CurrentWordIndex = 0;
@@ -108,7 +110,7 @@ private:
 	void RevealNextWord();
 	
 public:
-	virtual void SetDialogueText(FText InText, float TextSpeed) override;
+	virtual void SetDialogueText(FText InText, float TextSpeed, float SpeedVariance = 0) override;
 	virtual void ClearResponses() override;
 	virtual void AddResponseButton(FText InResponseText, int InOptionIndex) override;
 	virtual void SetupCameraAndSpeaker(FName CameraName, FName InSpeakerName, const TSoftObjectPtr<UObject> Portrait) override;
