@@ -27,8 +27,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
 	USpringArmComponent* SpeakerCameraBoom = nullptr;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
-	UTexture2D* SpeakerImage = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue", meta =(AllowedClasses = "/Script/Engine.Texture2D,/Script/Engine.MaterialInterface", DisplayThumbnail = "true"))
+	TSoftObjectPtr<UObject> SpeakerImage = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
 	float CameraTransitionTime = 0.5f;
