@@ -63,9 +63,9 @@ void UPuzzleInventoryManager::ClearPuzzleSlots()
 {
 	for (int i = 0; i < PuzzleInventorySlots.Num(); i++)
 	{
-		RemovePuzzleSlotElementFromLevel(i);
+		ClearPuzzleSlot(i);
 	}
-	PuzzleInventorySlots = TArray<FPuzzleInventorySlotItem>();
+	
 }
 
 void UPuzzleInventoryManager::RemovePuzzleSlotElementFromLevel(int index)
