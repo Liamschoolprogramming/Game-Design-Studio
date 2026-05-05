@@ -59,20 +59,21 @@ void UELSGameInstance::StopMusic(float FadeOutTime)
 	
 }
 
-void UELSGameInstance::SaveAudioSettings(float MusicVolumeIn, float SFXVolumeIn, float MasterVolumeIn)
+void UELSGameInstance::SaveAudioSettings(float MusicVolumeIn, float SFXVolumeIn, float MasterVolumeIn, float DialogueVolumeIn)
 {
 	if (SettingsSaveGame)
 	{
 		SettingsSaveGame->MusicVolume = MusicVolumeIn;
 		SettingsSaveGame->SFXVolume = SFXVolumeIn;
+		SettingsSaveGame->DialogueVolume = DialogueVolumeIn;
 		SettingsSaveGame->MasterVolume = MasterVolumeIn;
 
-		if (MasterSoundMix && MusicSoundClass && SFXSoundClass && MasterSoundClass)
+		if (MasterSoundMix && MusicSoundClass && SFXSoundClass && MasterSoundClass && DialogueSoundClass)
 		{
 			UGameplayStatics::SetSoundMixClassOverride(GetWorld(),MasterSoundMix,MasterSoundClass, MasterVolumeIn, 1,0,true);
 			UGameplayStatics::SetSoundMixClassOverride(GetWorld(),MasterSoundMix,MusicSoundClass,MusicVolumeIn, 1,0,true);
 			UGameplayStatics::SetSoundMixClassOverride(GetWorld(),MasterSoundMix,SFXSoundClass,SFXVolumeIn, 1,0,true);
-			
+			UGameplayStatics::SetSoundMixClassOverride(GetWorld(),MasterSoundMix,DialogueSoundClass,DialogueVolumeIn, 1,0,true);
 			UGameplayStatics::SaveGameToSlot(SettingsSaveGame,FString(TEXT("settings")), 0);
 			UGameplayStatics::PushSoundMixModifier(GetWorld(),MasterSoundMix);
 		}
@@ -89,10 +90,12 @@ void UELSGameInstance::LoadAudioSettings()
 		float MasterVolumeIn = SettingsSaveGame->MasterVolume;
 		float MusicVolumeIn = SettingsSaveGame->MusicVolume;
 		float SFXVolumeIn = SettingsSaveGame->SFXVolume;
+		float DialogueVolumeIn = SettingsSaveGame->DialogueVolume;
 
 		UGameplayStatics::SetSoundMixClassOverride(GetWorld(),MasterSoundMix,MasterSoundClass, MasterVolumeIn, 1,0,true);
 		UGameplayStatics::SetSoundMixClassOverride(GetWorld(),MasterSoundMix,MusicSoundClass,MusicVolumeIn, 1,0,true);
 		UGameplayStatics::SetSoundMixClassOverride(GetWorld(),MasterSoundMix,SFXSoundClass,SFXVolumeIn, 1,0,true);
+		UGameplayStatics::SetSoundMixClassOverride(GetWorld(),MasterSoundMix,DialogueSoundClass,DialogueVolumeIn, 1,0,true);
 		UGameplayStatics::PushSoundMixModifier(GetWorld(),MasterSoundMix);
 		
 	}

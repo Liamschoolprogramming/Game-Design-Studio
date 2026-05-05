@@ -3,8 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DialogueAudio.h"
 #include "UObject/Interface.h"
 #include "DialogueSharedTypes.h"
+#include "Sound/SoundBase.h"
 #include "DialogueExecutionHandler.generated.h"
 UENUM(BlueprintType)
 enum class EDialogueParamType : uint8
@@ -68,10 +70,10 @@ class DIALOGUEASSETEDITORRUNTIME_API IDialogueExecutionHandler
 	
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void SetDialogueText(FText InText) = 0;
+	virtual void SetDialogueText(FText InText, float TextSpeed = 0.1f, float SpeedVariance = 0) = 0;
 	virtual void ClearResponses() = 0;
 	virtual void AddResponseButton(FText InResponseText, int InOptionIndex) = 0;
-	virtual void SetupCameraAndSpeaker(FName CameraName, FName InSpeakerName, UTexture2D* Portrait) = 0;
+	virtual void SetupCameraAndSpeaker(FName CameraName, FName InSpeakerName, const TSoftObjectPtr<UObject> Portrait) = 0;
 	virtual void EndDialogue() = 0;
 	virtual TArray<int> GetQuestProgress(FName QuestKey) = 0;
 	virtual void StartQuest(FName QuestKey) = 0;
@@ -85,6 +87,8 @@ public:
 	virtual UWorld* GetWorldFromPlayer() = 0;
 	virtual void CheckDialogueState() = 0;
 	virtual void PlayDialogue(AActor* InOwner, class UDialogueAsset* InDialogueAsset, APlayerController* InPlayerController) = 0;
+	virtual void PlayAudio(FDialogueAudio AudioIn) = 0;
+	virtual void SkipLine(int32 Index, bool bContinueToNextLine) = 0;
 	
 
 	
