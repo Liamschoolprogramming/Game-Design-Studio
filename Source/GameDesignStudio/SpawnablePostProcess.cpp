@@ -18,6 +18,6 @@ void ASpawnablePostProcess::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	PostProcessComponent->BlendWeight = 0.f;
+	
 }
 

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BoundedPostProcess.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "PostProcessSubsystem.generated.h"
 
@@ -16,6 +17,15 @@ struct FPostProcessHandle
 
 	bool IsValid() const { return HandleID != INDEX_NONE; }
 	static FPostProcessHandle Invalid() { return FPostProcessHandle(); }
+
+	static FPostProcessHandle Generate()
+	{
+		static int32 Counter = 0;
+		FPostProcessHandle NewHandle;
+		NewHandle.HandleID = FPlatformAtomics::InterlockedIncrement(&Counter);
+		return NewHandle;
+	}
+	
 };
 
 
@@ -29,10 +39,16 @@ class GAMEDESIGNSTUDIO_API UPostProcessSubsystem : public UWorldSubsystem
 	
 public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	TArray<class ASpawnablePostProcess*> ActivePostProcessInstances;
+	TMap<int32, TObjectPtr<ABoundedPostProcess>> ActivePostProcessInstances;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	TMap<int32, FTimerHandle> TimerHandles;
 	
 	
 	
 	UFUNCTION(BlueprintCallable)
-	void SpawnPostProcess(float Life = 0.0f, ASpawnablePostProcess* SpawnInstance = nullptr);
+	FPostProcessHandle SpawnPostProcess(FTransform Transform,float Life = 0.0f, TSubclassOf<ABoundedPostProcess> SpawnClass = nullptr);
+
+	UFUNCTION(BlueprintCallable)
+	void DestroyPostProcess(FPostProcessHandle Handle);
 };

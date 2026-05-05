@@ -3,3 +3,8 @@
 
 #include "BoundedPostProcess.h"
 
+ABoundedPostProcess::ABoundedPostProcess()
+{
+	SphereComp = CreateDefaultSubobject<USphereComponent>("ColisionSphere");
+	RootComponent = SphereComp;
+}
