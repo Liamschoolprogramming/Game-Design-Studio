@@ -54,18 +54,31 @@ void UPuzzleInventoryManager::ClearPuzzleSlot(int index)
 {
 	if (index < PuzzleInventorySlots.Num())
 	{
+		RemovePuzzleSlotElementFromLevel(index);
 		PuzzleInventorySlots[index] = FPuzzleInventorySlotItem();
 	}
 }
 
 void UPuzzleInventoryManager::ClearPuzzleSlots()
 {
+	for (int i = 0; i < PuzzleInventorySlots.Num(); i++)
+	{
+		RemovePuzzleSlotElementFromLevel(i);
+	}
 	PuzzleInventorySlots = TArray<FPuzzleInventorySlotItem>();
 }
 
 void UPuzzleInventoryManager::RemovePuzzleSlotElementFromLevel(int index)
 {
 	PuzzleInventorySlots[index].bInLevel = false;
+	
+	if (PuzzleInventorySlots[index].PuzzleItemRef != nullptr)
+	{
+		PuzzleInventorySlots[index].PuzzleItemRef->Destroy();
+		PuzzleInventorySlots[index].PuzzleItemRef = nullptr;
+		PuzzleInventorySlots[index].bInLevel = false;
+		
+	}
 }
 
 void UPuzzleInventoryManager::ResetAllPuzzleSlotsToNotInLevel()
