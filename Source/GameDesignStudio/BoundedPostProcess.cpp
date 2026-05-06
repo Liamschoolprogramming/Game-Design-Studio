@@ -7,4 +7,6 @@ ABoundedPostProcess::ABoundedPostProcess()
 {
 	SphereComp = CreateDefaultSubobject<USphereComponent>("ColisionSphere");
 	RootComponent = SphereComp;
+	PostProcessComponent->bUnbound = false;
+	PostProcessComponent->SetupAttachment(SphereComp);
 }

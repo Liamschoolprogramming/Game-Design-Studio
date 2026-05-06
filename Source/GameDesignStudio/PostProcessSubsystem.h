@@ -47,7 +47,8 @@ public:
 	
 	
 	UFUNCTION(BlueprintCallable)
-	FPostProcessHandle SpawnPostProcess(FTransform Transform,float Life = 0.0f, TSubclassOf<ABoundedPostProcess> SpawnClass = nullptr);
+	FPostProcessHandle SpawnPostProcess(FTransform Transform, float Life = 0.0f, TSubclassOf<ABoundedPostProcess> SpawnClass = nullptr, bool bAttachToActor =
+		                                    false, AActor* OwningActor = nullptr);
 
 	UFUNCTION(BlueprintCallable)
 	void DestroyPostProcess(FPostProcessHandle Handle);
