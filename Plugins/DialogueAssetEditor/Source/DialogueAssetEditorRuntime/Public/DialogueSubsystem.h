@@ -35,6 +35,7 @@ public:
 	bool RegisterStateData(const TSoftObjectPtr<UDialogueAsset>& Tree, const FStateData& StateData);
 	bool UnregisterStateData(TSoftObjectPtr<UDialogueAsset> Tree);
 	
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	bool bInDialogue;
 
 	UPROPERTY()
