@@ -47,6 +47,10 @@ public:
 	UDialogueSpeakerComponent* CurrentSpeakerComponent = nullptr;
 
 	FOnCustomFunctionParam OnCustomFunctionParam;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+	float DialogueSpeed = 0.05f; // seconds between words
+
 private:
 	UPROPERTY()
 	UDialogueAsset* PlayingDialogueAsset = nullptr;
@@ -81,13 +85,35 @@ private:
 	UFUNCTION()
 	void ChooseFirstOptionAndEnableDialogue();
 
+	UPROPERTY()
+	bool bPlayAudioPerWord;
+
+	UPROPERTY()
+	USoundBase* DialogueSound;
+
+	UPROPERTY()
+	UAudioComponent* CurrentDialogueAudio = nullptr;
+
+	void SetUpPlayAudioPerWord(USoundBase* AudioToPlay);
+	void LoadAndPlayDialogueSound();
+	void RevealAllWords();
 	
+	float DialogueSpeedVariance = .1f;
+	
+	TArray<FString> TextArray;
+	FString DialogueText;
+	int32 CurrentWordIndex = 0;
+	FTimerHandle DialogueTimerHandle;
+	
+	bool bIsPlaying = false;
+
+	void RevealNextWord();
 	
 public:
-	virtual void SetDialogueText(FText InText) override;
+	virtual void SetDialogueText(FText InText, float TextSpeed, float SpeedVariance = 0) override;
 	virtual void ClearResponses() override;
 	virtual void AddResponseButton(FText InResponseText, int InOptionIndex) override;
-	virtual void SetupCameraAndSpeaker(FName CameraName, FName InSpeakerName, UTexture2D* Portrait) override;
+	virtual void SetupCameraAndSpeaker(FName CameraName, FName InSpeakerName, const TSoftObjectPtr<UObject> Portrait) override;
 	virtual void EndDialogue() override;
 	virtual TArray<int> GetQuestProgress(FName QuestKey) override;
 	virtual void StartQuest(FName QuestKey) override;
@@ -101,5 +127,8 @@ public:
 	virtual UWorld* GetWorldFromPlayer() override;
 	virtual void CheckDialogueState() override;
 	virtual void PlayDialogue(AActor* InOwner, class UDialogueAsset* InDialogueAsset, APlayerController* InPlayerController) override;
+	virtual void PlayAudio(FDialogueAudio AudioIn) override;
+	virtual void SkipLine(int32 Index, bool bContinueToNextLine) override;
 	//virtual void CallCustomFunctionWithParams(FString FunctionName, const FDialogueParameters& Parameters) override;
 };
+

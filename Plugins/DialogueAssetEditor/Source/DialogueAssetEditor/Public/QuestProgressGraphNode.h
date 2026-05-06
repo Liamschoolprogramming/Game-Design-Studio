@@ -56,10 +56,6 @@ public: //UEdGraph interface
 		return NodeInfo;
 	}
 
-	virtual UQuestProgressNodeInfo* GetDialogueNodeInfo()
-	{
-		return NodeInfo;
-	}
 
 	
 	virtual void InitNodeBehaviour(UObject* Owner) override
@@ -76,10 +72,15 @@ public: //UEdGraph interface
 	{
 		return NodeBehaviour;
 	}
+	virtual UQuestProgressNodeInfo* GetDialogueNodeInfo()
+	{
+		return NodeInfo;
+	}
+
+	
 protected:
 	UPROPERTY()
 	class UQuestProgressBehaviour* NodeBehaviour = nullptr;
-protected:
 	UPROPERTY()
 	class UQuestProgressNodeInfo* NodeInfo = nullptr;
 

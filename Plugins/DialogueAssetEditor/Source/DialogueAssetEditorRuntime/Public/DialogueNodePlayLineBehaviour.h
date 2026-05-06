@@ -18,8 +18,10 @@ virtual void Execute(UDialogueNodeInfoBase* NodeInfoBase, IDialogueExecutionHand
 {
     UDialogueNodeInfo* NodeInfo = Cast<UDialogueNodeInfo>(NodeInfoBase);
     if(!NodeInfo) return;
+
     
-    Handler->SetDialogueText(NodeInfo->DialogueText);
+    Handler->SetDialogueText(NodeInfo->DialogueText, NodeInfo->DialogueSpeed, NodeInfo->SpeedVariance);
+    Handler->PlayAudio(NodeInfo->DialogueAudio);
     Handler->ClearResponses();
     
     int OptionIndex = 0;

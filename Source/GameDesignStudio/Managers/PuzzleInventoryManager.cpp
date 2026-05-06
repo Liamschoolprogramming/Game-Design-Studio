@@ -54,18 +54,31 @@ void UPuzzleInventoryManager::ClearPuzzleSlot(int index)
 {
 	if (index < PuzzleInventorySlots.Num())
 	{
+		RemovePuzzleSlotElementFromLevel(index);
 		PuzzleInventorySlots[index] = FPuzzleInventorySlotItem();
 	}
 }
 
 void UPuzzleInventoryManager::ClearPuzzleSlots()
 {
-	PuzzleInventorySlots = TArray<FPuzzleInventorySlotItem>();
+	for (int i = 0; i < PuzzleInventorySlots.Num(); i++)
+	{
+		ClearPuzzleSlot(i);
+	}
+	
 }
 
 void UPuzzleInventoryManager::RemovePuzzleSlotElementFromLevel(int index)
 {
 	PuzzleInventorySlots[index].bInLevel = false;
+	
+	if (PuzzleInventorySlots[index].PuzzleItemRef != nullptr)
+	{
+		PuzzleInventorySlots[index].PuzzleItemRef->Destroy();
+		PuzzleInventorySlots[index].PuzzleItemRef = nullptr;
+		PuzzleInventorySlots[index].bInLevel = false;
+		
+	}
 }
 
 void UPuzzleInventoryManager::ResetAllPuzzleSlotsToNotInLevel()
@@ -92,6 +105,7 @@ void UPuzzleInventoryManager::PlacePuzzleItemInLevel(int index)
 	if (index >= PuzzleInventorySlots.Num()) return;
 	
 	FPuzzleInventorySlotItem PuzzleItem = PuzzleInventorySlots[index];
+	
 	if (PuzzleItem.bInLevel)
 	{
 		// snap position of puzzle ref to player pickup point
@@ -100,9 +114,16 @@ void UPuzzleInventoryManager::PlacePuzzleItemInLevel(int index)
 		// and B to put back in inventory
 		if (PuzzleItem.PuzzleItemRef != nullptr)
 		{
+			
 			APuzzleInteractive_Pickupable* PickupablePuzzleItem = Cast<APuzzleInteractive_Pickupable>(PuzzleItem.PuzzleItemRef);
 			if (PickupablePuzzleItem != nullptr)
 			{
+				if (PickupablePuzzleItem->bHasActivatingElement)
+				{
+					// warn player on screen
+					GEngine->AddOnScreenDebugMessage(-1, 0.5, FColor::Red, "Cannot pickup activating element!");
+					return;
+				}
 				APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(),0));
 				// do not pickup a second object
 				if (PlayerCharacter->PickupableObject) return;

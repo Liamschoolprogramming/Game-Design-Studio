@@ -74,12 +74,6 @@ virtual UDialogueNodeBehaviour* GetNodeBehaviour() const override\
 	{\
 		return NodeBehaviour;\
 	}\
-protected:\
-UPROPERTY()\
-	class NodeBehaviourClass* NodeBehaviour = nullptr;\
-protected:\
-UPROPERTY()\
-class NodeInfoClass* NodeInfo = nullptr;\
 private:\
 	void HandleDeleteNode();\
 	void HandleDeletePin();\
@@ -97,7 +91,7 @@ FText NodeClass::GetNodeTitle(ENodeTitleType::Type TitleType) const\
 {\
 	if (NodeInfo != nullptr)\
 	{\
-		FString OutputString = TitleName;\
+		FString OutputString = TEXT(TitleName);\
 		if (!ToFString(NodeInfo->TitleVariable).IsEmpty())\
 		{\
 			FString ActionData = ToFString(NodeInfo->TitleVariable);\

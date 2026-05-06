@@ -11,6 +11,7 @@
 #include "DialogueGraphSchema.h"
 #include "DialogueAssetEditor.h"
 #include "DialogueGraphNodeFactory.h"
+#include "DialogueMacros.h"
 #include "DialogueNodeInfo.h"
 #include "QuestProgressGraphNode.h"
 #include "RandomDialogueGraphNode.h"
@@ -61,6 +62,8 @@ void FDialogueAssetEditorApp::InitEditor(const EToolkitMode::Type Mode, const TS
 	SetCurrentMode(TEXT("DialogueAssetAppMode"));
 	
 	UpdateEditorGraphFromWorkingAsset();
+	
+	bGraphFullyLoaded = true;
 	
 	
 }
@@ -181,6 +184,12 @@ void FDialogueAssetEditorApp::OnWorkingAssetPreSave()
  */
 void FDialogueAssetEditorApp::UpdateWorkingAssetFromGraph()
 {
+	if (!bGraphFullyLoaded)
+	{
+		UE_LOG(FDialogueAssetEditorAppSub, Warning, 
+			TEXT("UpdateWorkingAssetFromGraph called before graph was loaded — skipping."));
+		return;
+	}
 	if (WorkingAsset == nullptr || WorkingGraph == nullptr)
 	{
 		return;
@@ -189,6 +198,19 @@ void FDialogueAssetEditorApp::UpdateWorkingAssetFromGraph()
 	{
 		return;
 	}
+	
+	// LOG 1: What's in the WorkingGraph before we do anything?
+	UE_LOG(FDialogueAssetEditorAppSub, Warning, TEXT("=== BEGIN COMPILE ==="));
+	UE_LOG(FDialogueAssetEditorAppSub, Warning, TEXT("WorkingGraph has %d nodes:"), WorkingGraph->Nodes.Num());
+	for (UEdGraphNode* Node : WorkingGraph->Nodes)
+	{
+		UDialogueGraphNodeBase* DN = Cast<UDialogueGraphNodeBase>(Node);
+		UE_LOG(FDialogueAssetEditorAppSub, Warning, TEXT("  - Class: %s | DialogueType: %s"),
+			*Node->GetClass()->GetName(),
+			DN ? *DN->GetDialogueNodeType().ToString() : TEXT("NOT A DIALOGUE NODE"));
+	}
+
+	
 	UDialogueRuntimeGraph* RuntimeGraph = NewObject<UDialogueRuntimeGraph>(WorkingAsset);
 	WorkingAsset->Graph = RuntimeGraph;
 	
@@ -198,7 +220,14 @@ void FDialogueAssetEditorApp::UpdateWorkingAssetFromGraph()
 	
 	for (UEdGraphNode* UiNode : WorkingGraph->Nodes)
 	{
-		
+		UDialogueGraphNodeBase* UiDialogueNode = Cast<UDialogueGraphNodeBase>(UiNode);
+		if (!UiDialogueNode)
+		{
+			UE_LOG(FDialogueAssetEditorAppSub, Warning, 
+				TEXT("CompileGraph: Skipping non-dialogue node '%s'"), 
+				*UiNode->GetClass()->GetName());
+			continue;
+		}
 		
 		
 		
@@ -230,7 +259,7 @@ void FDialogueAssetEditorApp::UpdateWorkingAssetFromGraph()
 		}
 		
 	
-		UDialogueGraphNodeBase* UiDialogueNode = Cast<UDialogueGraphNodeBase>(UiNode);
+		
 
 		// Ensure NodeBehaviour exists
 		if (UiDialogueNode->GetNodeBehaviour() == nullptr)
@@ -238,8 +267,32 @@ void FDialogueAssetEditorApp::UpdateWorkingAssetFromGraph()
 			UiDialogueNode->InitNodeBehaviour(UiDialogueNode);
 		}
 
-		RuntimeNode->NodeBehaviour = DuplicateObject(UiDialogueNode->GetNodeBehaviour(), RuntimeNode);
-		RuntimeNode->NodeInfo = DuplicateObject(UiDialogueNode->GetNodeInfo(), RuntimeNode);
+		 UDialogueNodeBehaviour* Behaviour = UiDialogueNode->GetNodeBehaviour();
+		 UDialogueNodeInfoBase* NodeInfo  = UiDialogueNode->GetNodeInfo();
+		
+		if (!Behaviour)
+		{
+			UE_LOG(FDialogueAssetEditorAppSub, Error,
+				TEXT("CompileGraph: NodeBehaviour is null after init on node '%s' — skipping."),
+				*UiDialogueNode->GetName());
+			continue;
+		}
+
+		if (!NodeInfo)
+		{
+			UE_LOG(FDialogueAssetEditorAppSub, Error,
+				TEXT("CompileGraph: NodeInfo is null on node '%s' — skipping."),
+				*UiDialogueNode->GetName());
+			continue;
+		}
+		
+		UE_LOG(FDialogueAssetEditorAppSub, Warning,
+		   TEXT("  ADD: %s | Type: %s"),
+		   *UiDialogueNode->GetName(),
+		   *UiDialogueNode->GetDialogueNodeType().ToString());
+
+		RuntimeNode->NodeBehaviour = DuplicateObject(Behaviour, RuntimeNode);
+		RuntimeNode->NodeInfo = DuplicateObject(NodeInfo, RuntimeNode);
 		RuntimeNode->NodeType = UiDialogueNode->GetDialogueNodeType();
 			
 		
@@ -252,6 +305,12 @@ void FDialogueAssetEditorApp::UpdateWorkingAssetFromGraph()
 		UDialogueeRuntimePin* Pin1 = IdToPinMap[Connection.first];
 		UDialogueeRuntimePin* Pin2 = IdToPinMap[Connection.second];
 		Pin1->Connection = Pin2;
+	}
+	
+	UE_LOG(FDialogueAssetEditorAppSub, Warning, TEXT("=== END COMPILE: %d runtime nodes ==="), RuntimeGraph->Nodes.Num());
+	for (UDialogueRuntimeNode* RN : RuntimeGraph->Nodes)
+	{
+		UE_LOG(FDialogueAssetEditorAppSub, Warning, TEXT("  COMPILED: %s"), *RN->NodeType.ToString());
 	}
 }
 /**
@@ -335,5 +394,26 @@ void FDialogueAssetEditorApp::UpdateEditorGraphFromWorkingAsset()
 		UEdGraphPin* ToPin = IdToPinMap[Connection.second];
 		FromPin->LinkedTo.Add(ToPin);
 		ToPin->LinkedTo.Add(FromPin);
+	}
+	
+	//repair broken graph
+	
+	bool bHasStartNode = false;
+	for (UEdGraphNode* Node : WorkingGraph->Nodes)
+	{
+		UDialogueGraphNodeBase* DialogueNode = Cast<UDialogueGraphNodeBase>(Node);
+		if (DialogueNode && DialogueNode->GetDialogueNodeType() == "StartNode")
+		{
+			bHasStartNode = true;
+			break;
+		}
+	}
+
+	if (!bHasStartNode)
+	{
+		UE_LOG(FDialogueAssetEditorAppSub, Warning, 
+			TEXT("No start node found in graph '%s' — creating one."), 
+			*WorkingAsset->GetName());
+		WorkingGraph->GetSchema()->CreateDefaultNodesForGraph(*WorkingGraph);
 	}
 }
