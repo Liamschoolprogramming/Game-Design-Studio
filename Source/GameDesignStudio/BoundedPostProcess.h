@@ -23,4 +23,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
 	USphereComponent* SphereComp;
 	
+	UFUNCTION(BlueprintCallable)
+	void FadeWeight(float Speed);
+	
+	virtual void Tick(float DeltaTime) override;
+	
+	private:
+	bool bFading;
+	float FadeSpeed;
+	
 };

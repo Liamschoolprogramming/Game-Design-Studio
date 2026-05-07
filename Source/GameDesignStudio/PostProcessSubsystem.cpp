@@ -4,38 +4,52 @@
 #include "PostProcessSubsystem.h"
 
 
-FPostProcessHandle UPostProcessSubsystem::SpawnPostProcess(FTransform Transform, float Life, TSubclassOf<ABoundedPostProcess> SpawnClass, bool bAttachToActor, AActor* OwningActor)
+FPostProcessHandle UPostProcessSubsystem::SpawnPostProcess(TSubclassOf<ABoundedPostProcess> SpawnClass, FPostProcessSpawnParams SpawnParams)
 {
 	if (!SpawnClass) return FPostProcessHandle::Invalid();
 	if (!GetWorld()) return FPostProcessHandle::Invalid();
 	
-	if (Life == 0.0f)
+	
+	
+	if (SpawnParams.Life == 0.0f)
 	{
 		FPostProcessHandle PostProcessHandle = FPostProcessHandle::Generate();
+		PostProcessHandle.SpawnParams = SpawnParams;
 
-		FActorSpawnParameters SpawnParams;
-		ABoundedPostProcess* NewPostProcess = GetWorld()->SpawnActor<ABoundedPostProcess>(SpawnClass,Transform, SpawnParams);
+		FActorSpawnParameters SpawnActorParams;
+		ABoundedPostProcess* NewPostProcess = GetWorld()->SpawnActor<ABoundedPostProcess>(SpawnClass,SpawnParams.Transform, SpawnActorParams);
+		if (SpawnParams.bFadeIn)
+		{
+			UE_LOG(LogTemp, Log, TEXT("FadeIn"));
+			NewPostProcess->FadeWeight(SpawnParams.FadeSpeed);
+		}
 		ActivePostProcessInstances.Add(PostProcessHandle.HandleID, NewPostProcess);
-		if (bAttachToActor && OwningActor)
+		if (SpawnParams.bAttachToActor && SpawnParams.OwningActor)
 		{
 			FAttachmentTransformRules AttachmentTransformRules = FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true);
 	
-			NewPostProcess->AttachToActor(OwningActor, AttachmentTransformRules);
+			NewPostProcess->AttachToActor(SpawnParams.OwningActor, AttachmentTransformRules);
 		}
 		return PostProcessHandle;
 	}
 	else
 	{
 		FPostProcessHandle PostProcessHandle = FPostProcessHandle::Generate();
-		FActorSpawnParameters SpawnParams;
-		ABoundedPostProcess* NewPostProcess = GetWorld()->SpawnActor<ABoundedPostProcess>(SpawnClass,Transform, SpawnParams);
-		ActivePostProcessInstances.Add(PostProcessHandle.HandleID, NewPostProcess);
+		PostProcessHandle.SpawnParams = SpawnParams;
 
-		if (bAttachToActor && OwningActor)
+		FActorSpawnParameters SpawnActorParams;
+		ABoundedPostProcess* NewPostProcess = GetWorld()->SpawnActor<ABoundedPostProcess>(SpawnClass,SpawnParams.Transform, SpawnActorParams);
+		ActivePostProcessInstances.Add(PostProcessHandle.HandleID, NewPostProcess);
+		if (SpawnParams.bFadeIn)
+		{
+			UE_LOG(LogTemp, Log, TEXT("FadeIn"));
+			NewPostProcess->FadeWeight(SpawnParams.FadeSpeed);
+		}
+		if (SpawnParams.bAttachToActor && SpawnParams.OwningActor)
 		{
 			FAttachmentTransformRules AttachmentTransformRules = FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true);
 	
-			NewPostProcess->AttachToActor(OwningActor, AttachmentTransformRules);
+			NewPostProcess->AttachToActor(SpawnParams.OwningActor, AttachmentTransformRules);
 		}
 		FTimerHandle NewHandle;
 		FTimerDelegate Delegate;
@@ -47,7 +61,7 @@ FPostProcessHandle UPostProcessSubsystem::SpawnPostProcess(FTransform Transform,
 		GetWorld()->GetTimerManager().SetTimer(
 		NewHandle,
 		Delegate,
-		Life,
+		SpawnParams.Life,
 		false // looping
 	);
 		TimerHandles.Add(PostProcessHandle.HandleID, NewHandle);
@@ -59,7 +73,9 @@ void UPostProcessSubsystem::DestroyPostProcess(FPostProcessHandle Handle)
 {
 	TObjectPtr<ABoundedPostProcess>* PostProcess = ActivePostProcessInstances.Find(Handle.HandleID);
 	if (!PostProcess) return;
-
+	
+	
+	
 	if (FTimerHandle* Timer = TimerHandles.Find(Handle.HandleID))
 	{
 		GetWorld()->GetTimerManager().ClearTimer(*Timer);
@@ -68,8 +84,17 @@ void UPostProcessSubsystem::DestroyPostProcess(FPostProcessHandle Handle)
 
 	ActivePostProcessInstances.Remove(Handle.HandleID);
     
-	if ((*PostProcess)->IsValidLowLevel())
+	if (PostProcess->Get())
 	{
-		(*PostProcess)->Destroy();
+		if (Handle.SpawnParams.bFadeOut)
+		{
+			UE_LOG(LogTemp, Log, TEXT("FadeOut"));
+			PostProcess->Get()->FadeWeight(Handle.SpawnParams.FadeSpeed * -1);
+		}
+		else
+		{
+			(*PostProcess)->Destroy();
+		}
+		
 	}
 }
