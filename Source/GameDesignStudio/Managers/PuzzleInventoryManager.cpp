@@ -40,10 +40,7 @@ void UPuzzleInventoryManager::SetPuzzleSlot(FPuzzleInventoryItem PuzzleItem, int
 		// check if that slot has a puzzle item that is in-level
 		// if so, it should be removed from level.
 		FPuzzleInventorySlotItem ExistingPuzzleItemInSlot = PuzzleInventorySlots[SlotIndex];
-		if (ExistingPuzzleItemInSlot.bInLevel)
-		{
-			ExistingPuzzleItemInSlot.PuzzleItemRef->Destroy();
-		}
+		RemovePuzzleSlotElementFromLevel(SlotIndex);
 		
 		FPuzzleInventorySlotItem NewInventorySlotItem = FPuzzleInventorySlotItem(PuzzleItem, SlotIndex);
 		PuzzleInventorySlots[SlotIndex] = NewInventorySlotItem;
@@ -76,8 +73,6 @@ void UPuzzleInventoryManager::RemovePuzzleSlotElementFromLevel(int index)
 	{
 		PuzzleInventorySlots[index].PuzzleItemRef->Destroy();
 		PuzzleInventorySlots[index].PuzzleItemRef = nullptr;
-		PuzzleInventorySlots[index].bInLevel = false;
-		
 	}
 }
 
