@@ -6,6 +6,7 @@
 #include "DialogueNodeBehaviour.h"
 #include "DialogueExecutionHandler.h"
 #include "DialogueNodeInfo.h"
+#include "DialogueSubsystem.h"
 #include "StateBranchNodeInfo.h"
 #include "StateSwitchNodeBehaviour.generated.h"
 

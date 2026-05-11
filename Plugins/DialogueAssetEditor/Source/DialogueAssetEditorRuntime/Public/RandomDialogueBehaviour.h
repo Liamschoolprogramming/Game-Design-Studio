@@ -26,14 +26,26 @@ class DIALOGUEASSETEDITORRUNTIME_API URandomDialogueBehaviour : public UDialogue
 		
 		//pick a random line from responses
 		FText DialogueText;
+		FDialogueAudio Sound;
+		float Speed = 3.5;
 		if (NodeInfo->DialogueOptions.Num() > 0)
 		{
 			int32 RandomIndex = FMath::RandRange(0, NodeInfo->DialogueOptions.Num() - 1);
 			
 			DialogueText = NodeInfo->DialogueOptions[RandomIndex];
+			if (NodeInfo->AudioOptions.IsValidIndex(RandomIndex))
+			{
+				Sound = NodeInfo->AudioOptions[RandomIndex];
+			}
+			if (NodeInfo->DialogueSpeedOptions.IsValidIndex(RandomIndex))
+			{
+				Speed = NodeInfo->DialogueSpeedOptions[RandomIndex];
+			}
+			
 		}
 		
-		Handler->SetDialogueText(DialogueText);
+		Handler->SetDialogueText(DialogueText, Speed, NodeInfo->SpeedVariance);
+		Handler->PlayAudio(Sound);
 		Handler->ClearResponses();
     
 		int OptionIndex = 0;

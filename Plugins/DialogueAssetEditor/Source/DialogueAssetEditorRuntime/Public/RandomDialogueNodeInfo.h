@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DialogueAudio.h"
 #include "DialogueNodeInfo.h"
 #include "DialogueNodeInfoBase.h"
 #include "UObject/Object.h"
@@ -19,5 +20,15 @@ class DIALOGUEASSETEDITORRUNTIME_API URandomDialogueNodeInfo : public UDialogueN
 	public:
 	UPROPERTY(EditAnywhere)
 	TArray<FText> DialogueOptions;
+	
+	UPROPERTY(EditAnywhere)
+	//line will play at the same index as the dialogue text
+	TArray<FDialogueAudio> AudioOptions;
+	
+	UPROPERTY(EditAnywhere)
+	//bigger means faster
+	TArray<float> DialogueSpeedOptions;
+	
+	
 	
 };

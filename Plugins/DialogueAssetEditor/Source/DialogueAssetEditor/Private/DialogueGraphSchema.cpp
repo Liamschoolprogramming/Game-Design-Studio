@@ -58,6 +58,9 @@ void UDialogueGraphSchema::CreateDefaultNodesForGraph(UEdGraph& Graph) const
 	StartNode->NodePosX = 0;
 	StartNode->NodePosY = 0;
 	
+	StartNode->InitNodeInfo(StartNode);
+	StartNode->InitNodeBehaviour(StartNode);
+	
 	StartNode->CreateDialoguePin(EGPD_Output, TEXT("Start"));
 	
 	Graph.AddNode(StartNode, true, true);
