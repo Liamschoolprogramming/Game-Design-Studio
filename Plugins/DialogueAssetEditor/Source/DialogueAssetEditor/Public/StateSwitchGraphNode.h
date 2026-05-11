@@ -25,4 +25,11 @@ class DIALOGUEASSETEDITOR_API UStateSwitchGraphNode : public UDialogueGraphNodeB
 		UStateSwitchNodeBehaviour,
 	    true
 	)
+	
+protected:
+	UPROPERTY()
+	class UStateBranchNodeInfo* NodeInfo = nullptr;
+	UPROPERTY()
+	class UStateSwitchNodeBehaviour* NodeBehaviour = nullptr;
+	
 };

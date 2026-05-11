@@ -35,6 +35,7 @@ public:
 	bool RegisterStateData(const TSoftObjectPtr<UDialogueAsset>& Tree, const FStateData& StateData);
 	bool UnregisterStateData(TSoftObjectPtr<UDialogueAsset> Tree);
 	
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	bool bInDialogue;
 
 	UPROPERTY()
@@ -65,6 +66,9 @@ public:
 	 * @param DialoguePlayerReference the Dialogue Player to pass in (must implement IDialogueExecutionHandler)
 	 **/
 	void ChooseOptionAtIndex(int32 Index);
+	
+	UFUNCTION(BlueprintCallable, Category = "Dialogue")
+	void SkipLine(int32 Index, bool bContinueToNextLine);
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
 	void DialogueBPFunction(const FString& ActionData);

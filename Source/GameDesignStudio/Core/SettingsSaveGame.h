@@ -20,6 +20,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings", SaveGame)
 	float SFXVolume = 0.75f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings", SaveGame)
+	float DialogueVolume = 0.75f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings", SaveGame)
 	float MasterVolume =1.0f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings", SaveGame)
