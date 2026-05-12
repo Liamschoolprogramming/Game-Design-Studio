@@ -39,6 +39,6 @@ public:
 	//random variation between words
 	float SpeedVariance = .1f;
 	
-	UPROPERTY(EditAnywhere)
-	UTexture2D* CharacterPortrait;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue", meta =(AllowedClasses = "/Script/Engine.Texture2D,/Script/Engine.MaterialInterface", DisplayThumbnail = "true"))
+	TSoftObjectPtr<UObject> CharacterPortrait = nullptr;
 };
