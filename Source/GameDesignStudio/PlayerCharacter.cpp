@@ -57,6 +57,9 @@ APlayerCharacter::APlayerCharacter()
 	DialogueSpeakerComponent->SetWorldTransform(CameraAttachPoint->GetComponentTransform());
 	DialogueSpeakerComponent->SetRelativeLocation(FVector(0,0,20));
 	DialogueSpeakerComponent->SetRelativeRotation(FRotator(-10,- 180,0));
+
+	DropShadow = CreateDefaultSubobject<UDropShadow>(FName("DropShadow"));
+	DropShadow->SetupAttachment(RootComponent);
 	
 }
 
@@ -163,6 +166,8 @@ void APlayerCharacter::BeginPlay()
 		}
 	}
 	
+	// spawn in the shadow quad if it doesnt exist. do that here
+	// hi studio team
 
 	
 	
@@ -312,6 +317,9 @@ void APlayerCharacter::SetSphereToPossessionRange()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	
+	
 
 }
 //TODO should be moved to PlayerController.cpp
