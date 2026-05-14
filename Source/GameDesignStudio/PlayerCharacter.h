@@ -6,6 +6,7 @@
 #include "CameraAttachPoint.h"
 #include "DialogueInterface.h"
 #include "DialogueSpeakerComponent.h"
+#include "DropShadow.h"
 #include "EngineUtils.h"
 #include "GameFramework/Character.h"
 #include "EnhancedInputComponent.h"
@@ -65,6 +66,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void CheckForPossessablesInRange();
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Components")
+	UDropShadow* DropShadow = nullptr;
 	
 protected:
 	// Called when the game starts or when spawned
