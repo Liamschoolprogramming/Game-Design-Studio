@@ -95,6 +95,8 @@ UDialogueSpeakerComponent* UDialogueSystemPlayer::FindSpeakerComponent(UWorld* W
 		if (It->GetWorld() != World)
 			continue;
 
+		UE_LOG(LogTemp, Display, TEXT("FindSpeakerComponent %s"), *It->SpeakerName.ToString());
+
 		if (It->SpeakerName == SpeakerName)
 		{
 			return *It;
