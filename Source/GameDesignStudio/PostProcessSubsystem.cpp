@@ -17,13 +17,16 @@ FPostProcessHandle UPostProcessSubsystem::SpawnPostProcess(TSubclassOf<ABoundedP
 		PostProcessHandle.SpawnParams = SpawnParams;
 
 		FActorSpawnParameters SpawnActorParams;
-		ABoundedPostProcess* NewPostProcess = GetWorld()->SpawnActor<ABoundedPostProcess>(SpawnClass,SpawnParams.Transform, SpawnActorParams);
+		ABoundedPostProcess* NewPostProcess = GetWorld()->SpawnActorDeferred<ABoundedPostProcess>(SpawnClass,SpawnParams.Transform, SpawnParams.OwningActor);
+		NewPostProcess->bFadeIn = true;
+		NewPostProcess->FinishSpawning(SpawnParams.Transform);
+		ActivePostProcessInstances.Add(PostProcessHandle.HandleID, NewPostProcess);
 		if (SpawnParams.bFadeIn)
 		{
 			UE_LOG(LogTemp, Log, TEXT("FadeIn"));
 			NewPostProcess->FadeWeight(SpawnParams.FadeSpeed);
+			NewPostProcess->bFadeIn = true;
 		}
-		ActivePostProcessInstances.Add(PostProcessHandle.HandleID, NewPostProcess);
 		if (SpawnParams.bAttachToActor && SpawnParams.OwningActor)
 		{
 			FAttachmentTransformRules AttachmentTransformRules = FAttachmentTransformRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true);
@@ -38,12 +41,16 @@ FPostProcessHandle UPostProcessSubsystem::SpawnPostProcess(TSubclassOf<ABoundedP
 		PostProcessHandle.SpawnParams = SpawnParams;
 
 		FActorSpawnParameters SpawnActorParams;
-		ABoundedPostProcess* NewPostProcess = GetWorld()->SpawnActor<ABoundedPostProcess>(SpawnClass,SpawnParams.Transform, SpawnActorParams);
+		
+		ABoundedPostProcess* NewPostProcess = GetWorld()->SpawnActorDeferred<ABoundedPostProcess>(SpawnClass,SpawnParams.Transform, SpawnParams.OwningActor);
+		NewPostProcess->bFadeIn = true;
+		NewPostProcess->FinishSpawning(SpawnParams.Transform);
 		ActivePostProcessInstances.Add(PostProcessHandle.HandleID, NewPostProcess);
 		if (SpawnParams.bFadeIn)
 		{
 			UE_LOG(LogTemp, Log, TEXT("FadeIn"));
 			NewPostProcess->FadeWeight(SpawnParams.FadeSpeed);
+			
 		}
 		if (SpawnParams.bAttachToActor && SpawnParams.OwningActor)
 		{
