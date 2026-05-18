@@ -148,6 +148,7 @@ void UDialogueSubsystem::StartDialogue(UDialogueAsset* InDialogueAsset, AActor* 
 		if (IDialogueExecutionHandler* InterfacePtr = Cast<IDialogueExecutionHandler>(Instance))
 		{
 			InterfacePtr->PlayDialogue(InOwner, InDialogueAsset, InPlayerController);
+			OnCameraChange = InterfacePtr->OnCameraChange;
 			bInDialogue = true;
 		}
 	}
@@ -184,6 +185,11 @@ void UDialogueSubsystem::SkipLine(int32 Index, bool bContinueToNextLine)
 		
 	
 	}
+}
+
+FOnCameraChange& UDialogueSubsystem::GetOnCameraChange()
+{
+	return OnCameraChange;
 }
 
 void UDialogueSubsystem::SaveDialogue()

@@ -526,6 +526,12 @@ void APlayerControllerBase::Move(const FInputActionValue& Value)
 	// do not move possessable turrets
 	APlayerCharacter* OurCharacter = Cast<APlayerCharacter>(GetPawn());
 	APossessableEntity* PossessableEntity = Cast<APossessableEntity>(GetPawn());
+	
+	if (!OurCharacter)
+	{
+		return;
+	}
+	
 	if (PossessableEntity)
 	{
 		if (PossessableEntity->PlayerCharacterType == EPlayerCharacterType::Turret)

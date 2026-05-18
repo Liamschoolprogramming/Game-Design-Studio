@@ -27,6 +27,10 @@ void ABoundedPostProcess::FadeWeight(float Speed)
 void ABoundedPostProcess::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (PostProcessComponent)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%f Weight"), PostProcessComponent->BlendWeight);
+	}
 	if (bFading && PostProcessComponent)
 	{
 		
@@ -41,5 +45,15 @@ void ABoundedPostProcess::Tick(float DeltaTime)
 		{
 			Destroy();
 		}
+	}
+}
+
+void ABoundedPostProcess::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	if (bFadeIn)
+	{
+		PostProcessComponent->BlendWeight = 0.0f;
 	}
 }

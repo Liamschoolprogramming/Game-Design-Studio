@@ -5,3 +5,7 @@
 
 
 // Add default functionality here for any IDialogueExecutionHandler functions that are not pure virtual.
+FOnCameraChange& IDialogueExecutionHandler::GetOnCameraChanged()
+{
+	return OnCameraChange;
+}

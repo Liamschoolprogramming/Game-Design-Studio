@@ -28,7 +28,10 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 	
-	private:
+	bool bFadeIn;
+
+	void BeginPlay() override;
+private:
 	bool bFading;
 	float FadeSpeed;
 	

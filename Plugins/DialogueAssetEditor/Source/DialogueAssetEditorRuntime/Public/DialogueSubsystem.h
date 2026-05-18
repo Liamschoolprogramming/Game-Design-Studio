@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DialogueExecutionHandler.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DialogueSharedTypes.h"
 #include "InstancedStruct.h"
@@ -73,6 +74,10 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Dialogue")
 	void DialogueBPFunction(const FString& ActionData);
 	
+	FOnCameraChange OnCameraChange;
+	
+	
+	FOnCameraChange& GetOnCameraChange();
 	
 	void SaveDialogue();
 	void LoadDialogue();
@@ -82,6 +87,9 @@ public:
 	
 private:
 	TMap<FSoftObjectPath, FStateData> DialogueTreeStates;
+	
+	
+	
 };
 
 

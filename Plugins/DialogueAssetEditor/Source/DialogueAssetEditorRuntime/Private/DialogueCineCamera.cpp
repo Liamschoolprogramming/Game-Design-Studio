@@ -117,7 +117,7 @@ void ADialogueCineCamera::SetAnimationAlongPath(const float Percent)
 		FVector Forward = BaseQuat.GetUpVector();
 
 		// Create offset around that forward axis
-		FQuat OffsetQuat(Forward, FMath::DegreesToRadians(AnimationOffset));
+		FQuat OffsetQuat(Forward, FMath::DegreesToRadians(AnimationAngleOffset));
 
 		// Apply in local space
 		FQuat FinalQuat = OffsetQuat * BaseQuat;
