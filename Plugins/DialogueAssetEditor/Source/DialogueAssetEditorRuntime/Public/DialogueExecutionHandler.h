@@ -53,10 +53,13 @@ struct FDialogueParameters
 
 
 // This class does not need to be modified.
+DECLARE_MULTICAST_DELEGATE(FOnCameraChange)
 UINTERFACE()
 class UDialogueExecutionHandler : public UInterface
 {
 	GENERATED_BODY()
+	
+	
 };
 
 /**
@@ -70,6 +73,7 @@ class DIALOGUEASSETEDITORRUNTIME_API IDialogueExecutionHandler
 	
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	FOnCameraChange OnCameraChange;
 	virtual void SetDialogueText(FText InText, float TextSpeed = 0.1f, float SpeedVariance = 0) = 0;
 	virtual void ClearResponses() = 0;
 	virtual void AddResponseButton(FText InResponseText, int InOptionIndex) = 0;
@@ -89,6 +93,7 @@ public:
 	virtual void PlayDialogue(AActor* InOwner, class UDialogueAsset* InDialogueAsset, APlayerController* InPlayerController) = 0;
 	virtual void PlayAudio(FDialogueAudio AudioIn) = 0;
 	virtual void SkipLine(int32 Index, bool bContinueToNextLine) = 0;
+	virtual FOnCameraChange& GetOnCameraChanged();
 	
 
 	

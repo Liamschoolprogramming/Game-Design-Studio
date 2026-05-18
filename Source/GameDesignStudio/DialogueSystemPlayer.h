@@ -27,6 +27,7 @@ class UQuestDialogueUIController;
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnCustomFunctionParam, FString, FDialogueParameters)
 
+
 UCLASS()
 class GAMEDESIGNSTUDIO_API UDialogueSystemPlayer : public UObject, public IDialogueExecutionHandler
 {
