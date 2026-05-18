@@ -412,6 +412,7 @@ void UDialogueSystemPlayer::ChangeCamera(FName CameraName, float TransitionTime,
 	if (ADialogueCineCamera* Camera = FindCineCamera(GetWorld(),CameraName))
 	{
 		PlayerController->SetViewTargetWithBlend(Camera, TransitionTime);
+		OnCameraChange.Broadcast();
 		Camera->ActivateCamera();
 		DialogueWidget->SetVisibility(ESlateVisibility::Hidden);
 		if (bReenableDialogueAfterAnimation)

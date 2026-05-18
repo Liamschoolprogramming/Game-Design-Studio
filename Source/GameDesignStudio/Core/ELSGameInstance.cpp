@@ -3,6 +3,7 @@
 
 #include "Core/ELSGameInstance.h"
 
+#include "DialogueSubsystem.h"
 #include "Components/AudioComponent.h"
 #include "Debug/DebugUtils.h"
 #include "GameFramework/GameUserSettings.h"
@@ -130,6 +131,7 @@ void UELSGameInstance::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
 		if (It)
 		{
 			It->OwningManager = UPuzzleRiverManager::StaticClass();
+			
 		}
 	}
 	
@@ -213,6 +215,10 @@ void UELSGameInstance::Init()
 		// Example delegate for when a map has finished loading
 		FWorldDelegates::OnPostWorldCreation.AddUFunction(this, "OnMapChangeFinished");
 	}
+	
+	UDialogueSubsystem* DialogueSubsystem = GetSubsystem<UDialogueSubsystem>();
+	FOnCameraChange& OnCameraChange = DialogueSubsystem->GetOnCameraChange();
+	OnCameraChange.AddUObject(this,&UELSGameInstance::OnCameraChanged);
 	
 
 	

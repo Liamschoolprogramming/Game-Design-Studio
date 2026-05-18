@@ -52,7 +52,7 @@ public:
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="CameraSettings|Animation",meta = (EditCondition = "bHasAnimation", EditConditionHides))
 	//Angle offset around the up axis as rotation for the camera
-	float AnimationOffset = 90.f;
+	float AnimationAngleOffset = 90.f;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CameraSettings|Animation", meta = (ClampMin = "0", ClampMax = "100"),meta = (EditCondition = "bHasAnimation", EditConditionHides))
 	//Percent along the path

@@ -84,6 +84,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Music")
 	UAudioComponent* FadeOutMusicPlayer;
 	
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnCameraChanged();
 	
 	
 protected:
